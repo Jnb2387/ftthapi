@@ -20,7 +20,7 @@ function formatSQL(request) {
     var join = request.query.join.split(';');
     sql.join(join[0], null, join[1]);
   }
-
+ console.log(sql.toString())
   return sql.toString();
 }
 

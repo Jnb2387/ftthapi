@@ -1,29 +1,14 @@
-// There are four parts to the configuration of you REST API:
-// 	host: the base documentation path for Swagger (useful for proxying)
-//  schemes: change to ['https'] if behind a https proxy
-// 	port: the port for the server
-// 	db: a list of database connection strings
-// 	cache: cache settings for your services
-// 	search: a configuration for the search services
-//
-// Search return columns must include the following:
-// id       unique identifier for that search type
-// type     the category of search (i.e. "address")
-// label    the return value you want to sort by
-//
-// The search performs a union of all tables specified in the query,
-// so to search for more than one table in a single query, the return
-// columns for each table in that query *must* be the same.
-//
-
-
+var username = "postgres";
+var host = "fgi-database";
+var database = "fgi_web_gis";
+var password = 'navy23';
 
 module.exports = {
     schemes: ['http'],
     host: 'localhost:8011'||'0.0.0.0',
     port: process.env.PORT || 8011,
     db: {
-        postgis: ""
+        postgis: "postgres://" + username + ":" + password + "@" + host + "/" + database
     },
     cache: {
         expiresIn: 30 * 1000,

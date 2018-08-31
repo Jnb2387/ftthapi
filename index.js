@@ -32,12 +32,8 @@ server.register(
         schemes: config.schemes,
         host: config.host,
         info: {
-          title: 'Dirt-Simple PostGIS REST API',
-          description: 'Created by Mecklenburg County GIS',
-          license: {
-            name: 'MIT Licensed - Fork me on Github!',
-            url: 'https://github.com/tobinbradley/dirt-simple-postgis-http-api'
-          }
+          title: 'REST API',
+          description: 'Created For Ftth',
         }
       }
     }
