@@ -7,7 +7,7 @@ function formatSQL(request) {
   var sql = squel
     .delete()
     .from(request.params.table)
-    .where("id =" + request.query.id);
+    .where("id in(" + request.query.id)+")";
   console.log(sql.toString())
   return sql.toString();
 }
