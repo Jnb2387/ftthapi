@@ -33,7 +33,7 @@ module.exports = [
 
     config: {
       description: 'Insert Cell',
-      notes: 'Insert a new record',
+      notes: 'Insert a new Cell',
       tags: ['api'],
       validate: {
         params: {

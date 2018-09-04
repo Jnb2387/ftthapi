@@ -21,6 +21,7 @@ function formatSQL(request) {
     sqlParts.push('(' + partial.toString() + ')');
   });
 
+  console.log(sqlParts.toString());
   var returnSQL = sqlParts.join(' union ') + ' order by type, label';
   return returnSQL;
 }
@@ -41,7 +42,7 @@ module.exports = [
         },
         query: {
           tables: Joi.string()
-            .default('address')
+            .default('cell')
             .description(
               'Comma delimited list of tables to search through. Each table must be defined in onfig. The default is <em>address</em>. Ex: <em>address,parcel,school</em>',
             ),

@@ -25,8 +25,8 @@ module.exports = [
     path: '/insert_functions/v1/{table}',
 
     config: {
-      description: 'Insert',
-      notes: 'Insert a new record',
+      description: 'Insert a New Function',
+      notes: 'Insert a new Function',
       tags: ['api'],
       validate: {
         params: {
@@ -37,6 +37,11 @@ module.exports = [
         query: {
           pni_cell_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
           netwin_cell_jso_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
+          // design_function:Joi.string().allow('').description('something'),
+          // resource:Joi.string().allow('').description('something'),
+          // date_complete:Joi.string().allow('').description('something'),
+          // comment:Joi.string().allow('').description('something'),
+          // id:Joi.string().description('something')
         },
       },
       jsonp: 'callback',

@@ -1,8 +1,8 @@
 var username = "postgres";
-// var host = "fgi-database";
-// var database = "fgi_web_gis";
-var host = "localhost";
-var database = "jeffreydb";
+var host = "fgi-database";
+var database = "fgi_web_gis";
+// var host = "localhost";
+// var database = "jeffreydb";
 var password = 'navy23';
 
 module.exports = {
@@ -26,10 +26,11 @@ module.exports = {
             }
         },
         cell: {
-            table: 'parks p, tax_parcels t',
-            columns: `p.gid as id, prkname as label, 'PARK' as type, round(ST_X(ST_Transform(p.the_geom, 4326))::NUMERIC,4) as lng, round(ST_Y(ST_Transform(p.the_geom, 4326))::NUMERIC,4) as lat, t.pid as pid, prkaddr as address`,
-            where: 'prkname ilike ? and p.the_geom && t.the_geom',
+            table: 'ftth.cells c, ftth.homes_passed hp, ftth.footages f , ftth.pdo pdo, ftth.sheath s',//, ftth.functions_table func',
+            columns: `c.cell_id as id, c.pni_cell_name as label, 'CELL' as type, c.netwin_project_name, c.feeder, c.permitting_rolt_number, c.franchise, c.town, hp.total`,
+            where: `c.pni_cell_name ilike ? OR c.netwin_cell_jso_name ilike ?`,
             format: function(query) {
+                console.log(query)
                 return '%' + query.trim() + '%';
             }
         },
