@@ -9,8 +9,8 @@ function formatSQL(request) {
     var sql = squel
         .update()
         .table(request.params.table)
-        .set("pni_cell_name", request.query.pni_cell_name)
-        .set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
+        .set("permitting_rolt_number", request.query.permitting_rolt_number)
+        .set("current_hub", request.query.current_hub)
         // .set("function_id", request.payload['data['+request.query.id+'][function_id]'])
         .set("design_function", request.payload['data['+request.query.id+'][design_function]'])
         .set("resource", request.payload['data['+request.query.id+'][resource]'])
@@ -25,19 +25,19 @@ function formatSQL(request) {
 
 module.exports = [{
     method: 'POST',
-    path: '/update_functions/v1/{table}',
+    path: '/update_permitting_functions/v1/{table}',
     config: {
-        description: 'Update the functions table',
-        notes: 'Update.',
+        description: 'Update the permitting functions table',
+        notes: 'Update permitting function table.',
         tags: ['api'],
         validate: {
             params: {
                 table: Joi.string()
-                    .required().description('name of the table').default('ftth.functions_table')
+                    .required().description('name of the table').default('ftth.permitting_functions')
             },
             query: {
-                pni_cell_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-                netwin_cell_jso_name: Joi.string().description("What Column"),
+                permitting_rolt_number: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
+                current_hub: Joi.string().description("What Column"),
                 id: Joi.number().integer().description('The ID for edit point.'),
             }
         },
@@ -48,17 +48,17 @@ module.exports = [{
                 .query(formatSQL(request))
                 .then(function (data) {
                     //DATATABLES EDITOR EXPECTS A JSON OBJECT TO BE RETURNED WITH THE NEW DATA
-                    var returndata = {
-                        "data": [{
-                            // "function_id": request.payload['data['+request.query.id+'][function_id]'],
-                            "design_function": request.payload['data['+request.query.id+'][design_function]'],
-                            "resource": request.payload['data['+request.query.id+'][resource]'],
-                            // "object_id": request.payload['data['+request.query.id+'][object_id]'],
-                            "date_complete": request.payload['data['+request.query.id+'][date_complete]'],
-                            "comment": request.payload['data['+request.query.id+'][comment]'],
-                            "id":request.query.id
-                        }]
-                    }
+                    var returndata={"data":[{
+                        "permitting_rolt_number":request.query.permitting_rolt_number,
+                        "current_hub":request.query.current_hub,
+                        "design_function":request.payload['data['+request.query.id+'][design_function]'],
+                        "resource":request.payload['data['+request.query.id+'][resource]'],
+                        // "object_id":request.payload['data['+request.query.id+'][object_id]'],
+                        "date_complete":request.payload['data['+request.query.id+'][date_complete]'],
+                        "comment":request.payload['data['+request.query.id+'][comment]'],
+                        "id":request.query.id
+          
+                      }]}
                     // console.log(returndata)
                     reply(returndata);
                 })
