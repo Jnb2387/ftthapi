@@ -9,23 +9,23 @@ function formatSQL(request) {
     var sql = squel
         .update()
         .table(request.params.table)
-        // .set("permitting_rolt_number", request.payload.permitting_rolt_number)
+        .set("permitting_rolt_number", request.params.permitting_rolt_number)
         // .set("rolt_status", request.payload.rolt_status)
         // .set("cabinet_type", request.payload.cabinet_type)
         // .set("netwin_rolt_name", request.payload.netwin_rolt_name)
         // .set("current_hub", request.payload.current_hub)
         // .set("future_hub", request.payload.future_hub)
 
-        // .set("first_franchise_town", request.payload.first_franchise_town)
-        // .set("first_hamlet", request.payload.first_hamlet)
-        // .set("first_street", request.payload.first_street)
-        // .set("first_cross_street", request.payload.first_cross_street)
-        // .set("first_utlity_strip_width", request.payload.first_utlity_strip_width)
-        // .set("first_lat_long", request.payload.first_lat_long)
-        // .set("first_riser_pole", request.payload.first_riser_pole)
-        // .set("first_permitting_agency", request.payload.first_permitting_agency)
-        // .set("first_road_type", request.payload.first_road_type)
-        .set("first_pictures", request.query.first_pictures)
+        .set("first_franchise_town", request.payload.first_franchise_town)
+        .set("first_hamlet", request.payload.first_hamlet)
+        .set("first_street", request.payload.first_street)
+        .set("first_cross_street", request.payload.first_cross_street)
+        .set("first_utlity_strip_width", request.payload.first_utlity_strip_width)
+        .set("first_lat_long", request.payload.first_lat_long)
+        .set("first_riser_pole", request.payload.first_riser_pole)
+        .set("first_permitting_agency", request.payload.first_permitting_agency)
+        .set("first_road_type", request.payload.first_road_type)
+        .set("first_pictures", request.payload.first_pictures)
 
         // .set("second_franchise_town", request.payload.second_franchise_town)
         // .set("second_hamlet", request.payload.second_hamlet)
@@ -72,29 +72,29 @@ module.exports = [{
         tags: ['api'],
         validate: {
             params: {
-                table: Joi.string()
-                    .required().description('name of the table').default('ftth.permitting'),
-                    permitting_rolt_number: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-                    id: Joi.number().integer().description('The ID for edit point.'),
-                    
-                },
-                query: {
+                table: Joi.string().required().description('Name of the Table').default('ftth.permitting'),
+                permitting_rolt_number: Joi.string().description('What Rolt'),
+                id: Joi.number().integer().description('The ID for edit point.'),
+            },
+            query: {
+            },
+            payload: {
                 // rolt_status: Joi.string().description("What Column"),
                 // cabinet_type: Joi.string().description("What Column"),
                 // netwin_rolt_name: Joi.string().description("What Column"),
                 // current_hub: Joi.string().description("What Column"),
                 // future_hub: Joi.string().description("What Column"),
 
-                // first_franchise_town: Joi.string().description("What Column"),
-                // first_hamlet: Joi.string().description("What Column"),
-                // first_street: Joi.string().description("What Column"),
-                // first_cross_street: Joi.string().description("What Column"),
-                // first_utlity_strip_width: Joi.string().description("What Column"),
-                // first_lat_long: Joi.string().description("What Column"),
-                // first_riser_pole: Joi.string().description("What Column"),
-                // first_permitting_agency: Joi.string().description("What Column"),
-                // first_road_type: Joi.string().description("What Column"),
-                first_pictures: Joi.string().description("What Column"),
+                first_franchise_town: Joi.string().description("What Franchise"),
+                first_hamlet: Joi.string().description("What Hamlet"),
+                first_street: Joi.string().description("What Street"),
+                first_cross_street: Joi.string().description("What Column"),
+                first_utlity_strip_width: Joi.string().description("What Column"),
+                first_lat_long: Joi.string().description("What Column"),
+                first_riser_pole: Joi.string().description("What Column"),
+                first_permitting_agency: Joi.string().description("What Column"),
+                first_road_type: Joi.string().description("What Column"),
+                first_pictures: Joi.string().description("First Pictures"),
 
 
                 // second_franchise_town: Joi.string().description("What Column"),
@@ -133,7 +133,7 @@ module.exports = [{
             db
                 .query(formatSQL(request))
                 .then(function (data) {
-                    reply("Permitting Table Successfully Updated");
+                    reply("First Location Successfully Updated");
                 })
                 .catch(function (err) {
                     reply({
