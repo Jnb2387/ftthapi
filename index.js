@@ -5,6 +5,7 @@ const HapiSwagger = require('hapi-swagger');
 const Router = require('hapi-router');
 const config = require('./config');
 
+
 // Create a server with a host and port
 const server = new Hapi.Server();
 server.connection({
@@ -38,8 +39,8 @@ server.register(
       }
     }
   ],
-  function(err) {
-    server.start(function() {
+  function (err) {
+    server.start(function () {
       // Add any server.route() config here
       console.log('Server running at:', server.info.uri);
     });

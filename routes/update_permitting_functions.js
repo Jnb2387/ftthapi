@@ -36,9 +36,9 @@ module.exports = [{
                     .required().description('name of the table').default('ftth.permitting_functions')
             },
             query: {
-                permitting_rolt_number: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-                current_hub: Joi.string().description("What Column"),
-                id: Joi.number().integer().description('The ID for edit point.'),
+                permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
+                current_hub: Joi.string().description("Current Hub"),
+                id: Joi.number().integer().description('The ID for the Feature.'),
             }
         },
         jsonp: 'callback',

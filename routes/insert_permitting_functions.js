@@ -9,12 +9,12 @@ function formatSQL(request) {
     .into(request.params.table)
     .set("permitting_rolt_number", request.query.permitting_rolt_number)
     .set("current_hub", request.query.current_hub)
-    // .set("function_id", request.payload['data[0][function_id]'])
-    .set("design_function", request.payload['data[0][design_function]'])
-    .set("resource", request.payload['data[0][resource]'])
+    .set("design_function", request.payload.design_function)
+    .set("resource", request.payload.resource)
+    .set("date_complete", request.payload.date_complete)
+    .set("comment", request.payload.comment)
     // .set("object_id", request.payload['data[0][object_id]'])
-    .set("date_complete", request.payload['data[0][date_complete]'])
-    .set("comment", request.payload['data[0][comment]'])
+    // .set("function_id", request.payload['data[0][function_id]'])
   console.log(sql.toString())
   return sql.toString();
 }
@@ -35,14 +35,15 @@ module.exports = [
             .description('name of the table').default('ftth.functions_table'),
         },
         query: {
-          permitting_rolt_number: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-          current_hub: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-          // design_function:Joi.string().allow('').description('something'),
-          // resource:Joi.string().allow('').description('something'),
-          // date_complete:Joi.string().allow('').description('something'),
-          // comment:Joi.string().allow('').description('something'),
-          // id:Joi.string().description('something')
+          permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
+          current_hub: Joi.string().description('Current Hub')
         },
+        payload:{
+          design_function: Joi.string().description('Design Function'),
+          resource: Joi.string().description('Resource'),
+          date_complete:Joi.string().description('Date Complete'),
+          comment: Joi.string().allow('').description('Comment')
+        }
       },
       jsonp: 'callback',
       cache: config.cache,
@@ -54,21 +55,23 @@ module.exports = [
             var returndata={"data":[{
               "permitting_rolt_number":request.query.permitting_rolt_number,
               "current_hub":request.query.current_hub,
-              "design_function":request.payload['data[0][design_function]'],
-              "resource":request.payload['data[0][resource]'],
+              "design_function":request.payload.design_function,
+              "resource":request.payload.resource,
               // "object_id":request.payload['data[0][object_id]'],
-              "date_complete":request.payload['data[0][date_complete]'],
-              "comment":request.payload['data[0][comment]'],
+              "date_complete":request.payload.date_complete,
+              "comment":request.payload.comment,
               "id":request.payload['data[0][id]']
 
             }]}
             reply(returndata);
           })
           .catch(function (err) {
-            reply({
+            reply(
+              {
               error: 'error running query',
               error_details: err,
-            });
+            }
+          );
           });
       },
     },

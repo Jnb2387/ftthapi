@@ -54,7 +54,7 @@ module.exports = [
             .integer()
             .max(1000)
             .min(1)
-            .default(100)
+            .default(1000)
             .description(
               'Limit the number of features returned. The default is <em>100</em>.',
             ),

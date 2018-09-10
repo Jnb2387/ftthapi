@@ -36,9 +36,9 @@ module.exports = [{
                     .required().description('name of the table').default('ftth.functions_table')
             },
             query: {
-                pni_cell_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-                netwin_cell_jso_name: Joi.string().description("What Column"),
-                id: Joi.number().integer().description('The ID for edit point.'),
+                pni_cell_name: Joi.string().description('PNI Cell Name'),
+                netwin_cell_jso_name: Joi.string().description("Netwin Cell JSO Name"),
+                id: Joi.number().integer().description('The ID for the Feature'),
             }
         },
         jsonp: 'callback',

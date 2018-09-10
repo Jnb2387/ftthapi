@@ -27,28 +27,6 @@ function formatSQL(request) {
         .set("first_road_type", request.payload.first_road_type)
         .set("first_pictures", request.payload.first_pictures)
 
-        // .set("second_franchise_town", request.payload.second_franchise_town)
-        // .set("second_hamlet", request.payload.second_hamlet)
-        // .set("second_street", request.payload.second_street)
-        // .set("second_cross_street", request.payload.second_cross_street)
-        // .set("second_utility_strip_width", request.payload.second_utility_strip_width)
-        // .set("second_lat_long", request.payload.second_lat_long)
-        // .set("second_riser_pole", request.payload.second_riser_pole)
-        // .set("second_permitting_agency", request.payload.second_permitting_agency)
-        // .set("second_road_type", request.payload.second_road_type)
-        // .set("second_pictures", request.payload.second_pictures)
-
-        // .set("franchise_town", request.payload.franchise_town)
-        // .set("hamlett", request.payload.hamlett)
-        // .set("street", request.payload.street)
-        // .set("cross_street", request.payload.cross_street)
-        // .set("utility_strip_width", request.payload.utility_strip_width)
-        // .set("lat_long", request.payload.lat_long)
-        // .set("riser_pole", request.payload.riser_pole)
-        // .set("permitting_agency", request.payload.permitting_agency)
-        // .set("road_type", request.payload.road_type)
-        // .set("pictures", request.payload.pictures)
-
         // .set("approved_final_location", request.payload.approved_final_location)
         // .set("permit__", request.payload.permit__)
         // .set("blocked_y_n_", request.payload.blocked_y_n_)
@@ -65,7 +43,7 @@ function formatSQL(request) {
 
 module.exports = [{
     method: 'POST',
-    path: '/update_permitting_table/v1/{table},{permitting_rolt_number},{id}',
+    path: '/update_permitting_table_first_location/v1/{table},{permitting_rolt_number},{id}',
     config: {
         description: 'Update the permitting table',
         notes: 'Update permitting table.',
@@ -85,38 +63,18 @@ module.exports = [{
                 // current_hub: Joi.string().description("What Column"),
                 // future_hub: Joi.string().description("What Column"),
 
-                first_franchise_town: Joi.string().description("What Franchise"),
-                first_hamlet: Joi.string().description("What Hamlet"),
-                first_street: Joi.string().description("What Street"),
-                first_cross_street: Joi.string().description("What Column"),
-                first_utlity_strip_width: Joi.string().description("What Column"),
-                first_lat_long: Joi.string().description("What Column"),
-                first_riser_pole: Joi.string().description("What Column"),
-                first_permitting_agency: Joi.string().description("What Column"),
-                first_road_type: Joi.string().description("What Column"),
+                first_franchise_town: Joi.string().description("First Franchise"),
+                first_hamlet: Joi.string().description("First Hamlet"),
+                first_street: Joi.string().description("First Street"),
+                first_cross_street: Joi.string().description("First Cross Street"),
+                first_utlity_strip_width: Joi.string().description("First Utility Strip Width"),
+                first_lat_long: Joi.string().description("first Lat Long"),
+                first_riser_pole: Joi.string().description("First Riser Pole"),
+                first_permitting_agency: Joi.string().description("First Permitting Agency"),
+                first_road_type: Joi.string().description("First Road Type"),
                 first_pictures: Joi.string().description("First Pictures"),
 
 
-                // second_franchise_town: Joi.string().description("What Column"),
-                // second_hamlet: Joi.string().description("What Column"),
-                // second_street: Joi.string().description("What Column"),
-                // second_cross_street: Joi.string().description("What Column"),
-                // second_utility_strip_width: Joi.string().description("What Column"),
-                // second_lat_long: Joi.string().description("What Column"),
-                // second_riser_pole: Joi.string().description("What Column"),
-                // second_permitting_agency: Joi.string().description("What Column"),
-                // second_road_type: Joi.string().description("What Column"),
-                // second_pictures: Joi.string().description("What Column"),
-
-                // franchise_town: Joi.string().description("What Column"),
-                // hamlett: Joi.string().description("What Column"),
-                // street: Joi.string().description("What Column"),
-                // cross_street: Joi.string().description("What Column"),
-                // utility_strip_width: Joi.string().description("What Column"),
-                // lat_long: Joi.string().description("What Column"),
-                // permitting_agency: Joi.string().description("What Column"),
-                // road_type: Joi.string().description("What Column"),
-                // pictures: Joi.string().description("What Column"),
                 // approved_final_location: Joi.string().description("What Column"),
                 // permit__: Joi.string().description("What Column"),
                 // blocked_y_n_: Joi.string().description("What Column"),
