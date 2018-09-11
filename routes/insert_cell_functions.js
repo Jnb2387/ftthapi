@@ -10,11 +10,18 @@ function formatSQL(request) {
     .set("pni_cell_name", request.query.pni_cell_name)
     .set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
     // .set("function_id", request.payload['data[0][function_id]'])
-    .set("design_function", request.payload['data[0][design_function]'])
-    .set("resource", request.payload['data[0][resource]'])
     // .set("object_id", request.payload['data[0][object_id]'])
-    .set("date_complete", request.payload['data[0][date_complete]'])
-    .set("comment", request.payload['data[0][comment]'])
+
+    // .set("design_function", request.payload['data[0][design_function]'])
+    // .set("resource", request.payload['data[0][resource]'])
+    // .set("date_complete", request.payload['data[0][date_complete]'])
+    // .set("comment", request.payload['data[0][comment]'])
+
+    .set("design_function", request.query.design_function)
+    .set("resource", request.payload.resource)
+    .set("date_complete", request.payload.date_complete)
+    .set("comment", request.payload.comment)
+
   console.log(sql.toString())
   return sql.toString();
 }
@@ -37,12 +44,14 @@ module.exports = [
         query: {
           pni_cell_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
           netwin_cell_jso_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
-          // design_function:Joi.string().allow('').description('something'),
-          // resource:Joi.string().allow('').description('something'),
-          // date_complete:Joi.string().allow('').description('something'),
-          // comment:Joi.string().allow('').description('something'),
-          // id:Joi.string().description('something')
         },
+        payload:{
+
+          design_function:Joi.string().description('something'),
+          resource:Joi.string().description('something'),
+          date_complete:Joi.string().description('something'),
+          comment:Joi.string().allow('').description('something'),
+        }
       },
       jsonp: 'callback',
       cache: config.cache,
@@ -53,11 +62,20 @@ module.exports = [
             //DATATABLES EDITOR EXPECTS A JSON OBJECT TO BE RETURNED WITH THE NEW DATA
             var returndata={"data":[{
               // "function_id":request.payload['data[0][function_id]'],
-              "design_function":request.payload['data[0][design_function]'],
-              "resource":request.payload['data[0][resource]'],
               // "object_id":request.payload['data[0][object_id]'],
-              "date_complete":request.payload['data[0][date_complete]'],
-              "comment":request.payload['data[0][comment]'],
+              
+              // "design_function":request.payload['data[0][design_function]'],
+              // "resource":request.payload['data[0][resource]'],
+              // "date_complete":request.payload['data[0][date_complete]'],
+              // "comment":request.payload['data[0][comment]'],
+              
+              "current_hub":request.query.current_hub,
+              "design_function":request.payload.design_function,
+              "resource":request.payload.resource,
+              "date_complete":request.payload.date_complete,
+              "comment":request.payload.comment,
+
+
               "id":request.payload['data[0][id]']
 
             }]}

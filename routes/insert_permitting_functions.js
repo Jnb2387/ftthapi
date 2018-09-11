@@ -53,11 +53,11 @@ module.exports = [
           .then(function (data) {
             //DATATABLES EDITOR EXPECTS A JSON OBJECT TO BE RETURNED WITH THE NEW DATA
             var returndata={"data":[{
+              // "object_id":request.payload['data[0][object_id]'],
               "permitting_rolt_number":request.query.permitting_rolt_number,
               "current_hub":request.query.current_hub,
               "design_function":request.payload.design_function,
               "resource":request.payload.resource,
-              // "object_id":request.payload['data[0][object_id]'],
               "date_complete":request.payload.date_complete,
               "comment":request.payload.comment,
               "id":request.payload['data[0][id]']
