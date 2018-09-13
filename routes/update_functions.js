@@ -9,8 +9,8 @@ function formatSQL(request) {
     var sql = squel
         .update()
         .table(request.params.table)
-        .set("pni_cell_name", request.query.pni_cell_name)
-        .set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
+        //.set("pni_cell_name", request.query.pni_cell_name)
+        //.set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
         // .set("function_id", request.payload['data['+request.query.id+'][function_id]'])
         .set("design_function", request.payload['data['+request.query.id+'][design_function]'])
         .set("resource", request.payload['data['+request.query.id+'][resource]'])

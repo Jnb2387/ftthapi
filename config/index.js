@@ -1,8 +1,8 @@
 var username = "postgres";
 var host = "fgi-database";
 var database = "fgi_web_gis";
-// var host = "localhost";
 var password="admin";
+// var host = "localhost";
 // var database = "jeffreydb";
 // var password = 'navy23';
 

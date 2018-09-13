@@ -7,8 +7,8 @@ function formatSQL(request) {
   var sql = squel
     .insert()
     .into(request.params.table)
-    .set("pni_cell_name", request.query.pni_cell_name)
-    .set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
+   .set("pni_cell_name", request.query.pni_cell_name)
+   .set("netwin_cell_jso_name", request.query.netwin_cell_jso_name)
     // .set("function_id", request.payload['data[0][function_id]'])
     // .set("object_id", request.payload['data[0][object_id]'])
 
@@ -17,7 +17,7 @@ function formatSQL(request) {
     // .set("date_complete", request.payload['data[0][date_complete]'])
     // .set("comment", request.payload['data[0][comment]'])
 
-    .set("design_function", request.query.design_function)
+    .set("design_function", request.payload.design_function)
     .set("resource", request.payload.resource)
     .set("date_complete", request.payload.date_complete)
     .set("comment", request.payload.comment)
@@ -46,7 +46,6 @@ module.exports = [
           netwin_cell_jso_name: Joi.string().description('The fields to return. The default is <em>all fields</em>.'),
         },
         payload:{
-
           design_function:Joi.string().description('something'),
           resource:Joi.string().description('something'),
           date_complete:Joi.string().description('something'),
@@ -68,7 +67,7 @@ module.exports = [
               // "resource":request.payload['data[0][resource]'],
               // "date_complete":request.payload['data[0][date_complete]'],
               // "comment":request.payload['data[0][comment]'],
-              
+
               "current_hub":request.query.current_hub,
               "design_function":request.payload.design_function,
               "resource":request.payload.resource,

@@ -9,7 +9,7 @@ function formatSQL(request) {
     var sql = squel
         .update()
         .table(request.params.table)
-        .set("permitting_rolt_number", request.query.permitting_rolt_number)
+        //.set("permitting_rolt_number", request.query.permitting_rolt_number)
         .set("current_hub", request.query.current_hub)
         // .set("function_id", request.payload['data['+request.query.id+'][function_id]'])
         .set("design_function", request.payload['data['+request.query.id+'][design_function]'])
