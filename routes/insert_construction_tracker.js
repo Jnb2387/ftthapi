@@ -7,9 +7,10 @@ const db = require('../config/db.js');
 function formatSQL(request) {
 
     var sql = squel
-        .update()
-        .table(request.params.table)
-        // .set("permitting_rolt_number", request.params.permitting_rolt_number)
+        .insert()
+        .into(request.params.table)
+        .set("pni_cell_name", request.payload.pni_cell_name)
+        .set("jso_location", request.payload.jso_location)
         .set("start_device", request.payload.start_device)
         .set("end_device", request.payload.end_device)
         .set("fiber_count", request.payload.fiber_count)
@@ -35,10 +36,7 @@ function formatSQL(request) {
         .set("backhaul_spliced", request.payload.backhaul_spliced)
         .set("pdo_to_odf", request.payload.pdo_odf)
         .set("tested", request.payload.tested)
-
-
-
-        .where("id =" + request.query.id);
+        // .where("id =" + request.query.id);
     console.log(sql.toString());
 
     return sql.toString();
@@ -46,10 +44,10 @@ function formatSQL(request) {
 
 module.exports = [{
     method: 'POST',
-    path: '/update_construction_tracker/v1/{table}',
+    path: '/insert_construction_tracker/v1/{table}',
     config: {
-        description: 'Update the construction table',
-        notes: 'Update construction table.',
+        description: 'Insert the construction table',
+        notes: 'Insert construction table.',
         tags: ['api'],
         validate: {
             params: {
