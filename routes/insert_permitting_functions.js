@@ -32,7 +32,7 @@ module.exports = [
         params: {
           table: Joi.string()
             .required()
-            .description('name of the table').default('ftth.functions_table'),
+            .description('name of the table').default('ftth.permitting_functions'),
         },
         query: {
           permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
@@ -48,6 +48,7 @@ module.exports = [
       jsonp: 'callback',
       cache: config.cache,
       handler: function (request, reply) {
+        console.log(request.payload)
         db
           .query(formatSQL(request))
           .then(function (data) {

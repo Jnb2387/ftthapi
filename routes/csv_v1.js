@@ -20,6 +20,18 @@ function formatSQL(request) {
     var join2 = request.query.join2.split(';');
     sql.left_join(join2[0], null, join2[1]);
   }
+  if (request.query.join3) {
+    var join3 = request.query.join3.split(';');
+    sql.left_join(join3[0], null, join3[1]);
+  }
+  if (request.query.join4) {
+    var join4 = request.query.join4.split(';');
+    sql.left_join(join4[0], null, join4[1]);
+  }
+  if (request.query.join5) {
+    var join5 = request.query.join5.split(';');
+    sql.left_join(join5[0], null, join5[1]);
+  }
 console.log(sql.toString())
   return sql.toString();
 }
@@ -54,9 +66,18 @@ module.exports = [
           join2: Joi.string().description(
             'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>',
           ),
+          join3: Joi.string().description(
+            'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>',
+          ),
+          join4: Joi.string().description(
+            'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>',
+          ),
+          join5: Joi.string().description(
+            'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>',
+          ),
           limit: Joi.number()
             .integer()
-            .max(10000)
+            //.max(10000)
             .min(1)
             .default(5000)
             .description(
