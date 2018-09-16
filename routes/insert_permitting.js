@@ -13,8 +13,8 @@ function formatSQL(request) {
     .set("netwin_rolt_name", request.payload.netwin_rolt_name)
     .set("current_hub", request.payload.current_hub)
     .set("approved_final_location", request.payload.approved_final_location)
-    .set("permit__", request.payload.permit__)
-    .set("blocked_y_n_", request.payload.blocked_y_n_)
+    .set("permit_", request.payload.permit__)
+    .set("blocked_y_n", request.payload.blocked_y_n_)
     .set("blocked_by", request.payload.blocked_by)
     .set("blocker_owner", request.payload.blocker_owner)
     .set("eta_blocker_resolution", request.payload.eta_blocker_resolution)
@@ -52,9 +52,9 @@ function formatSQL(request) {
     .set("riser_pole", request.payload.riser_pole)
     .set("permitting_agency", request.payload.permitting_agency)
     .set("road_type", request.payload.road_type)
-    .set("pictures", request.payload.first_pictures)
+    .set("pictures", request.payload.first_pictures);
 
-  console.log(sql.toString())
+  console.log(sql.toString());
   return sql.toString();
 }
 
@@ -133,7 +133,7 @@ module.exports = [
             reply("Permitting Successfully Inserted.");
           })
           .catch(function (err) {
-            reply(err.detail, console.log(err.detail));
+            reply(err.detail, console.log(err));
           });
       },
     },

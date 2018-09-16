@@ -20,7 +20,7 @@ function formatSQL(request) {
     var join = request.query.join.split(';');
     sql.join(join[0], null, join[1]);
   }
- console.log(sql.toString())
+ console.log(sql.toString());
   return sql.toString();
 }
 
@@ -29,6 +29,7 @@ module.exports = [
     method: 'GET',
     path: '/query/v1/{table}',
     config: {
+      // auth: 'simple',
       description: 'simple query',
       notes: 'Perform a simple query on a table.',
       tags: ['api'],
@@ -42,13 +43,13 @@ module.exports = [
           columns: Joi.string()
             .default('*')
             .description(
-              'The fields to return. The default is <em>all fields</em>.',
+              'The fields to return. The default is <em>all fields</em>.'
             ),
           filter: Joi.string()
             .default('')
             .description('Filtering parameters for a SQL WHERE statement.'),
           sort: Joi.string().description(
-            'A field or fields to sort the return by.',
+            'A field or fields to sort the return by.'
           ),
           limit: Joi.number()
             .integer()
@@ -56,10 +57,10 @@ module.exports = [
             .min(1)
             .default(1000)
             .description(
-              'Limit the number of features returned. The default is <em>100</em>.',
+              'Limit the number of features returned. The default is <em>100</em>.'
             ),
           join: Joi.string().description(
-            'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>',
+            'A table to join and a join expression separated by a semicolon. Ex: <em>table2;table1.id = table2.id</em>'
           ),
           group: Joi.string().description('Column(s) to group by.'),
         },
@@ -67,10 +68,14 @@ module.exports = [
       jsonp: 'callback',
       cache: config.cache,
       handler: function(request, reply) {
+        // request.auth.session.clear();
+        console.log(request.auth)
+        const user=request.auth.credentials;
         db
-          .query(formatSQL(request))
-          .then(function(data) {
-            reply(data);
+        .query(formatSQL(request))
+        .then(function(data) {
+          console.log("User Data From Response: ", user);
+            reply(data,user);
           })
           .catch(function(err) {
             reply({

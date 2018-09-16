@@ -32,6 +32,7 @@ module.exports = [
     path: '/insert_cell/v1/{table}',
 
     config: {
+      
       description: 'Insert Cell',
       notes: 'Insert a new Cell',
       tags: ['api'],

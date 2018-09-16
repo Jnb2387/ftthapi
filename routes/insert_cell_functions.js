@@ -17,7 +17,7 @@ function formatSQL(request) {
     // .set("date_complete", request.payload['data[0][date_complete]'])
     // .set("comment", request.payload['data[0][comment]'])
 
-    .set("design_function", request.query.design_function)
+    .set("design_function", request.payload.design_function)
     .set("resource", request.payload.resource)
     .set("date_complete", request.payload.date_complete)
     .set("comment", request.payload.comment)

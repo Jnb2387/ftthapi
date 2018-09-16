@@ -4,7 +4,10 @@ const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const Router = require('hapi-router');
 const config = require('./config');
-
+const Basic = require('hapi-auth-basic');
+const Bcrypt = require('bcrypt');
+const db = require('./config/db.js');
+const Users = require('./config/users');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -14,6 +17,33 @@ server.connection({
   routes: {
     cors: true
   }
+});
+
+var validate = function (request, username, password, callback) {
+  var user = Users[username];
+  if (!user) {
+    return {
+      credentials: null,
+      isValid: false
+    };
+  }
+  Bcrypt.compare(password, user.password, function (err, isValid) {
+    // if (isValid === true) {
+      // isValid = false;
+    // }
+    callback(err, isValid, {
+      id: user.id,
+      name: user.name
+    });
+    console.log(user);
+    
+  });
+};
+
+//FOR AUTHENTICATION NOT SURE WHAT I AM DOING 
+server.register(Basic);
+server.auth.strategy('simple', 'basic', {
+  validateFunc: validate,
 });
 
 // Start the server
