@@ -1,19 +1,10 @@
 var username = "postgres";
-<<<<<<< HEAD
-// var host = "fgi-database";
-// var database = "fgi_web_gis";
-// var password="admin";
-var host = "localhost";
-var database = "jeffreydb";
-var password = 'navy23';
-=======
 var host = "fgi-database";
 var database = "fgi_web_gis";
 var password="admin";
 // var host = "localhost";
 // var database = "jeffreydb";
 // var password = 'navy23';
->>>>>>> 338dc2ec841c4b19ff72301c42e906bac0c10d67
 
 module.exports = {
     schemes: ['http'],

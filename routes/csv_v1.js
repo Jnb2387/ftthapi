@@ -92,6 +92,7 @@ module.exports = [
       db
         .query(formatSQL(request))
         .then(function(data) {
+          // console.log(data)
             data.forEach((row) => {
                 delete row.geom;
               });

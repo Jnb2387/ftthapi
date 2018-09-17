@@ -3,6 +3,8 @@ const config = require('../config');
 const db = require('../config/db.js');
 const squel = require('squel').useFlavour('postgres');
 
+const Boom = require('boom')  
+
 function formatSQL(request) {
   var sql = squel
     .insert()
@@ -13,8 +15,8 @@ function formatSQL(request) {
     .set("netwin_rolt_name", request.payload.netwin_rolt_name)
     .set("current_hub", request.payload.current_hub)
     .set("approved_final_location", request.payload.approved_final_location)
-    .set("permit_", request.payload.permit__)
-    .set("blocked_y_n", request.payload.blocked_y_n_)
+    .set("permit_", request.payload.permit_)
+    .set("blocked_y_n_", request.payload.blocked_y_n_)
     .set("blocked_by", request.payload.blocked_by)
     .set("blocker_owner", request.payload.blocker_owner)
     .set("eta_blocker_resolution", request.payload.eta_blocker_resolution)
@@ -80,7 +82,7 @@ module.exports = [
           netwin_rolt_name:Joi.string().allow('').description('Cell Hub'),
           current_hub:Joi.string().allow('').description('Cell Ring'),
           approved_final_location:Joi.string().allow('').description('placeholder'),
-          permit__:Joi.string().allow('').description('placeholder'),
+          permit_:Joi.string().allow('').description('placeholder'),
           blocked_y_n_:Joi.string().allow('').description('placeholder'),
           blocked_by:Joi.string().allow('').description('placeholder'),
           blocker_owner:Joi.string().allow('').description('placeholder'),
@@ -133,7 +135,8 @@ module.exports = [
             reply("Permitting Successfully Inserted.");
           })
           .catch(function (err) {
-            reply(err.detail, console.log(err));
+            console.log(err)
+            reply(Boom.badRequest(err).output.payload.message);
           });
       },
     },

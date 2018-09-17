@@ -12,7 +12,7 @@ const Users = require('./config/users');
 // Create a server with a host and port
 const server = new Hapi.Server();
 server.connection({
-  host: '0.0.0.0',
+  host: '0.0.0.0'|| localhost,
   port: config.port,
   routes: {
     cors: true
@@ -22,6 +22,7 @@ server.connection({
 var validate = function (request, username, password, callback) {
   var user = Users[username];
   if (!user) {
+    // console.log("NO USER")
     return {
       credentials: null,
       isValid: false
@@ -31,11 +32,14 @@ var validate = function (request, username, password, callback) {
     // if (isValid === true) {
       // isValid = false;
     // }
+    // console.log(isValid)
+
     callback(err, isValid, {
       id: user.id,
       name: user.name
     });
-    console.log(user);
+    // console.log("User from bcrypt: ", user);
+    // console.log(isValid)
     
   });
 };

@@ -68,14 +68,13 @@ module.exports = [
       jsonp: 'callback',
       cache: config.cache,
       handler: function(request, reply) {
-        // request.auth.session.clear();
-        console.log(request.auth)
-        const user=request.auth.credentials;
+        // console.log("request.auth FROM query Route: ", request.auth)
+        // const user=request.auth.credentials;
         db
         .query(formatSQL(request))
         .then(function(data) {
-          console.log("User Data From Response: ", user);
-            reply(data,user);
+          // console.log("User Data From Response from Route: ", user);
+            reply(data);
           })
           .catch(function(err) {
             reply({
