@@ -29,18 +29,14 @@ var validate = function (request, username, password, callback) {
     };
   }
   Bcrypt.compare(password, user.password, function (err, isValid) {
-    // if (isValid === true) {
-      // isValid = false;
-    // }
-    // console.log(isValid)
-
+    // isValid=false;
     callback(err, isValid, {
       id: user.id,
-      name: user.name
+      name: user.name,
+      role: user.role
     });
     // console.log("User from bcrypt: ", user);
-    // console.log(isValid)
-    
+    // console.log("isValid = ",isValid)
   });
 };
 
@@ -54,6 +50,7 @@ server.auth.strategy('simple', 'basic', {
 server.register(
   [
     Inert,
+    
     Vision,
     {
       register: Router,
@@ -80,3 +77,30 @@ server.register(
     });
   }
 );
+
+
+//  THIS DEFINATELY NEEDS TO BE CHECK
+//  IT SENDS THE HTML FROM THE SERVER
+ server.route({
+  method : 'GET',
+  path : '/{param*}',
+   config: {
+      auth: 'simple',
+    },
+  handler : {
+
+      directory : {
+          path : 'public'
+      }
+
+  }
+});
+
+ server.route({
+    method: 'GET',
+    path: '/logout',
+    handler: function (request, reply) {
+
+        reply('You are logged out now').code(401);
+    }
+});

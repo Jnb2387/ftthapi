@@ -25,10 +25,10 @@ module.exports = [
         params: {
           table: Joi.string()
             .required()
-            .description('name of the table').default('ftth.construction_cell_tracker'),
+            .description('Table Name').default('ftth.construction_cell_tracker'),
         },
         query: {
-          id: Joi.number().integer().description('The ID for edit point.'),
+          id: Joi.number().integer().description('The ID for feature.'),
         },
       },
       jsonp: 'callback',

@@ -5,7 +5,6 @@ var Joi = require('joi'),
 const db = require('../config/db.js');
 
 function formatSQL(request) {
-
     var sql = squel
         .update()
         .table(request.params.table)
@@ -36,8 +35,8 @@ function formatSQL(request) {
         // .set("blocker_description", request.payload.blocker_description)
 
         .where("id =" + request.params.id);
-    console.log(sql.toString());
 
+    console.log(sql.toString());
     return sql.toString();
 }
 
@@ -67,7 +66,7 @@ module.exports = [{
                 first_hamlet: Joi.string().description("First Hamlet"),
                 first_street: Joi.string().description("First Street"),
                 first_cross_street: Joi.string().description("First Cross Street"),
-                first_utlity_strip_width: Joi.string().description("First Utility Strip Width"),
+                first_utlity_strip_width: Joi.string().replace(/'/g, "''").description("First Utility Strip Width"),// THIS COLUMN HAS A SINGLE QUOTE IN THE FIELD SO IT SCREWS EVERTHING Up
                 first_lat_long: Joi.string().description("first Lat Long"),
                 first_riser_pole: Joi.string().description("First Riser Pole"),
                 first_permitting_agency: Joi.string().description("First Permitting Agency"),

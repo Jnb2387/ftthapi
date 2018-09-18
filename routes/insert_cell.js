@@ -21,7 +21,6 @@ function formatSQL(request) {
     .set("map_number", request.payload.map_number)
     .set("nodes_within_cell", request.payload.nodes_within_cell);
 
-
   console.log(sql.toString())
   return sql.toString();
 }
@@ -32,7 +31,7 @@ module.exports = [
     path: '/insert_cell/v1/{table}',
 
     config: {
-      
+      auth: 'simple',
       description: 'Insert Cell',
       notes: 'Insert a new Cell',
       tags: ['api'],
@@ -40,29 +39,27 @@ module.exports = [
         params: {
           table: Joi.string()
             .required()
-            .description('name of the table').default('ftth.cells'),
+            .description('Table Name').default('ftth.cells'),
         },
         payload: {
-          netwin_cell_jso_name:Joi.string().description('Netwin Cell JSO Name'),
-          pni_cell_name: Joi.string().description('PNI Cell Name'),
-          cell_state:Joi.string().allow('').description('Cell State'),
-          cell_hub:Joi.string().allow('').description('Cell Hub'),
-          cell_ring:Joi.string().allow('').description('Cell Ring'),
-          rolt_id:Joi.string().allow('').description('Rolt ID'),
-          netwin_project_name:Joi.string().allow('').description('Newtin Project Name'),
-          feeder:Joi.string().allow('').description('Feeder'),
-          permitting_rolt_number:Joi.string().allow('').description('Permitting Rolt Number'),
-          town:Joi.string().allow('').description('Town'),
-          region:Joi.string().allow('').description('Region'),
-          map_number:Joi.string().allow('').description('Map Number'),
-          nodes_within_cell:Joi.string().allow('').description('Nodes Within Cell')
-
+          netwin_cell_jso_name:Joi.string().replace(/'/g, "''").description('Netwin Cell JSO Name'),
+          pni_cell_name: Joi.string().replace(/'/g, "''").description('PNI Cell Name'),
+          cell_state:Joi.string().replace(/'/g, "''").allow('').description('Cell State'),
+          cell_hub:Joi.string().replace(/'/g, "''").allow('').description('Cell Hub'),
+          cell_ring:Joi.string().replace(/'/g, "''").allow('').description('Cell Ring'),
+          rolt_id:Joi.string().replace(/'/g, "''").allow('').description('Rolt ID'),
+          netwin_project_name:Joi.string().replace(/'/g, "''").allow('').description('Newtin Project Name'),
+          feeder:Joi.string().replace(/'/g, "''").allow('').description('Feeder'),
+          permitting_rolt_number:Joi.string().replace(/'/g, "''").allow('').description('Permitting Rolt Number'),
+          town:Joi.string().replace(/'/g, "''").allow('').description('Town'),
+          region:Joi.string().replace(/'/g, "''").allow('').description('Region'),
+          map_number:Joi.string().replace(/'/g, "''").allow('').description('Map Number'),
+          nodes_within_cell:Joi.string().replace(/'/g, "''").allow('').description('Nodes Within Cell')
         },
       },
       jsonp: 'callback',
       cache: config.cache,
       handler: function (request, reply) {
-        // console.log(request);
         db
           .query(formatSQL(request))
           .then(function (data) {

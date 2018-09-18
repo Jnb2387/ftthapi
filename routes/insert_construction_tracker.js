@@ -5,7 +5,6 @@ var Joi = require('joi'),
 const db = require('../config/db.js');
 
 function formatSQL(request) {
-
     var sql = squel
         .insert()
         .into(request.params.table)
@@ -36,7 +35,7 @@ function formatSQL(request) {
         .set("backhaul_spliced", request.payload.backhaul_spliced)
         .set("pdo_to_odf", request.payload.pdo_odf)
         .set("tested", request.payload.tested)
-        // .where("id =" + request.query.id);
+        .set("permitting_rolt_number", request.payload.permitting_rolt_number)
     console.log(sql.toString());
 
     return sql.toString();
@@ -54,36 +53,37 @@ module.exports = [{
                 table: Joi.string().required().description('Name of the Table').default('ftth.construction_cell_tracker'),
             },
             query: {
-                id: Joi.number().integer().description('The ID for edit point.'),
+                id: Joi.number().integer().description('The ID for the Feature.'),
             },
             payload: {
-                pni_cell_name: Joi.string().description('What permitting rolt'),
-                jso_location: Joi.string().description('What permitting rolt'),
-                start_device: Joi.string().allow('').description("What Column"),
-                end_device: Joi.string().allow('').description("What Column"),
-                fiber_count: Joi.string().allow('').description("What Column"),
-                homes_passed: Joi.string().allow('').description("What Column"),
-                cbs: Joi.string().allow('').description("What Column"),
-                ug: Joi.string().allow('').description("What Column"),
-                mdu: Joi.string().allow('').description("What Column"),
-                route: Joi.string().allow('').description("What Column"),
-                start_footage: Joi.string().allow('').description("What Column"),
-                end_footage: Joi.string().allow('').description("What Column"),
-                total_placed: Joi.string().allow('').description("What Column"),
-                placed: Joi.string().allow('').description("What Column"),
-                total_pdo: Joi.string().allow('').description("What Column"),
-                pdo_spliced: Joi.string().allow('').description("What Column"),
-                date_issued: Joi.string().allow('').description("What Column"),
-                cabled_complete: Joi.string().allow('').description("What Column"),
-                pdo_complete: Joi.string().allow('').description("What Column"),
-                jso_spliced: Joi.string().allow('').description("What Column"),
-                pdo_jso_complete: Joi.string().allow('').description("What Column"),
-                feeder_spliced: Joi.string().allow('').description("What Column"),
-                pdo_jso_feeder_complete: Joi.string().allow('').description("What Column"),
-                feeder_to_odf_rolt_spliced: Joi.string().allow('').description("What Column"),
-                backhaul_spliced: Joi.string().allow('').description("What Column"),
-                pdo_to_odf: Joi.string().allow('').description("What Column"),
-                tested: Joi.string().allow('').description("What Column"),
+                pni_cell_name: Joi.string().replace(/'/g, "''").description('PNI Cell Name'),
+                jso_location: Joi.string().replace(/'/g, "''").description('JSO Location'),
+                start_device: Joi.string().replace(/'/g, "''").allow('').description("Start Device"),
+                end_device: Joi.string().replace(/'/g, "''").allow('').description("End Device"),
+                fiber_count: Joi.string().replace(/'/g, "''").allow('').description("Fiber Count"),
+                homes_passed: Joi.string().replace(/'/g, "''").allow('').description("Homes Passed"),
+                cbs: Joi.string().replace(/'/g, "''").allow('').description("CBS"),
+                ug: Joi.string().replace(/'/g, "''").allow('').description("Underground"),
+                mdu: Joi.string().replace(/'/g, "''").allow('').description("MDU"),
+                route: Joi.string().replace(/'/g, "''").allow('').description("Route"),
+                start_footage: Joi.string().replace(/'/g, "''").allow('').description("Start Footage"),
+                end_footage: Joi.string().replace(/'/g, "''").allow('').description("End Footage"),
+                total_placed: Joi.string().replace(/'/g, "''").allow('').description("Total Placed"),
+                placed: Joi.string().replace(/'/g, "''").allow('').description("Placed"),
+                total_pdo: Joi.string().replace(/'/g, "''").allow('').description("Total PDO"),
+                pdo_spliced: Joi.string().replace(/'/g, "''").allow('').description("PDO Spliced"),
+                date_issued: Joi.string().replace(/'/g, "''").allow('').description("Date Issued"),
+                cabled_complete: Joi.string().replace(/'/g, "''").allow('').description("Cabled Complete"),
+                pdo_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO Complete"),
+                jso_spliced: Joi.string().replace(/'/g, "''").allow('').description("JSO Spliced"),
+                pdo_jso_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO JSO Complete"),
+                feeder_spliced: Joi.string().replace(/'/g, "''").allow('').description("Feeder Spliced"),
+                pdo_jso_feeder_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO JSO Feeder Complete"),
+                feeder_to_odf_rolt_spliced: Joi.string().replace(/'/g, "''").allow('').description("Feeder To ODF Rolt Spliced"),
+                backhaul_spliced: Joi.string().replace(/'/g, "''").allow('').description("Backhaul Spliced"),
+                pdo_to_odf: Joi.string().replace(/'/g, "''").allow('').description("PDO to ODF"),
+                tested: Joi.string().replace(/'/g, "''").allow('').description("Tested"),
+                permitting_rolt_number: Joi.string().replace(/'/g, "''").allow('').description("Permitting Rolt Number")
             }
         },
         jsonp: 'callback',
@@ -121,9 +121,8 @@ module.exports = [{
                             "backhaul_spliced":request.payload.backhaul_spliced,
                             "pdo_to_odf":request.payload.pdo_to_odf,
                             "tested":request.payload.tested,
-
+                            "permitting_rolt_number":request.payload.permitting_rolt_number,
                             "id": request.query.id
-
                         }]
                     }
                     reply(returndata);

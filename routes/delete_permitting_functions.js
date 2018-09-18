@@ -24,10 +24,10 @@ module.exports = [
         params: {
           table: Joi.string()
             .required()
-            .description('name of the table').default('ftth.permitting_functions'),
+            .description('Table Name').default('ftth.permitting_functions'),
         },
         query: {
-          id: Joi.number().integer().description('The ID for edit point.'),
+          id: Joi.number().integer().description('The ID for the Feature.'),
         },
       },
       jsonp: 'callback',

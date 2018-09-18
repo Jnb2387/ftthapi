@@ -5,7 +5,6 @@ var Joi = require('joi'),
 const db = require('../config/db.js');
 
 function formatSQL(request) {
-
     var sql = squel
         .update()
         .table(request.params.table)
@@ -22,8 +21,8 @@ function formatSQL(request) {
         .set("pictures", request.payload.pictures)
 
         .where("id =" + request.params.id);
-    console.log(sql.toString());
 
+    console.log(sql.toString());
     return sql.toString();
 }
 
@@ -37,29 +36,22 @@ module.exports = [{
         validate: {
             params: {
                 table: Joi.string().required().description('Name of the Table').default('ftth.permitting'),
-                permitting_rolt_number: Joi.string().description('What Rolt'),
-                id: Joi.number().integer().description('The ID for edit point.'),
+                permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
+                id: Joi.number().integer().description('The ID for the Feature.'),
             },
             query: {
             },
             payload: {
-                franchise_town: Joi.string().description("What Column"),
-                hamlett: Joi.string().description("What Column"),
-                street: Joi.string().description("What Column"),
-                cross_street: Joi.string().description("What Column"),
-                utility_strip_width: Joi.string().description("What Column"),
-                lat_long: Joi.string().description("What Column"),
-                riser_pole: Joi.string().description("What Column"),
-                permitting_agency: Joi.string().description("What Column"),
-                road_type: Joi.string().description("What Column"),
-                pictures: Joi.string().description("What Column"),
-                // approved_final_location: Joi.string().description("What Column"),
-                // permit__: Joi.string().description("What Column"),
-                // blocked_y_n_: Joi.string().description("What Column"),
-                // blocked_by: Joi.string().description("What Column"),
-                // blocker_owner: Joi.string().description("What Column"),
-                // eta_blocker_resolution: Joi.string().description("What Column"),
-                // blocker_description: Joi.string().description("What Column")
+                franchise_town: Joi.string().description("Franchise Town"),
+                hamlett: Joi.string().description("Hamlet"),
+                street: Joi.string().description("Street"),
+                cross_street: Joi.string().description("Cross Street"),
+                utility_strip_width: Joi.string().replace(/'/g, "''").description("Utility Strip Width"),// THIS COLUMN HAS A SINGLE QUOTE IN THE FIELD SO IT SCREWS EVERTHING Up
+                lat_long: Joi.string().description("Lat Long"),
+                riser_pole: Joi.string().description("Riser Pole"),
+                permitting_agency: Joi.string().description("Permitting Agency"),
+                road_type: Joi.string().description("Road Type"),
+                pictures: Joi.string().description("Pictures"),
             }
         },
         jsonp: 'callback',
@@ -68,9 +60,10 @@ module.exports = [{
             db
                 .query(formatSQL(request))
                 .then(function (data) {
-                    reply("First Location Successfully Updated");
+                    reply("Final Location Successfully Updated");
                 })
                 .catch(function (err) {
+                    console.log(err)
                     reply({
                         'error': 'error running query',
                         'error_details': err

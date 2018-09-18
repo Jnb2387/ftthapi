@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>FTTH</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin="" />
+
+    <!-- delete? -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.3.1/moment-2.18.1/dt-1.10.18/b-1.5.2/sl-1.2.6/datatables.min.css">
+
+    <link rel="stylesheet" type="text/css" href="css/generator-base.css">
+    <link rel="stylesheet" type="text/css" href="css/editor.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.dataTables.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
+
+</head>
+
+<body class="grey lighten-2">
+
+    <!--Main Navigation-->
+    <header>
+
+        <!-- Navbar -->
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+            <div class="container-fluid">
+
+                <!-- Brand -->
+                <a class="navbar-brand waves-effect" href="#permitting_top">
+                        <span id="nav_cell_name"></span> <strong class="blue-text">Permitting</strong>
+                </a>
+
+                <!-- Collapse -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Links -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <!-- Left -->
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link waves-effect" href="#locations_section">Locations
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link waves-effect" href="#permittingfunctiontable">Functions
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="nav-item ">
+                        <a class="nav-link waves-effect" id="log_out" target="_blank">Log Out</a>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        <!-- Navbar -->
+
+        <!-- Sidebar -->
+        <div class="sidebar-fixed position-fixed">
+
+            <a class="logo-wrapper waves-effect m-0">
+                <img id="alticeimage" src="./images/altice.jpg" class="img-fluid" alt="" style=max-height:90px;>
+            </a>
+
+            <form class="d-flex justify-content-end mr-3 pt-1 m-1">
+
+            </form>
+            <div class="list-group list-group-flush">
+                <a href="index.html" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-server mr-3 pt-0"></i>Cell Summary
+                </a>
+                <a href="dashboard.html" id="dashboard_pagebtn" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-pie-chart mr-3 pt-0"></i>Dashboard
+                </a>
+                <a href="#" id="permittingdataextractbtn" data-toggle="tooltip" data-placement="right" title="Download Permitting Data AS CSV"
+                    class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-download mr-3 pt-0"></i>Permitting Extract</a>
+                <a href="permitting.html" id="permitting_pagebtn" class="list-group-item active waves-effect">
+                    <i class="fa fa-columns mr-3 pt-0"></i>Permitting</a>
+                <a href="#addpermittingmodal" data-toggle="modal" data-target="#addpermittingmodal" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-plus mr-3"></i>Add Permitting Rolt</a>
+            </div>
+
+        </div>
+        <!-- Sidebar -->
+
+    </header>
+    <!--Main Navigation-->
+
+    <!--Main layout-->
+    <main class="pt-5" id="permitting_top">
+        <div class="container-fluid mt-3">
+            <!--Jumbotron-->
+            <div class="jumbotron jumbotron-fluid mb-1 p-1">
+
+                <h3 class="ml-0 pl-0">Permitting Page</h3>
+                <div class="row ml-2 p-2 permittinglabels">
+                    <!-- SEARCH FIELDS -->
+                    <div class="col-lg-4 col-md-4 ">
+                        <form>
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+                                    
+                                <label for="permitting_rolt_search" class="col-4 m-0 p-1 col-form-label">Permitting Rolt
+                                </label>
+                                <input type="text" class=" col-6 m-0 p-1 form-control" name="permitting_rolt_search" id="permitting_rolt_search" placeholder="Search for ROLT-.."
+                                autofocus> 
+                                <p class=" " id="no_results"></p>
+                            </div>
+                            <!-- Grid row -->
+
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="netwin_rolt_search" class="col-4 m-0 p-1 col-form-label">Netwin Rolt</label>
+                                <input type="text" class="col-6 m-0 p-1 form-control" id="netwin_rolt_search" name="netwin_rolt_search">
+                            </div>
+                            <!-- Grid row -->
+
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="current_hub_search" class="col-4 m-0 p-1 col-form-label">Current Hub</label>
+                                <input type="text" class="col-6 m-0 p-1 form-control" id="current_hub_search" name="current_hub_search">
+                            </div>
+                            <!-- Grid row -->
+
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="exisiting_hub_search" class="col-4 m-0 p-1 col-form-label">Future Hub</label>
+                                <input type="text" class="col-6 m-0 p-1 form-control" id="future_hub_search" name="future_hub_search">
+                            </div>
+                            <!-- Grid row -->
+                            <!-- Grid row -->
+                            <div class="form-group row m-1 p-1 ">
+                                <button type="button" class="btn btn-primary btn-md" id="permitting_search">Search</button>
+                            </div>
+                            <!-- Grid row -->
+                        </form>
+                        <!-- Default horizontal form -->
+                    </div>
+                    <!-- /END SEARCH FIELDS -->
+                    <div class="col-lg-3 col-md-3">
+                        <form>
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+                                <label for="cabinet_type" class="col-lg-5 m-0 p-1 col-form-label">Cabinet Type</label>
+                                <input type="text" class="col-lg-5 col-md-12 m-0 p-1 form-control" id="cabinet_type" name="cabinet_type">
+                            </div>
+                            <!-- Grid row -->
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="rolt_status" class="col-lg-5 m-0 p-1 col-form-label">Rolt Status</label>
+                                <input type="text" class="col-lg-5 col-md-12 m-0 p-1 form-control" id="rolt_status" name="rolt_status">
+                            </div>
+                            <!-- Grid row -->
+
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="ga_outreach_completed" class="col-lg-5 m-0 p-1 col-form-label">GA Outreach Completed</label>
+                                <input type="text" class="col-lg-5 col-md-12 m-0 p-1 form-control" id="ga_outreach_completed" name="ga_outreach_completed">
+                            </div>
+                            <!-- Grid row -->
+                            <!-- Grid row -->
+                            <div class="form-group row my-1">
+
+                                <label for="municipality_climate" class="col-lg-5 m-0 p-1 col-form-label">Municipality Climate</label>
+                                <input type="text" class="col-lg-5 col-md-12 m-0 p-1 form-control" id="municipality_climate" name="municipality_climate">
+                            </div>
+                            <!-- Grid row -->
+                        </form>
+                    </div>
+                    <div class="col-lg-5 col-md-5" id="blocker_inputs">
+                        <form>
+                            <div class="form-row md-form my-1 mb-lg-2 mb-md-5" >
+                                <div class="col-4">
+                                    <label for="block_yes_no">Blocker</label>
+                                    <input type="text" class="form-control" id="block_yes_no" name="block_yes_no">
+                                </div>
+                                <div class="col-4">
+                                    <label for="original_build_year">Original Build Yr</label>
+                                    <input type="text" class=" form-control" id="original_build_yr" name="original_build_yr">
+                                </div>
+                                <div class="col-4">
+                                    <label for="actual_build_year">Actual Build Yr</label>
+                                    <input type="text" class="form-control" id="actual_build_yr" name="actual_build_yr">
+                                </div>
+                            </div>
+                            <!-- Grid row -->
+                            <div class=" form-row md-form mr-2 mb-lg-2 mb-md-5">
+                                <div class="col-3">
+                                    <label for="blocked_by">Blocked By</label>
+                                    <input type="text" class="form-control" id="blocked_by" name="blocked_by">
+                                </div>
+
+                                <div class="col-5">
+                                    <label for="blocker_owner">Blocker Owner</label>
+                                    <input type="text" class="form-control" id="blocker_owner" name="blocker_owner">
+                                </div>
+                                <div class="col-4">
+                                    <label for="eta_blocker_resolution" >ETA Blocker Resolution</label>
+                                    <input type="text" class="form-control" id="eta_blocker_resolution" name="eta_blocker_resolution">
+                                </div>
+                            </div>
+                            <!-- Grid row -->
+                            <!-- Grid row -->
+                            <div class="form-row md-form mr-2">
+                                <div class="col-12">
+                                    <label for="blocker_description">Blocker Description</label>
+                                    <input type="text" class=" form-control" id="blocker_description" name="blocker_description">
+                                </div>
+                            </div>
+                            <!-- Grid row -->
+                        </form>
+                    </div>
+                </div>
+                <!-- /END FULL TOP ROW -->
+            </div>
+            <!--Jumbotron-->
+            <hr class="my-4 col-10" id="locations_section">
+
+
+
+
+            <!-- MAIN ROW -->
+            <div class="row " id="location_row">
+                <!-- COLUMN NAME  -->
+                <div class="col-lg-2 col-md-3 mt-lg-5 pt-lg-2 pt-md-2 mt-md-4 px-0">
+                    <form>
+                        <ul class="list-group" id="column_names">
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Franchise</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Hamlet</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Street</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Cross Street</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold pl-md-0 ">Utility Strip Width</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Lat/Lon</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Riser Pole #</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold pl-md-0 ">Permitting Agency</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Road Type</li>
+                            <li class="list-group-item mb-1 d-flex justify-content-end font-weight-bold">Pictures</li>
+                        </ul>
+
+                    </form>
+                </div>
+                <!-- END COLUMN NAMES -->
+                <!-- FIRST LOCATION  -->
+                <div class="col-lg-3 col-md-3 mr-lg-2 ml-lg-5 ml-md-0 mr-md-0 card" id="first_location_card">
+                    <!-- Card -->
+                    <div class="card-body m-lg-2 p-lg-2 m-md-0 p-md-0">
+                        <form method="POST">
+                            <!-- action="http://localhost:8011/update_permitting_table/v1/{ftth.permitting},{permitting_rolt_number},{id}"> -->
+
+                            <h5 class="card-title text-center">
+                                <strong>First Location</strong>
+                            </h5>
+                            <ul class="list-group" id="first_location">
+                                <li class="list-group-item mb-1" id="first_franchise_town">Franchise</li>
+                                <li class="list-group-item mb-1" id="first_hamlet">Hamlet</li>
+                                <li class="list-group-item mb-1" id="first_street">Street</li>
+                                <li class="list-group-item mb-1" id="first_cross_street">Cross Street</li>
+                                <li class="list-group-item mb-1" id="first_utlity_strip_width">Utility Strip Width</li>
+                                <li class="list-group-item mb-1" id="first_lat_long">Lat/Lon</li>
+                                <li class="list-group-item mb-1" id="first_riser_pole">Riser Pole #</li>
+                                <li class="list-group-item mb-1" id="first_permitting_agency">Permitting Agency</li>
+                                <li class="list-group-item mb-1" id="first_road_type">Road Type</li>
+                                <li class="list-group-item mb-1" id="first_pictures">Pictures</li>
+                                <input type="hidden" name="permitting_rolt_number" id="permitting_rolt_number" />
+                                <input type="hidden" name="id" id="id" />
+                                <span class='locationeditbtnspan' data-toggle="tooltip" data-placement="left" title="Edit First Location">
+                                    <button type="button" class="btn btn-primary btn-md col-lg-12 locationeditbtn">Edit</button>
+                                </span>
+                            </ul>
+                            <button type="button" class="btn btn-primary btn-md col-lg-12 location_save_btn" id="save_first">Save</button>
+                        </form>
+                    </div>
+                    <!-- /Card Body -->
+                </div>
+                <!-- END FIRST LOCATION -->
+                <!-- SECOND LOCATION  -->
+                <div class="col-lg-3 col-md-3 mr-lg-2 mr-md-0 card" id="second_location_card">
+                    <div class="card-body m-lg-2 p-lg-2 m-md-0 p-md-0">
+                        <form>
+                            <h5 class="card-title text-center">
+                                <strong>Second Location</strong>
+                            </h5>
+                            <ul class="list-group" id="second_location">
+                                <li class="list-group-item mb-1" id="second_franchise_town">Franchise</li>
+                                <li class="list-group-item mb-1" id="second_hamlet">Hamlet</li>
+                                <li class="list-group-item mb-1" id="second_street">Street</li>
+                                <li class="list-group-item mb-1" id="second_cross_street">Cross Street</li>
+                                <li class="list-group-item mb-1" id="second_utility_strip_width">Utility Strip Width</li>
+                                <li class="list-group-item mb-1" id="second_lat_long">Lat/Lon</li>
+                                <li class="list-group-item mb-1" id="second_riser_pole">Riser Pole #</li>
+                                <li class="list-group-item mb-1" id="second_permitting_agency">Permitting Agency</li>
+                                <li class="list-group-item mb-1" id="second_road_type">Road Type</li>
+                                <li class="list-group-item mb-1" id="second_pictures">Pictures</li>
+                                <span class='locationeditbtnspan' data-toggle="tooltip" data-placement="bottom" title="Edit Second Location">
+                                    <button type="button" class="btn btn-primary btn-md col-lg-12 locationeditbtn">Edit</button>
+                                </span>
+                            </ul>
+                            <button type="button" class="btn btn-primary btn-md col-lg-12 location_save_btn" id="save_second">Save</button>
+
+                        </form>
+                    </div>
+                    <!-- /Card Body -->
+                </div>
+                <!-- END SECOND LOCATION -->
+                <!-- FINAL LOCATION  -->
+                <div class="col-lg-3 col-md-3 mr-lg-2 mr-md-0 card" id="final_location_card">
+                    <div class="card-body m-lg-2 p-lg-2 m-md-0 p-md-0">
+                        <h5 class="card-title text-center">
+                            <strong>Final Location</strong>
+                        </h5>
+                        <form>
+                            <ul class="list-group" id="final_location">
+                                <li class="list-group-item mb-1" id="final_franchise">Franchise</li>
+                                <li class="list-group-item mb-1" id="final_hamlet">Hamlet</li>
+                                <li class="list-group-item mb-1" id="final_street">Street</li>
+                                <li class="list-group-item mb-1" id="final_cross_street">Cross Street</li>
+                                <li class="list-group-item mb-1" id="final_utility_strip_width">Utility Strip Width</li>
+                                <li class="list-group-item mb-1" id="final_lat_long">Lat/Lon</li>
+                                <li class="list-group-item mb-1" id="final_riser_pole">Riser Pole #</li>
+                                <li class="list-group-item mb-1" id="final_permitting_agency">Permitting Agency</li>
+                                <li class="list-group-item mb-1" id="final_road_type">Road Type</li>
+                                <li class="list-group-item mb-1" id="final_pictures">Pictures</li>
+                                <span class='locationeditbtnspan' data-toggle="tooltip" data-placement="bottom" title="Edit Final Location">
+                                    <button type="button" class="btn btn-primary btn-md col-lg-12 locationeditbtn">Edit</button>
+                                </span>
+                            </ul>
+                            <button type="button" class="btn btn-primary btn-md col-lg-12 location_save_btn" id="save_final">Save</button>
+
+                        </form>
+                    </div>
+                    <!-- /Card Body -->
+                </div>
+                <!-- END FINAL LOCATION -->
+            </div>
+            <!-- END MAIN ROW -->
+            <!-- Line Break -->
+            <hr class="my-4">
+            <!-- Permitting Function Table -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h4 class="font-weight-bold">Permitting Functions Table</h4>
+                            <div class="card-body">
+                                <table class="table table-striped table-bordered table-hover" cellspacing="0" width="100%" id="permittingfunctiontable">
+                                    <thead>
+                                        <tr>
+                                            <!-- <th>Permitting Rolt</th>
+                                            <th>Current Hub</th> -->
+                                            <th>Design Function</th>
+                                            <th>Resource</th>
+                                            <th>Date Complete</th>
+                                            <th>Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="black-text">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Permitting Function Table -->
+
+
+            <!-- <button type="button" id="permittingTableSuccessbtn" class="btn btn-primary waves-effect mt-3 " data-toggle="modal" data-target="#permittingTableSuccess">Success Modal</button> -->
+
+
+            <!-- Permitting Update Success Modal -->
+            <div class="modal fade right" id="permittingTableSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+                data-backdrop='false'>
+                <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
+                    <!--Content-->
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <p class="heading lead">Success</p>
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="white-text">&times;</span>
+                            </button>
+                        </div>
+
+                        <!--Body-->
+                        <div class="modal-body">
+                            <div class="text-center">
+                                <i class="fa fa-check fa-4x mb-3 animated rotateIn"></i>
+                                <p>Permitting Table Successfully Updated</p>
+                            </div>
+                        </div>
+
+                        <!--Footer-->
+                        <div class="modal-footer justify-content-center">
+                            <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal">Close</a>
+                        </div>
+                    </div>
+                    <!--/.Content-->
+                </div>
+            </div>
+            <!-- /Permitting Update Success Modal-->
+
+
+            <!-- Add Permitting Modal -->
+            <div class="modal fade right" id="addpermittingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg  modal-right" role="document">
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Add Permitting Rolt</h4>
+                           
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <!--Body-->
+                        <div class="modal-body">
+                            <!-- Default auto-sizing form -->
+                            <form>
+                                <!-- method='POST' actions='http://localhost:8011/insert_permitting/v1/ftth.permitting'> -->
+                                <!-- Main Modal Grid row -->
+                                <div class="form-row ">
+                                    <!-- Generic Permitting Stuff -->
+                                    <div class="col-3">
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>Permitting Rolt#</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="permitting_rolt_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Rolt Status</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="rolt_status_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cabinet Type</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="cabinet_type_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Netwin Rolt Name</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="netwin_rolt_name_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Current Hub</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="current_hub_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Future Hub</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="future_hub_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Approved Final Location</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="approved_final_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Permit__</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="permit_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Blocked Y N</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="blocked_y_n_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Blocked By</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="blocked_by_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Blocker Owner</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="blocker_owner_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>ETA Blocker Resolution</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="eta_blocker_resolution_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Blocker Description</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="blocker_description_add_rolt">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Generic Permitting Stuff -->
+                                    <!-- First Location Row -->
+                                    <div class="col-3">
+                                        <h5 class="text-center font-weight-bold">First Location</h5>
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>First Franchise</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="first_franchise_town_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Hamlet</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="first_hamlet_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="first_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Cross Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="first_cross_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Utility Strip Width</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="first_utility_strip_width_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Lat/Long</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="first_lat_long_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Riser Pole</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="first_riser_pole_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Permitting Agency</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="first_permitting_agency_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Road Type</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="first_road_type_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>First Pictures</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="first_pictures_add_rolt">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End First Location Row -->
+                                    <!-- Second Location Row -->
+                                    <div class="col-3">
+                                        <h5 class="text-center font-weight-bold">Second Location</h5>
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>Second Franchise</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="second_franchise_town_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Hamlet</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="second_hamlet_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="second_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Cross Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="second_cross_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Utility Strip Width</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="second_utility_strip_width_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Lat/Long</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="second_lat_long_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Riser Pole</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="second_riser_pole_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Permitting Agency</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="second_permitting_agency_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Road Type</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="second_road_type_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Second Pictures</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="second_pictures_add_rolt">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Second Location Row -->
+                                    <!-- Final Location Row -->
+                                    <div class="col-3">
+                                        <h5 class="text-center font-weight-bold">Final Location</h5>
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>Final Franchise</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="final_franchise_town_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Hamlet</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="final_hamlet_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="final_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Cross Street</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="final_cross_street_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Utility Strip Width</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="final_utility_strip_width_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Lat/Long</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="final_lat_long_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Riser Pole</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control" id="final_riser_pole_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Permitting Agency</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="final_permitting_agency_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Road Type</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="final_road_type_add_rolt">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Final Pictures</p>
+                                            </div>
+                                            <div class="col-7">
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control " id="final_pictures_add_rolt">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Final Location Row -->
+                                </div>
+                                <!-- END MAIN ROW MODAL -->
+                                <!-- Default auto-sizing form -->
+                        </div>
+                    </form>
+                    <!--Footer-->
+                    <div class="d-flex justify-content-center pb-2 fixed-bottom">
+                            <button id="addpermittingbtn" class="btn btn-primary">Add Permitting</button>
+                            <!-- <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button> -->
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <!-- /ADD Permitting Modal -->
+            <!-- Add Permitting Success Modal -->
+            <div class="modal fade right" id="addpermittingSuccess" tabindex="-1" role="dialog" aria-labelledby="addpermittingSuccessLabel"
+                aria-hidden="true" data-backdrop='false'>
+                <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
+                    <!--Content-->
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <p class="heading lead">Success</p>
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="white-text">&times;</span>
+                            </button>
+                        </div>
+
+                        <!--Body-->
+                        <div class="modal-body">
+                            <div class="text-center">
+                                <i class="fa fa-check fa-4x mb-3 animated rotateIn"></i>
+                                <p>New Permitting Successfully Added</p>
+                            </div>
+                        </div>
+
+                        <!--Footer-->
+                        <div class="modal-footer justify-content-center">
+                            <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal">Close</a>
+                        </div>
+                    </div>
+                    <!--/.Content-->
+                </div>
+            </div>
+            <!-- /Add Cell Success Modal -->
+        </div>
+        <!-- /end container -->
+    </main>
+    <!--/Main layout-->
+
+    <!--Footer-->
+    <footer class="page-footer text-center font-small primary-color-dark darken-2 mt-4 wow fadeIn">
+
+
+
+
+    </footer>
+    <!--/.Footer-->
+
+    <!-- SCRIPTS -->
+    <!-- Axios-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <!-- delete? -->
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/moment-2.18.1/dt-1.10.18/b-1.5.2/sl-1.2.6/datatables.min.js"></script>
+
+    <!-- <script type="text/javascript" src="js/addons/datatables.min.js"></script> -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8" src="js/dataTables.editor.min.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="js/editor.bootstrap4.min.js"></script>
+    <!-- FOR EXPORT BUTTON IN DATATABLE -->
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <!-- <script type="text/javascript" src="js/script.js"></script> -->
+    <script type="text/javascript" src="js/script_permitting.js"></script>
+
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <!-- Initializations -->
+    <script type="text/javascript">
+        // Animations initialization
+        new WOW().init();
+    </script>
+
+
+
+</body>
+
+</html>

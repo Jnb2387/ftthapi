@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>FTTH</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+    crossorigin="" />
+    <!-- MDBootstrap Datatables  -->
+    <!-- <link href="css/addons/datatables.min.css" rel="stylesheet"> -->
+    
+    <!-- delete? -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.3.1/moment-2.18.1/dt-1.10.18/b-1.5.2/sl-1.2.6/datatables.min.css">
+    
+    <link rel="stylesheet" type="text/css" href="css/generator-base.css">
+    <link rel="stylesheet" type="text/css" href="css/editor.bootstrap4.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.css" rel="stylesheet">
+    <!-- <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' /> -->
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body class="grey lighten-2">
+
+    <!--Main Navigation-->
+    <header>
+
+        <!-- Navbar -->
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+            <div class="container-fluid">
+
+                <!-- Brand -->
+                <a class="navbar-brand waves-effect" href="#cellsummary_top">
+                   <span id="nav_cell_name"></span> <strong class="blue-text">Cell Summary</strong>
+                </a>
+
+                <!-- Collapse -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Links -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                    <!-- Left -->
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link waves-effect" href="#functiontable">Functions
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="nav-item ">
+                        <a class="nav-link waves-effect " id="log_out" target="_blank">Log Out</a>
+                    </div>
+                </div>
+
+            </div>
+        </nav>
+        <!-- Navbar -->
+
+        <!-- Sidebar -->
+        <div class="sidebar-fixed position-fixed">
+
+            <a class="logo-wrapper waves-effect m-0">
+                <img id="alticeimage" src="./images/altice.jpg" class="img-fluid" alt="" style=max-height:90px;>
+            </a>
+
+            <form class="d-flex justify-content-center m-1">
+
+            </form>
+            <div class="list-group list-group-flush">
+                <a href="#" class="list-group-item active waves-effect">
+                    <i class="fa fa-server mr-3"></i>Cell Summary
+                </a>
+                <a href="dashboard.html" id="dashboard_pagebtn"  class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-pie-chart mr-3"></i>Dashboard
+                </a>
+                <a href="#" id="celldataextractbtn" data-toggle="tooltip" data-placement="right" title="Download Cell Data AS CSV" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-download mr-3"></i>Cell Extract</a>
+                <!-- <a href="#mapdiv" id="mapdivbtn" data-toggle="modal" data-target="#basicExampleModal" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-map mr-3"></i>Map</a> -->
+                <a href="permitting.html" id="permitting_pagebtn" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-columns mr-3"></i>Permitting</a>
+                <a href="#" id="construction_pickerbtn" data-toggle="modal" data-target="#constructionpickerModal" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-check-square-o mr-3"></i>Construction Tracker</a>
+                <a href="#addcellmodal" data-toggle="modal" data-target="#addcellmodal" class="list-group-item list-group-item-action waves-effect">
+                    <i class="fa fa-plus mr-3"></i>Add New Cell</a>
+            </div>
+
+        </div>
+        <!-- Sidebar -->
+
+    </header>
+    <!--Main Navigation-->
+
+    <!--Main layout-->
+    <main class="pt-5 mx-lg-3" id="cellsummary_top">
+        <div class="container-fluid mt-4">
+
+
+            <!-- Heading -->
+            <div class="scrolling-navbar row d-flex justify-content-center ">
+
+                <div class="card mb-4 col-5 wow fadeIn fixed ">
+
+                    <!--Card content-->
+                    <div class="card-body row py-0 ">
+                        <div class="col-lg-8 md-form">
+                            <!-- Grid column -->
+
+                            <!-- Material input -->
+                            <!-- <div class="md-form"> -->
+                            <input type="text" id="cellsearch" class="form-control py-0" placeholder='Search For Cell' autofocus>
+                        </div>
+                        <div class="col-lg-3 m-2">
+                            <button class="btn btn-primary btn-md mt-0 p-3" type="submit" id="cellsearchbtn">
+                                <i class="fa fa-search"></i> Search
+                            </button>
+                        </div>
+                        <!-- </div> -->
+                        <!-- Grid column -->
+
+                        <!-- Grid row -->
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- /Heading -->
+
+            <!-- MAIN ROW WITH CARDS AND THE MAP -->
+            <div class="row">
+                <div class="col-lg-8 m-0 p-0">
+                    <!-- Row 1 -->
+                    <div class="row col-12 card-deck">
+                        <!-- Netwin JSO Card -->
+                        <div class="card  col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Netwin JSO</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="netwin_cell_jso_name"></p>
+                            </div>
+                        </div>
+                        <!-- PNI Cell Card -->
+                        <div class="card  col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">PNI Cell</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="pni_cell_name"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Netwin Project Name Card -->
+
+                        <div class="card  col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Netwin Project Name</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="netwin_project_name"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 2 -->
+                    <div class="row col-12 card-deck">
+                        <!-- State Card -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">State</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="cell_state"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Hub Card -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Hub</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="cell_hub"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- RingCard -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Ring</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="cell_ring"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Rolt Card -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Rolt</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="rolt_id"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Cell Card -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Cell</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="cellid"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!--Feeder Card -->
+                        <div class="card col-md-2 col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Feeder</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="feeder"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 2 -->
+                    <!-- Row 3 -->
+                    <!-- <hr class="hr-dark"> -->
+                    <div class="row col-12 card-deck">
+                        <!--Town Card -->
+                        <div class="card col-md-2 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Town</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="town"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Franchise Card -->
+                        <div class="card col-md-2 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Franchise</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="franchise"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Region Card -->
+                        <div class="card col-md-2 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Region</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="region"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 3 -->
+                    <!-- Row 4 -->
+                    <div class="row col-12 card-deck">
+                        <!-- Map Numbers Card -->
+                        <div class="card col-md-3 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Map Numbers</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="map_number"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Permitting Rolt Card -->
+                        <div class="card col-md-2 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Permitting Rolt</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="permitting_rolt_number"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Node In Cell Card -->
+                        <div class="card col-md-3 col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Node In Cell</p>
+                                <p class="text-center p-lg-1 m-lg-0" id="nodes_within_cell"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 4 -->
+                    <!-- HORIZONTAL RULE -->
+                    <div class="row col-12 mt-lg-2">
+                        <hr class="col-4 hr-dark">
+                        <span style="font-size: 18px;">
+                            <p class="text-center">Homes Passed</p>
+                        </span>
+                        <hr class="col-4 hr-dark">
+                    </div>
+
+                    <!-- Row 5 -->
+                    <div class="row col-12 card-deck">
+                        <!-- Aerial Card -->
+                        <div class="card col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Aerial</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="aerial_homes"></p>
+                            </div>
+                        </div>
+                        <!-- Card -->
+                        <!-- UG Card -->
+                        <div class="card col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">UG</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="ug_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- BA Card -->
+                        <div class="card col-lg-3 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">BA</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="ba_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Planned Card -->
+                        <div class="card col-lg-3 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Planned</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="planned_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- MDU Card -->
+                        <div class="card col-lg-2 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">MDU</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="mdu_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 5 -->
+
+                    <!-- Row 6 -->
+                    <div class="row col-12 card-deck">
+                        <!-- Commerical Aerial Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Commerical Aerial</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="comm_aerial_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Commerical UG Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Commerical UG</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="comm_ug_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Total Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Total</p>
+                                <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="total_homes"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 6 -->
+                    <div class="row col-12 mt-lg-2">
+                        <hr class="col-4 hr-dark">
+                        <span style="font-size: 18px;">
+                            <p class="text-center">Footages</p>
+                        </span>
+                        <hr class="col-4 hr-dark">
+                    </div>
+                    <!-- Row 7 -->
+                    <div class="row col-12 card-deck">
+                        <!-- Commerical Aerial Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">CBS</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="cbs_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Commerical UG Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">BA</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="ba_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Total Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">MDU</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="mdu_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Total Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Slack</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="slack_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Total Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">UG</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="ug_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                        <!-- Total Card -->
+                        <div class="card col-lg-4 m-1">
+                            <div class="card-body p-0">
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Total</p>
+                                <p class="text-center footages_null p-lg-1 m-lg-0" id="total_footages"></p>
+                            </div>
+                        </div>
+                        <!-- /Card -->
+                    </div>
+                    <!-- END ROW 7 -->
+                </div>
+                <!-- END MAIN DIV OF 8 -->
+
+
+                <!--Map Panel-->
+                <div class="col-lg-4 col-md-8 col-sm-12 m-0 p-0" id="mapdiv">
+                    <!-- Map Card-->
+                    <div class="card">
+
+                        <!-- Card header -->
+                        <div class="card-header text-center">
+                            <span class="font-weight-bold">Map</span>
+                            <button type="button" id="cellsinareabtn" class="btn btn-primary waves-effect m-0 p-2 float-right disabled ">Find Cells In View</button>
+                        </div>
+                        <!--Card content-->
+                        <div class="card-body">
+                            <!--Leaflet map-->
+                            <div id="map" class="z-depth-1" style="height: 300px"></div>
+                        </div>
+                    </div>
+                    <!--/.Card-->
+                    <div class="row">
+                        <!-- Button trigger Cell Statistics modal & Edit Cell modal-->
+                        <button type="button" id="editcellbtn" class="btn btn-success waves-effect mt-3 ml-1" data-toggle="modal" data-target="#cellmodal">Edit Cell</button>
+                        <button type="button" id="cellstatisticsbtn" class="btn btn-primary waves-effect mt-3 " data-toggle="modal" data-target="#cellstatisticsmodal">Cell Statistics</button>
+                    </div>
+                </div>
+                <!-- END MAP CARD -->
+            </div>
+            <!--/.END MAIN ROW-->
+
+
+            <!-- No Cells Found Modal -->
+            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+                data-backdrop='false'>
+                <div class="modal-dialog modal-notify modal-info modal-side modal-top-right mt-lg-5 d-block" role="document">
+                    <!--Content-->
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <p class="heading lead">No Cells Found</p>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="white-text">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!--/.Content-->
+                </div>
+            </div>
+            <!-- /No Cells Found Modal-->
+
+            <!-- Line Break -->
+            <hr class="my-4">
+            <!-- Function Table -->
+            <div class="row ">
+                <div class="col-lg-12 m-0 p-0">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h4 class="font-weight-bold">Functions Table</h4>
+                            <div class="card-body">
+                                <table class="table table-striped table-bordered table-hover" cellspacing="0" width="100%" id="functiontable">
+                                    <thead>
+                                        <tr>
+                                            <th>Design Function</th>
+                                            <th>Resource</th>
+                                            <!-- <th>Object ID</th> -->
+                                            <th>Date Complete</th>
+                                            <th>Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="black-text">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Function Table -->
+
+            <!-- Modal: celleditmodal -->
+            <div class="modal fade right" id="cellmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-side modal-top-right" role="document">
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Edit
+                                <strong>
+                                    <span id="editcellheader"></span>
+                                </strong> Cell</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <!--Body-->
+                        <div class="modal-body">
+                            <!-- Default auto-sizing form -->
+                            <form>
+                                <!-- Grid row -->
+                                <div class="form-row align-items-center">
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Netwin JSO</p>
+                                    </div>
+                                    <!-- Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control py-0" id="netwin_cell_jso_name_edit">
+                                        </div>
+                                    </div>
+                                    <!-- Grid column -->
+                                </div>
+                                <!-- /Grid row -->
+                            </form>
+                            <!-- Default auto-sizing form -->
+                        </div>
+                        <!--Footer-->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                            <button id="cellupdatebtn" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Modal: celleditmodal -->
+
+
+            <!-- Add Cell modal -->
+            <div class="modal fade right" id="addcellmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-side modal-top-right" role="document">
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Add Cell</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <!--Body-->
+                        <div class="modal-body">
+                            <!-- Default auto-sizing form -->
+                            <form>
+                                <!-- Grid row -->
+                                <div class="form-row align-items-center">
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Netwin JSO</p>
+                                    </div>
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="netwin_cell_jso_name_add">
+                                        </div>
+                                    </div>
+
+                                    <!-- Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>PNI Cell Name</p>
+                                    </div>
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="pni_cell_name_add">
+                                        </div>
+                                    </div>
+
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>State</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="cell_state_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Hub</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="cell_hub_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Ring</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="cell_ring_add">
+                                        </div>
+                                    </div>
+                                    <!-- Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Rolt</p>
+                                    </div>
+                                    <!--/ Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" id="rolt_id_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Netwin Prj. Name</p>
+                                    </div>
+                                    <!--/ Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="netwin_project_name_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Feeder</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="feeder_add">
+                                        </div>
+                                    </div>
+                                    <!--/ Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Permitting Rolt</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" id="permitting_rolt_number_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Town</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" id="town_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Region</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" id="region_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Map Number</p>
+                                    </div>
+                                    <!--/ Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" id="map_number_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-5">
+                                        <p>Nodes In Cell</p>
+                                    </div>
+                                    <!-- /Grid column -->
+                                    <!-- Grid column -->
+                                    <div class="col-7">
+                                        <!-- Default input -->
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control " id="nodes_within_cell_add">
+                                        </div>
+                                    </div>
+                                    <!-- /Grid column -->
+                                </div>
+                                <!-- /Grid row -->
+                            </form>
+                            <!-- Default auto-sizing form -->
+                        </div>
+                        <!--Footer-->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+                            <button id="addcellbtn" class="btn btn-primary">Add Cell</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Add Cell Modal -->
+            <!-- Add Cell Success Modal -->
+            <div class="modal fade right" id="addcellSuccess" tabindex="-1" role="dialog" aria-labelledby="addcellSuccessLabel" aria-hidden="true"
+                data-backdrop='false'>
+                <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
+                    <!--Content-->
+                    <div class="modal-content">
+                        <!--Header-->
+                        <div class="modal-header">
+                            <p class="heading lead">Success</p>
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" class="white-text">&times;</span>
+                            </button>
+                        </div>
+
+                        <!--Body-->
+                        <div class="modal-body">
+                            <div class="text-center">
+                                <i class="fa fa-check fa-4x mb-3 animated rotateIn"></i>
+                                <p>New Cell Successfully Added</p>
+                            </div>
+                        </div>
+
+                        <!--Footer-->
+                        <div class="modal-footer justify-content-center">
+                            <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal">Close</a>
+                        </div>
+                    </div>
+                    <!--/.Content-->
+                </div>
+            </div>
+            <!-- /Add Cell Success Modal -->
+
+            <!-- Cell Statistics Modal -->
+            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title w-100 text-center" id="myModalLabel">Cell Statistics</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-lg-5 ml-lg-5">
+                                    <h4 class="font-weight-bold">Sheath Table</h4>
+                                    <!-- Sheath Table -->
+                                    <table class="table table-striped table-bordered table-hover" id="sheathtable">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Aerial</th>
+                                                <th>UG</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-sm-6 col-lg-6 ">
+                                    <h4 class="font-weight-bold">PDO Table</h4>
+                                    <!-- PDO Table -->
+                                    <table class="table table-striped table-bordered table-hover" id="pdotable">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Aerial</th>
+                                                <th>UG</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Cell Statistics Right -->
+
+
+
+            <!--  Cell Extract Modal -->
+            <div class="modal fade right" id="cellExtractModal" tabindex="-1" role="dialog" aria-labelledby="cellExtractModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cellExtractModalLabel">Cell Extract</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <button type="button" class="btn btn-primary" id="current_cell_extract_btn">Current Cell</button>
+                            <button type="button" class="btn btn-primary float-right" id="all_cell_extract_btn">All Cells</button>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Cell Extract Modal -->
+
+            <!--  Construction Picker Modal -->
+            <div class="modal fade right" id="constructionpickerModal" tabindex="-1" role="dialog" aria-labelledby="constructionpickerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="constructionpickerModalLabel">Construction Tracker</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body ">
+                            <div class="row p-2 m-2 mb-4 d-flex justify-content-center">
+                                <div class="col-6 mt-3 ">
+                                    <button type="button" class="btn btn-primary  " id="current_cell_construction_btn">Current Cell</button>
+                                </div>
+                            </div>
+                            <div class="row  col-12 mt-lg-2 ">
+                                    <hr class="col-4 hr-dark">
+                                    <span style="font-size: 18px;">
+                                        <p class="text-center">OR</p>
+                                    </span>
+                                    <hr class="col-4 hr-dark">
+                                </div>
+            
+                            <div class="row p-2 m-2 d-flex justify-content-center">
+                                <div class="col-6">
+                                    <!-- Material input -->
+                                    <label for="construction_rolt">Permitting Rolt #</label>
+                                    <input type="text" id="construction_rolt" class="form-control">
+                                    <button type="button" class="btn btn-primary float-right mt-3" id="rolt_construction_btn">Search By Rolt</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Construction Picker Modal -->
+
+            <!-- Construction Tracker Modal -->
+            <div class="modal fade right" id="construction_tracker_modal" tabindex="-1" role="dialog" aria-labelledby="construction_tracker_modalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-frame" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header m-1 p-1">
+                            <h4 class="modal-title w-100 text-center" id="construction_tracker_modalLabel">Cell Construction Tracker</h4>
+                            <!-- <h6 class="modal-title" id="rolt_for_construction_tracker_display"></h6> -->
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+
+                        </div>
+                        <div class="modal-body">
+                            <table id="construction_tracker_table" class="table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>PNI Cell Name</th>
+                                        <th>JSO Location</th>
+                                        <th>Start Device</th>
+                                        <th>End Device</th>
+                                        <th>Fiber Count</th>
+                                        <th>Homes Passed</th>
+                                        <th>CBS</th>
+                                        <th>UG</th>
+                                        <th>MDU</th>
+                                        <th>Route</th>
+                                        <th>Start Footage</th>
+                                        <th>End Footage</th>
+                                        <th>Total Placed</th>
+                                        <th>Placed</th>
+                                        <th>Total PDO</th>
+                                        <th>PDO Spliced</th>
+                                        <th>Date Issued</th>
+                                        <th>Cabled Complete</th>
+                                        <th>PDO Complete</th>
+                                        <th>JSO Spliced</th>
+                                        <th>PDO JSO Complete</th>
+                                        <th>Feeder Spliced</th>
+                                        <th>PDO JSO Feeder Complete</th>
+                                        <th>Feeder to ODF Rolt Spliced</th>
+                                        <th>Backhaul Spliced</th>
+                                        <th>PDO to ODF</th>
+                                        <th>Tested</th>
+                                        <th>Permitting Rolt Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="black-text">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-around">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Construction Tracker Modal -->
+
+            <!-- Map2 Modal -->
+            <div class="modal " id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content m-0 p-0" style="height:auto;width:1050px;">
+                        <div class="modal-header d-block m-lg-0 p-lg-0">
+                            <h5 class="modal-title text-center" id="exampleModalLabel">Map Modal</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <button type="button" id="cellsinareabtn2" class="btn btn-primary waves-effect mr-lg-4 p-2 disabled float-right">Find Cells In View</button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="map2" style="height: 550px; width:1000px;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- /end container -->
+    </main>
+    <!--/Main layout-->
+
+    <!--Footer-->
+    <footer class="page-footer text-center font-small primary-color-dark darken-2 mt-4 wow fadeIn">
+
+
+
+
+    </footer>
+    <!--/.Footer-->
+
+    <!-- SCRIPTS -->
+    <!-- Axios-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <!--Leaflet-->
+    <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA=="
+        crossorigin=""></script>
+    <!-- Mapbox -->
+    <!-- <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script> -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <!-- delete? -->
+    <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/v/bs4/jq-3.3.1/moment-2.18.1/dt-1.10.18/b-1.5.2/sl-1.2.6/datatables.min.js"></script>
+    <!-- <script type="text/javascript" src="js/addons/datatables.min.js"></script> -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8" src="js/dataTables.editor.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="js/editor.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="js/mdb.min.js"></script>
+    <!-- Initializations -->
+    <script type="text/javascript">
+        // Animations initialization
+        new WOW().init();
+    </script>
+
+
+
+</body>
+
+</html>

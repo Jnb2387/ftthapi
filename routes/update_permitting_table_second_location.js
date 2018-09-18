@@ -5,7 +5,6 @@ var Joi = require('joi'),
 const db = require('../config/db.js');
 
 function formatSQL(request) {
-
     var sql = squel
         .update()
         .table(request.params.table)
@@ -22,8 +21,8 @@ function formatSQL(request) {
         .set("second_pictures", request.payload.second_pictures)
 
         .where("id =" + request.params.id);
-    console.log(sql.toString());
 
+    console.log(sql.toString());
     return sql.toString();
 }
 
@@ -37,22 +36,22 @@ module.exports = [{
         validate: {
             params: {
                 table: Joi.string().required().description('Name of the Table').default('ftth.permitting'),
-                permitting_rolt_number: Joi.string().description('What Rolt'),
-                id: Joi.number().integer().description('The ID for edit point.'),
+                permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
+                id: Joi.number().integer().description('The ID for the Feature.'),
             },
             query: {
             },
             payload: {
-                second_franchise_town: Joi.string().description("What Column"),
-                second_hamlet: Joi.string().description("What Column"),
-                second_street: Joi.string().description("What Column"),
-                second_cross_street: Joi.string().description("What Column"),
-                second_utility_strip_width: Joi.string().description("What Column"),
-                second_lat_long: Joi.string().description("What Column"),
-                second_riser_pole: Joi.string().description("What Column"),
-                second_permitting_agency: Joi.string().description("What Column"),
-                second_road_type: Joi.string().description("What Column"),
-                second_pictures: Joi.string().description("What Column")
+                second_franchise_town: Joi.string().description("Second Franchise Town"),
+                second_hamlet: Joi.string().description("Second Hamlet"),
+                second_street: Joi.string().description("Second Street"),
+                second_cross_street: Joi.string().description("Second Cross Street"),
+                second_utility_strip_width: Joi.string().replace(/'/g, "''").description("Second Utility Strip Width"),// THIS COLUMN HAS A SINGLE QUOTE IN THE FIELD SO IT SCREWS EVERTHING Up
+                second_lat_long: Joi.string().description("Second Lat Long"),
+                second_riser_pole: Joi.string().description("Second Riser Pole"),
+                second_permitting_agency: Joi.string().description("Second Permitting Agency"),
+                second_road_type: Joi.string().description("Second Road Type"),
+                second_pictures: Joi.string().description("Second Pictures")
             }
         },
         jsonp: 'callback',
@@ -61,9 +60,10 @@ module.exports = [{
             db
                 .query(formatSQL(request))
                 .then(function (data) {
-                    reply("First Location Successfully Updated");
+                    reply("Second Location Successfully Updated");
                 })
                 .catch(function (err) {
+                    console.log(err)
                     reply({
                         'error': 'error running query',
                         'error_details': err

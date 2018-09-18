@@ -35,14 +35,14 @@ module.exports = [
             .description('name of the table').default('ftth.permitting_functions'),
         },
         query: {
-          permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
-          current_hub: Joi.string().description('Current Hub')
+          permitting_rolt_number: Joi.string().replace(/'/g, "''").description('Permitting Rolt Number'),
+          current_hub: Joi.string().replace(/'/g, "''").description('Current Hub')
         },
         payload:{
-          design_function: Joi.string().description('Design Function'),
-          resource: Joi.string().description('Resource'),
-          date_complete:Joi.string().description('Date Complete'),
-          comment: Joi.string().allow('').description('Comment')
+          design_function: Joi.string().replace(/'/g, "''").description('Design Function'),
+          resource: Joi.string().replace(/'/g, "''").description('Resource'),
+          date_complete:Joi.string().replace(/'/g, "''").description('Date Complete'),
+          comment: Joi.string().replace(/'/g, "''").allow('').description('Comment')
         }
       },
       jsonp: 'callback',
@@ -62,7 +62,6 @@ module.exports = [
               "date_complete":request.payload.date_complete,
               "comment":request.payload.comment,
               "id":request.payload['data[0][id]']
-
             }]}
             reply(returndata);
           })

@@ -29,7 +29,6 @@ module.exports = [
     method: 'GET',
     path: '/query/v1/{table}',
     config: {
-      // auth: 'simple',
       description: 'simple query',
       notes: 'Perform a simple query on a table.',
       tags: ['api'],
@@ -68,12 +67,9 @@ module.exports = [
       jsonp: 'callback',
       cache: config.cache,
       handler: function(request, reply) {
-        // console.log("request.auth FROM query Route: ", request.auth)
-        // const user=request.auth.credentials;
         db
         .query(formatSQL(request))
         .then(function(data) {
-          // console.log("User Data From Response from Route: ", user);
             reply(data);
           })
           .catch(function(err) {
