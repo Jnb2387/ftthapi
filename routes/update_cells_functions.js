@@ -1,4 +1,6 @@
-var Joi = require('joi'),
+var BaseJoi = require('joi'),
+    Extension = require('joi-date-extensions'),
+    Joi = BaseJoi.extend(Extension),
     squel = require('squel').useFlavour('postgres'),
     config = require('../config'),
     pgp = require('pg-promise')(),
@@ -40,7 +42,7 @@ module.exports = [{
             payload:{
                 design_function: Joi.string().replace(/'/g, "''").description('Design Function'),
                 resource: Joi.string().replace(/'/g, "''").description('Resource'),
-                date_complete: Joi.date().description('Date Complete'),
+                date_complete: Joi.date().format('M/DD/YYYY').raw().description('Date Complete'),//date().format('M/DD/YYYY')
                 comment: Joi.string().replace(/'/g, "''").allow('').description('Comment')
             }
         },

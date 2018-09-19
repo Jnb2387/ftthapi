@@ -1,7 +1,10 @@
-const Joi = require('joi');
-const config = require('../config');
-const db = require('../config/db.js');
-const squel = require('squel').useFlavour('postgres');
+var BaseJoi = require('joi'),
+    Extension = require('joi-date-extensions'),
+    Joi = BaseJoi.extend(Extension),
+    squel = require('squel').useFlavour('postgres'),
+    config = require('../config'),
+    pgp = require('pg-promise')(),
+    db = require('../config/db.js');
 
 function formatSQL(request) {
   var sql = squel

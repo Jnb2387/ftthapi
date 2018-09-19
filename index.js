@@ -35,7 +35,7 @@ var validate = function (request, username, password, callback) {
       name: user.name,
       role: user.role
     });
-    // console.log("User from bcrypt: ", user);
+    // console.log("User from bcrypt: ", "Name: ",user.name, ", User Role: ", user.role);
     // console.log("isValid = ",isValid)
   });
 };
@@ -79,7 +79,7 @@ server.register(
 );
 
 
-//  THIS DEFINATELY NEEDS TO BE CHECK
+//  THIS DEFINATELY NEEDS TO BE CHECKED
 //  IT SENDS THE HTML FROM THE SERVER
  server.route({
   method : 'GET',
@@ -88,18 +88,37 @@ server.register(
       auth: 'simple',
     },
   handler : {
-
-      directory : {
+        directory : {
           path : 'public'
       }
 
   }
 });
+ //  THIS DEFINATELY NEEDS TO BE CHECKED
+//  IT SENDS THE HTML FROM THE SERVER
+ server.route({
+  method : 'POST',
+  path : '/index.html',
+   config: {
+      auth: 'simple',
+    },
+  handler: function (request, reply) {
+      //TRY WITh BASIC AUTH 
+        const user=request.auth.credentials;
+        console.log("Request.Auth.Credentials: ", user)
+
+        reply(user)
+    }
+});
+
 
  server.route({
     method: 'GET',
     path: '/logout',
     handler: function (request, reply) {
+      //TRY WITh BASIC AUTH 
+        // const user=request.auth.credentials;
+        // console.log("Request.Auth.Credentials: ", user)
 
         reply('You are logged out now').code(401);
     }

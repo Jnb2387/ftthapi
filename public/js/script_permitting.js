@@ -45,7 +45,12 @@ $(document).ready(function () {
     });
 
     async function getRoltData(rolt) {
-        try { //"http://localhost:8011/query/v1/ftth.permitting?columns=*&filter=%20permitting_rolt_number%20ilike'" + rolt + "%25'%20AND%20current_hub%20ilike'" + hub + "%25'&limit=10"
+        try { 
+            //IF SOMEONE MADE AN EDIT BUT DIDNT SAVE IT YET THEN DONT GET NEW DATA
+            if($(".locationeditbtn").prop("disabled")){
+                alert("Please Save Edits First")
+                return 
+            }
             const response = await axios.get("http://localhost:8011/query/v1/ftth.permitting?columns=*&filter=%20permitting_rolt_number%20ilike'" + rolt + "%25'&limit=10");
             responsedata = response.data[0];
             Object.keys(responsedata).forEach(function (key) { //REPLACE ANY NULL VALUES WITH JUST A DASH
@@ -53,8 +58,14 @@ $(document).ready(function () {
                     responsedata[key] = '-';
                 }
             });
+            console.log(response)
             console.log("Permitting table Data: ", responsedata);
-
+            //IF THE EDIT IS IN SESSION THEN JUST RUN THE EDIT BUTTON TO REMOVE THE GREY AND MAKE THE INPUTS A LIST AGAIN
+            if($(".locationeditbtn").hasClass("edit_red")){
+                $(".edit_red").click();
+                console.log("Edit Session Cancelled")
+            }
+            
             $("#final_pictures").html(responsedata.pictures)
             $("#final_road_type").html(responsedata.road_type)
             $("#final_permitting_agency").html(responsedata.permitting_agency)
@@ -240,6 +251,10 @@ $(document).ready(function () {
     //FUNCTION TABLE
     async function getPermittingFunction(rolt) {
         try {
+            //IF SOMEONE MADE AN EDIT BUT DIDNT SAVE IT YET THEN DONT GET NEW DATA
+            if($(".locationeditbtn").prop("disabled")){
+                return 
+            }
             const response = await axios.get("http://localhost:8011/query/v1/ftth.permitting_functions?columns=*&filter=%20permitting_rolt_number%20ilike'" + rolt + "%25'&limit=500");
             console.log('Permitting Function table data: ', response.data)
             dataArr = response.data;
@@ -501,7 +516,7 @@ $(document).ready(function () {
                 def: function () {
                     return new Date();
                 },
-                format: 'MM/DD/YYYY',
+                format: 'M/DD/YYYY',
             }, {
                 name: "comment",
                 label: "Comment"
@@ -594,6 +609,7 @@ $(document).ready(function () {
             e.stopPropagation();
             return
         }
+        
         $(this).siblings().each( // grab all the li elements from the first_location list
             function () {
                 var inp = $(this).find('input'); //search for the input field in the ul

@@ -1,8 +1,10 @@
-var Joi = require('joi'),
+var BaseJoi = require('joi'),
+    Extension = require('joi-date-extensions'),
+    Joi = BaseJoi.extend(Extension),
     squel = require('squel').useFlavour('postgres'),
     config = require('../config'),
-    pgp = require('pg-promise')();
-const db = require('../config/db.js');
+    pgp = require('pg-promise')(),
+    db = require('../config/db.js');
 
 function formatSQL(request) {
     var sql = squel
@@ -72,11 +74,11 @@ module.exports = [{
                 placed: Joi.string().replace(/'/g, "''").allow('').description("Placed"),
                 total_pdo: Joi.string().replace(/'/g, "''").allow('').description("Total PDO"),
                 pdo_spliced: Joi.string().replace(/'/g, "''").allow('').description("PDO Spliced"),
-                date_issued: Joi.string().replace(/'/g, "''").allow('').description("Date Issued"),
-                cabled_complete: Joi.string().replace(/'/g, "''").allow('').description("Cabled Complete"),
-                pdo_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO Complete"),
-                jso_spliced: Joi.string().replace(/'/g, "''").allow('').description("JSO Spliced"),
-                pdo_jso_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO JSO Complete"),
+                date_issued: Joi.date().format('M/DD/YYYY').raw().allow('').description("Date Issued"),
+                cabled_complete: Joi.date().format('M/DD/YYYY').raw().allow('').description("Cabled Complete"),
+                pdo_complete: Joi.date().format('M/DD/YYYY').raw().allow('').description("PDO Complete"),
+                jso_spliced: Joi.date().format('M/DD/YYYY').raw().allow('').description("JSO Spliced"),
+                pdo_jso_complete: Joi.date().format('M/DD/YYYY').raw().allow('').description("PDO JSO Complete"),
                 feeder_spliced: Joi.string().replace(/'/g, "''").allow('').description("Feeder Spliced"),
                 pdo_jso_feeder_complete: Joi.string().replace(/'/g, "''").allow('').description("PDO JSO Feeder Complete"),
                 feeder_to_odf_rolt_spliced: Joi.string().replace(/'/g, "''").allow('').description("Feeder To ODF Rolt Spliced"),

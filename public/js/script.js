@@ -458,7 +458,7 @@ $(document).ready(function () {
                     def: function () {
                         return new Date();
                     },
-                    format: 'MM/DD/YYYY',
+                    format: 'M/DD/YYYY',
                 }, {
                     name: "comment",
                     label: "Comment"
@@ -850,7 +850,7 @@ $(document).ready(function () {
                         return obj;
                     },
                     error: function (xhr, error, thrown) {
-                        alert(error)
+                        alert(xhr.responseJSON.message)
                     }
                 }, //STILL DONT UNDERSTAND HOW ITS GRABING THE id FIELD AS _id_ AT END OF URL
                 remove: {
@@ -914,19 +914,44 @@ $(document).ready(function () {
                 label: "PDO Spliced"
             }, {
                 name: "date_issued",
-                label: "Date Issued"
+                label: "Date Issued",
+                type: 'datetime',
+                def: function () {
+                    return new Date();
+                },
+                format: 'M/DD/YYYY',
             }, {
                 name: "cabled_complete",
-                label: "Cabled Complete"
+                label: "Cabled Complete",
+                type: 'datetime',
+                def: function () {
+                    return new Date();
+                },
+                format: 'M/DD/YYYY',
             }, {
                 name: "pdo_complete",
-                label: "PDO Complete"
+                label: "PDO Complete",
+                type: 'datetime',
+                def: function () {
+                    return new Date();
+                },
+                format: 'M/DD/YYYY',
             }, {
                 name: "jso_spliced",
-                label: "JSO Spliced"
+                label: "JSO Spliced",
+                type: 'datetime',
+                def: function () {
+                    return new Date();
+                },
+                format: 'M/DD/YYYY',
             }, {
                 name: "pdo_jso_complete",
-                label: "PDO JSO Complete"
+                label: "PDO JSO Complete",
+                type: 'datetime',
+                def: function () {
+                    return new Date();
+                },
+                format: 'M/DD/YYYY',
             }, {
                 name: "feeder_spliced",
                 label: "Feeder Spliced"
