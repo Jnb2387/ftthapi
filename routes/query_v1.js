@@ -70,7 +70,7 @@ module.exports = [
       handler: function(request, reply) {
         //TRY WITH BASIC AUTH 
         const user=request.auth.credentials;
-        // console.log("Request.Auth.Credentials: ", user)
+        console.log("Request.Auth.Credentials: ", user)
         db
         .query(formatSQL(request))
         .then(function(data) {
