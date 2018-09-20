@@ -181,27 +181,35 @@ $(document).ready(function () {
         }
     }
 
-    //Kinda of Weird but once the charts are drawn i believe this plugin checks if there is no data and displays no data label
-    Chart.plugins.register({
-        afterDraw: function(chart) {
-        if (chart.data.datasets[0].data[0].length < 1) {
-          var ctx = chart.chart.ctx;
-          var width = chart.chart.width;
-          var height = chart.chart.height
-          chart.clear();
-          ctx.save();
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.font = "16px normal 'Helvetica Nueue'";
-          ctx.fillText('No data to display', width / 2, height / 2);
-          ctx.restore();
-        }
-      }
-    });
     
+    //Kinda of Weird but once the charts are drawn i believe this plugin checks if there is no data and displays no data label
+
+
+        Chart.plugins.register({
+            afterDraw: function(chart) {
+                // console.log(chart.data.datasets[0])
+            if (chart.data.datasets[0].data[0].length < 1) {
+                alert("no data")
+              var ctx = chart.chart.ctx;
+              var width = chart.chart.width;
+              var height = chart.chart.height
+              chart.clear();
+              ctx.save();
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.font = "16px normal 'Helvetica Nueue'";
+              ctx.fillText('No data to display', width / 2, height / 2);
+              ctx.restore();
+            }
+          }
+        });
+        
+
 
     async function getFootagesData(cell) {
         try {
+            
+            console.log("cell FROM footage table get:",cell)
             var building_attachment = [];
             var cable_bearing_strand = [];
             var mdu = [];
@@ -210,7 +218,7 @@ $(document).ready(function () {
             // var total = [];
             const response = await axios.get("http://localhost:8011/query/v1/ftth.footages?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=1000");
             var doughnutdata = response.data;
-           
+            $("#no_data").addClass('d-none')
             doughnutdata.map(function (row) {
                 building_attachment.push(row.building_attachment);
                 cable_bearing_strand.push(row.cable_bearing_strand)
@@ -223,7 +231,7 @@ $(document).ready(function () {
 
             //doughnut
             var ctxD = document.getElementById("doughnutChart").getContext('2d');
-            var myLineChart = new Chart(ctxD, {
+            doughnutChart = new Chart(ctxD, {
                 type: 'doughnut',
                 data: {
                     labels: ["Building Attachment", "Cable Bearing Strand", "MDU", "Slack", "UG"],//, "total"],
@@ -251,6 +259,7 @@ $(document).ready(function () {
             });
         } catch (error) {
             console.log(error)
+            $("#no_data").removeClass('d-none')
         }
     }
 
@@ -318,6 +327,7 @@ $(document).ready(function () {
             });
         } catch (error) {
             console.log(error)
+            
         }
     }
 
