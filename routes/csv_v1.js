@@ -44,6 +44,7 @@ module.exports = [
   method: 'GET',
   path: '/csv/v1/{table}',
   config: {
+     auth: 'simple',
     description: 'CSV',
     notes: 'Return CSV.',
     tags: ['api'],

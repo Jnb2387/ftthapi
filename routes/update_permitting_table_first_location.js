@@ -46,6 +46,7 @@ module.exports = [{
     method: 'POST',
     path: '/update_permitting_table_first_location/v1/{table},{permitting_rolt_number},{id}',
     config: {
+         auth: 'simple',
         description: 'Update the permitting table',
         notes: 'Update permitting table.',
         tags: ['api'],

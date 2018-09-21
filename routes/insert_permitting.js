@@ -67,6 +67,7 @@ module.exports = [
   path: '/insert_permitting/v1/{table}',
 
   config: {
+     auth: 'simple',
     description: 'Insert Permitting',
     notes: 'Insert a New Permitting',
     tags: ['api'],

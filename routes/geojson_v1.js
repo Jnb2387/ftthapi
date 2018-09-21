@@ -54,6 +54,7 @@ module.exports = [
     method: 'GET',
     path: '/geojson/v1/{table}',
     config: {
+       auth: 'simple',
       description: 'geojson',
       notes: 'Return geojson.',
       tags: ['api'],

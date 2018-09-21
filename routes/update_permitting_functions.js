@@ -29,6 +29,7 @@ module.exports = [{
     method: 'POST',
     path: '/update_permitting_functions/v1/{table}',
     config: {
+         auth: 'simple',
         description: 'Update the permitting functions table',
         notes: 'Update permitting function table.',
         tags: ['api'],
@@ -43,10 +44,10 @@ module.exports = [{
                 id: Joi.number().integer().description('The ID for the Feature.'),
             },
              payload:{
-                design_function: Joi.string().replace(/'/g, "''").description('Design Function'),
-                resource: Joi.string().replace(/'/g, "''").description('Resource'),
-                date_complete: Joi.date().format('M/DD/YYYY').raw().description('Date Complete'),
-                comment: Joi.string().replace(/'/g, "''").allow('').description('Comment')
+                design_function: Joi.string().description('Design Function'),//DROP DOWN
+                resource: Joi.string().replace(/'/g, '"').description('Resource'),
+                date_complete: Joi.date().format('M/DD/YYYY').raw().description('Date Complete'),//DATE SELECTOR
+                comment: Joi.string().replace(/'/g, '"').allow('').description('Comment')
             }
         },
         jsonp: 'callback',

@@ -18,8 +18,10 @@ function formatSQL(request) {
 module.exports = [
   {
     method: 'POST',
+     
     path: '/delete_functions/v1/{table}',
     config: {
+      auth: 'simple',
       description: 'Delete Function',
       notes: 'Delete Record from Functions Table',
       tags: ['api'],

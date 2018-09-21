@@ -9,7 +9,17 @@ $(document).ready(function () {
     var homesresponsedata;
     var pni_or_netwin_name;
     var footagesresponsedata;
-
+    var username=$(".username");
+    var user_role=$(".user_role");
+    async function getUser(){
+        const response= await axios.post('http://localhost:8011/index.html')
+        responsedata=response.data
+        console.log(responsedata)
+        username.html(responsedata.name)
+        user_role.html(responsedata.role)
+    }
+    getUser()
+    
 
     async function getData(cell) {
         try {
@@ -131,15 +141,15 @@ $(document).ready(function () {
         }
     }
 
-    $('#cellsearchbtn').on("click", function () {
+    $('#cellsearchbtn').on("click", async function () {
         let cell = $("#cellsearch").val().toUpperCase();
         if (!cell) {
             return;
         } // DONT SEARCH IF THERE IS NOTHING IN THE INPUT
-        getData(cell);
-        getfunctiontable(cell);
-        getHomesPassed(cell);
-        getFootages(cell);
+        await getData(cell);
+        await getfunctiontable(cell);
+        await getHomesPassed(cell);
+        await getFootages(cell);
     });
     $("#mapdivbtn").on("click", function () {
         window.dispatchEvent(new Event('resize')); // FOR SOME REASON THE LEAFLET MAP DOESN'T KNOW THE ELEMENT SIZE IN A MODAL.
@@ -227,11 +237,11 @@ $(document).ready(function () {
                 ui.content.push(noResult);
             }
         }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
-        select: function (e, data) {
-            getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
-            getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
-            getHomesPassed(data.item.value);
-            getFootages(data.item.value);
+        select: async function (e, data) {
+            await getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
+            await getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
+            await getHomesPassed(data.item.value);
+            await getFootages(data.item.value);
         }
     });
     //WHEN THE PAGE IS SCROLLED THE USER WONT SEE WHAT CELL THEY SEARCHED FOR SO ADD IT TO THE NAVBAR
@@ -362,7 +372,7 @@ $(document).ready(function () {
                     [2, "desc"]
                 ]
             });
-
+            
             var editor = await new $.fn.dataTable.Editor({
                 ajax: {
                     dataType: 'json',
@@ -450,7 +460,9 @@ $(document).ready(function () {
                     }
                 }, {
                     name: "resource",
-                    label: "Resource"
+                    label: "Resource",
+                    def: username.text()//grabbed from variable at the top
+                    
                 }, {
                     name: "date_complete",
                     label: "Date Complete",
@@ -509,8 +521,13 @@ $(document).ready(function () {
             }
             ]);
 
-            functiondatatable.buttons().container()
-                .appendTo($('.col-md-6:eq(0)', functiondatatable.table().container()));
+            if(user_role.text()=='admin'){
+                console.log('disabled')
+                functiondatatable.buttons().container()
+                    .appendTo($('.col-md-6:eq(0)', functiondatatable.table().container()));
+                // functiondatatable.buttons().disable()
+            }
+            
         } catch (error) {
             console.log(error)
         }

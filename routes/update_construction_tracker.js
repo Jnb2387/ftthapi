@@ -51,6 +51,7 @@ module.exports = [{
     method: 'POST',
     path: '/update_construction_tracker/v1/{table}',
     config: {
+         auth: 'simple',
         description: 'Update the construction table',
         notes: 'Update construction table.',
         tags: ['api'],

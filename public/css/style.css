@@ -64,7 +64,10 @@
 }
 
 /* #locationrow tr, td { white-space: nowrap; } */
-
+.user_role{
+  font-size:11px;
+  color:"grey";
+}
 
 
 #addpermittingmodal .modal-dialog {

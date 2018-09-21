@@ -29,8 +29,8 @@ module.exports = [
     path: '/insert_functions/v1/{table}',
     config: {
       auth: 'simple',
-      description: 'Insert a New Function',
-      notes: 'Insert a new Function',
+      description: 'Insert a New Cell Function',
+      notes: 'Insert a new Cell Function',
       tags: ['api'],
       validate: {
         params: {
@@ -43,10 +43,10 @@ module.exports = [
           netwin_cell_jso_name: Joi.string().description('Netwin Cell JSO Name'),
         },
         payload:{
-          design_function:Joi.string().replace(/'/g, "''").description('Design Function'),
-          resource:Joi.string().replace(/'/g, "''").description('Resource'),
-          date_complete:Joi.date().format('M/DD/YYYY').raw().description('Date Complete'),
-          comment:Joi.string().replace(/'/g, "''").allow('').description('Comment'),
+          design_function:Joi.string().description('Design Function'),//DROP DOWN
+          resource:Joi.string().replace(/'/g, '"').description('Resource'),
+          date_complete:Joi.date().format('M/DD/YYYY').raw().description('Date Complete'),//DATE SELECTOR
+          comment:Joi.string().replace(/'/g, '"').allow('').description('Comment'),
         }
       },
       jsonp: 'callback',

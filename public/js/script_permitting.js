@@ -28,9 +28,9 @@ $(document).ready(function () {
                 ui.content.push(noResult);
             }
         }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
-        select: function (e, data) {
-            getRoltData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
-            getPermittingFunction(data.item.value);
+        select: async function (e, data) {
+            await getRoltData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
+            await getPermittingFunction(data.item.value);
         }
     });
 
@@ -58,7 +58,6 @@ $(document).ready(function () {
                     responsedata[key] = '-';
                 }
             });
-            console.log(response)
             console.log("Permitting table Data: ", responsedata);
             //IF THE EDIT IS IN SESSION THEN JUST RUN THE EDIT BUTTON TO REMOVE THE GREY AND MAKE THE INPUTS A LIST AGAIN
             if($(".locationeditbtn").hasClass("edit_red")){
@@ -122,10 +121,11 @@ $(document).ready(function () {
                 }
             });
         } catch (error) {
+            alert('Error Finding Rolt Data', error)
             console.log(error);
         }
     }
-    $("#permitting_search").on("click", function (e) {
+    $("#permitting_search").on("click", async function (e) {
         let rolt = $("#permitting_rolt_search").val();
         // let hub = $("#exisiting_hub_search").val();
         if (!rolt) {
@@ -133,8 +133,8 @@ $(document).ready(function () {
             e.stopPropagation();
             return;
         }
-        getRoltData(rolt);
-        getPermittingFunction(rolt)
+        await getRoltData(rolt);
+        await getPermittingFunction(rolt)
     });
     //ADD NEW PERMITTING
     $("#addpermittingbtn").on('click', function () {
@@ -541,7 +541,7 @@ $(document).ready(function () {
             }
         });
         //WHEN A NEW FUNCTION IS INSERTED OR CREATED THEN RE_RUN THE getfunctiontable() BECAUSE NEW ROWS DONT HAVE AN UNIQUE id YET SO CANT BE EDITED UNLESS RELOADED.
-        editor.on('create', function (e, o, action) {
+        editor.on('create' || 'edit', function (e, o, action) {
             var rolt = $("#permitting_rolt_search").val().toUpperCase();
             getPermittingFunction(rolt)
         });

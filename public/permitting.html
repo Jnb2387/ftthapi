@@ -39,7 +39,8 @@
 
                 <!-- Brand -->
                 <a class="navbar-brand waves-effect" href="#permitting_top">
-                        <span id="nav_cell_name"></span> <strong class="blue-text">Permitting</strong>
+                    <span id="nav_cell_name"></span>
+                    <strong class="blue-text">Permitting</strong>
                 </a>
 
                 <!-- Collapse -->
@@ -116,11 +117,11 @@
                         <form>
                             <!-- Grid row -->
                             <div class="form-group row my-1">
-                                    
+
                                 <label for="permitting_rolt_search" class="col-4 m-0 p-1 col-form-label">Permitting Rolt
                                 </label>
                                 <input type="text" class=" col-6 m-0 p-1 form-control" name="permitting_rolt_search" id="permitting_rolt_search" placeholder="Search for ROLT-.."
-                                autofocus> 
+                                    autofocus>
                                 <p class=" " id="no_results"></p>
                             </div>
                             <!-- Grid row -->
@@ -191,7 +192,7 @@
                     </div>
                     <div class="col-lg-5 col-md-5" id="blocker_inputs">
                         <form>
-                            <div class="form-row md-form my-1 mb-lg-2 mb-md-5" >
+                            <div class="form-row md-form my-1 mb-lg-2 mb-md-5">
                                 <div class="col-4">
                                     <label for="block_yes_no">Blocker</label>
                                     <input type="text" class="form-control" id="block_yes_no" name="block_yes_no">
@@ -217,7 +218,7 @@
                                     <input type="text" class="form-control" id="blocker_owner" name="blocker_owner">
                                 </div>
                                 <div class="col-4">
-                                    <label for="eta_blocker_resolution" >ETA Blocker Resolution</label>
+                                    <label for="eta_blocker_resolution">ETA Blocker Resolution</label>
                                     <input type="text" class="form-control" id="eta_blocker_resolution" name="eta_blocker_resolution">
                                 </div>
                             </div>
@@ -426,17 +427,17 @@
             <!-- Add Permitting Modal -->
             <div class="modal fade right" id="addpermittingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg  modal-right" role="document">
-                    <div class="modal-content">
+                    <div class="modal-content ">
                         <!--Header-->
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel">Add Permitting Rolt</h4>
-                           
+                        <div class="modal-header py-1">
+                            <h4 class="modal-title font-weight-bold" id="myModalLabel">Add Permitting Rolt</h4>
+
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">×</span>
                             </button>
                         </div>
                         <!--Body-->
-                        <div class="modal-body">
+                        <div class="modal-body pb-0">
                             <!-- Default auto-sizing form -->
                             <form>
                                 <!-- method='POST' actions='http://localhost:8011/insert_permitting/v1/ftth.permitting'> -->
@@ -817,13 +818,16 @@
                                 <!-- END MAIN ROW MODAL -->
                                 <!-- Default auto-sizing form -->
                         </div>
-                    </form>
-                    <!--Footer-->
-                    <div class="d-flex justify-content-center pb-2 fixed-bottom">
+                        </form>
+                        <!--Footer-->
+                        <!-- <div class="d-flex justify-content-center pb-2 fixed-bottom"> -->
+                                <div class="modal-footer d-flex justify-content-around">
+                                   
+             
                             <button id="addpermittingbtn" class="btn btn-primary">Add Permitting</button>
                             <!-- <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button> -->
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

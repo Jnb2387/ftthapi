@@ -26,6 +26,7 @@ module.exports = [{
     method: 'POST',
     path: '/update_functions/v1/{table}',
     config: {
+         auth: 'simple',
         description: 'Update the functions table',
         notes: 'Update.',
         tags: ['api'],

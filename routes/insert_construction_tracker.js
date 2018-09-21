@@ -47,6 +47,7 @@ module.exports = [{
     method: 'POST',
     path: '/insert_construction_tracker/v1/{table}',
     config: {
+         auth: 'simple',
         description: 'Insert the construction table',
         notes: 'Insert construction table.',
         tags: ['api'],

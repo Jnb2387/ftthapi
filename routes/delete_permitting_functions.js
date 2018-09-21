@@ -18,8 +18,10 @@ function formatSQL(request) {
 module.exports = [
   {
     method: 'POST',
+    
     path: '/delete_permitting_functions/v1/{table}',
     config: {
+       auth: 'simple',
       description: 'Delete Permitting Function',
       notes: 'Delete Record from Permitting Functions Table',
       tags: ['api'],
