@@ -1,14 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>FTTH</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="css/mdb.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/generator-base.css">
+
 </head>
+
 <body>
-  <h3>You Have Been Logged Out</h3>
-  <a href="index.html" id='loginbtn'><button>Log In</button></a>
-  
+  <main class=" mx-lg-3" id="signup">
+    <div class="container mt-3">
+      <!-- Heading -->
+      <div class="row d-flex justify-content-center ">
+        <div class="col-6">
+            <h2 class="mb-5 text-center font-weight-bold">FTTH</h2> 
+          <a href="index.html" id='loginbtn'><button class="btn btn-info my-4 btn-block">Log In</button></a>
+          <hr>
+          <br>
+
+          <!-- Default form register -->
+          <form class="text-center border border-light p-5" method="POST" action="/insert_user">
+
+            <p class="h4 mb-4">Create Account</p>
+
+            <div class="form-row mb-4">
+              <div class="col">
+                <!-- First name -->
+                <input type="text" id="newusername" name="newusername" class="form-control" placeholder="Username">
+              </div>
+              <div class="col">
+                <!-- Full Name -->
+                <input type="text" id="newuserfullname" name="newuserfullname" class="form-control" placeholder="Full Name">
+              </div>
+            </div>
+            
+            <label>Select Role:</label>
+            <select class="browser-default mb-4" id="newuserrole" name="newuserrole">
+              <option value="" disabled selected>Choose your option</option>
+              <option value="admin">Admin</option>
+              <option value="User">User</option>
+            </select>
+
+            <!-- Password -->
+            <input type="password" id="newuserpassword" name="newuserpassword" class="form-control" placeholder="Password">
+            <small id="firstRegisterFormPasswordHelpBlock" class="form-text text-muted mb-4">
+              At least 8 characters and 1 digit
+            </small>
+            <!-- Password -->
+            <input type="password" id="newusersecondpassword" class="form-control" placeholder="Confirm Password">
+
+            <small id="secondRegisterFormPasswordHelpBlock" class="form-text text-muted mb-4">
+              At least 8 characters and 1 digit
+            </small>
+
+
+            <!-- Sign up button -->
+            <button class="btn btn-info my-4 btn-block" type="submit">Create Account</button>
+          </form>
+          <!-- Default form register -->
+
+
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- SCRIPTS -->
+
+  <!-- JQuery -->
+  <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="js/popper.min.js"></script>
+
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Initializations -->
+  <script type="text/javascript">
+    // Animations initialization
+    new WOW().init();
+  </script>
 </body>
+
 </html>

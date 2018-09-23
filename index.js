@@ -7,47 +7,41 @@ const config = require('./config');
 const Basic = require('hapi-auth-basic');
 const Bcrypt = require('bcrypt');
 const db = require('./config/db.js');
-const Users = require('./config/users');
+// const Users = require('./config/users');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
 server.connection({
-  host: '0.0.0.0'|| localhost,
+  host: '0.0.0.0' || localhost,
   port: config.port,
   routes: {
     cors: true
   }
 });
 
-
+//THIS FUNCTION TAKES IN THE INPUT FROM THE LOG IN AND RUNS A QUERY TO THE DATABASE CHECKS FOR THE USER NAME AND THEN COMPARES THE ENCRYPTED PASSWORDS
 var validate = function (request, username, password, callback) {
- // console.log('username is: ', username)
- db.query("SELECT * FROM ftth.people WHERE (username ILIKE $1)",[username])
- .then(function(data) {
-  // var user = Users[username];
-  var user = data[0];
-  // console.log(user)
-  if (!user) {
-    // console.log("NO USER")
-    return {
-      credentials: null,
-      isValid: false
-    };
-  }
-  Bcrypt.compare(password, user.password, function (err, isValid) {
-    // isValid=true;
-    callback(err, isValid, {
-      id: user.id,
-      name: user.fullname,
-      role: user.role
+  console.log('Validating Request From: ', username);
+  db.query("SELECT * FROM ftth.users WHERE (username ILIKE $1)", [username])
+    .then(function (data) {
+      var user = data[0];
+      if (!user) {
+        console.log("NO USER");
+        return callback(null, false);
+      }
+      Bcrypt.compare(password, user.password, function (err, isValid) {
+        // isValid=true;
+        if(err){callback(err)}
+        callback(err, isValid, {
+          id: user.id,
+          name: user.fullname,
+          role: user.role
+        });
+      });
+    })
+    .catch(function (err) {
+      console.log(err)
     });
-    // console.log("User from bcrypt: ", "FullName: ",user.fullname, ", User Role: ", user.role);
-  });
-
-})
- .catch(function(err) {
-  console.log(err)
-});
 
 };
 
@@ -61,26 +55,26 @@ server.auth.strategy('simple', 'basic', {
 // Start the server
 server.register(
   [
-  Inert,
+    Inert,
 
-  Vision,
-  {
-    register: Router,
-    options: {
-      routes: 'routes/*.js'
-    }
-  },
-  {
-    register: HapiSwagger,
-    options: {
-      schemes: config.schemes,
-      host: config.host,
-      info: {
-        title: 'REST API',
-        description: 'Created For Ftth',
+    Vision,
+    {
+      register: Router,
+      options: {
+        routes: 'routes/*.js'
+      }
+    },
+    {
+      register: HapiSwagger,
+      options: {
+        schemes: config.schemes,
+        host: config.host,
+        info: {
+          title: 'REST API',
+          description: 'Created For Ftth',
+        }
       }
     }
-  }
   ],
   function (err) {
     server.start(function () {
@@ -88,70 +82,53 @@ server.register(
       console.log('Server running at:', server.info.uri);
     });
   }
-  );
-
-
+);
+ 
 //  THIS DEFINATELY NEEDS TO BE CHECKED
 //  IT SENDS THE HTML FROM THE SERVER
 server.route({
-  method : 'GET',
-  path : '/{param*}',
-  config: {
-    // auth: 'simple',
-  },
-  handler : {
-    directory : {
-      path : 'public',
-      index:['login.html']
+  method: 'GET',
+  path: '/{param*}', // send any file from the public folder
+  handler: {
+    directory: {
+      path: 'public', // folder to send
+      index: ['login.html'] // direct to this page when first loading.
     }
   }
 });
 
+
+//TRY WITh BASIC AUTH
 server.route({
   method: 'GET',
   path: '/logout',
   handler: function (request, reply) {
-      //TRY WITh BASIC AUTH 
-        // const user=request.auth.credentials;
-        // console.log("Request.Auth.Credentials: ", user)
+    reply('You are logged out now').code(401); // The code(401) removes the basic auth.
+  }
+});
 
-        reply('You are logged out now').code(401);
-      }
-    });
-
+//I AM NOT SURE WHY I HAD TO DO THESE
 server.route({
   method: 'POST',
-  path: '/index.html',
- config: {
+  path: '/getuser',
+  config: {
     auth: 'simple',
   },
   handler: function (request, reply) {
-      //TRY WITh BASIC AUTH 
-      // console.log(request)
-        const user=request.auth.credentials;
-        console.log("Request.Auth.Credentials: ", user)
-        // var username= request.payload.username
-        // var password=request.payload.password
-        // console.log(username, password)
-        // reply('You are logged out now').code(401);
-        reply(user)
-      }
-    });
+    //TRY WITh BASIC AUTH 
+    const user = request.auth.credentials;
+    console.log("Request.Auth.Credentials: ", user);
+    reply(user);
+  }
+});
+//THE LOGIN BUTTON SENDS A REQUEST TO THIS ROUTE WHICH IS THE ONLY
 server.route({
   method: 'GET',
   path: '/index.html',
- config: {
+  config: {
     auth: 'simple',
   },
   handler: function (request, h) {
-      //TRY WITh BASIC AUTH 
-        // const user=request.auth.credentials;
-        // console.log("Request.Auth.Credentials: ", user)
-        // var username= request.payload.username
-        // var password=request.payload.password
-        // console.log(username, password)
-        // reply('You are logged out now').code(401);
-        return h.file('public/index.html')
-      }
-    });
-
+    return h.file('public/index.html')
+  }
+});

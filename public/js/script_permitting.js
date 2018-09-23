@@ -1,6 +1,28 @@
 $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip(); // initialize the tooltip features
     var responsedata;
+  //USER STUFF
+  var username=$(".username");
+  var user_role=$(".user_role");
+  async function getUser(){
+      try{
+          const response= await axios.post('http://localhost:8011/getuser')
+          userdata=response.data
+          console.log(userdata)
+          username.html(userdata.name)
+          user_role.html(userdata.role)
+      }
+      catch(err){
+          console.log(err)
+      }
+  }
+  getUser();
+  $("#log_out").on("click", function () {
+      alert("You Have Been Logged Out")
+      axios.get("http://localhost:8011/logout")
+  });
+  // END USER STUFF
+
     //Autocomplete for the Search Rolt
     $("#permitting_rolt_search").autocomplete({
         minLength: 6,
@@ -304,7 +326,7 @@ $(document).ready(function () {
                 create: {
                     type: 'POST',
                     url: "http://localhost:8011/insert_permitting_functions/v1/ftth.permitting_functions?permitting_rolt_number=" + responsedata.permitting_rolt_number + "&current_hub=" + responsedata.current_hub,
-                    data: function (d) {
+                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -319,7 +341,7 @@ $(document).ready(function () {
                 edit: {
                     type: 'POST',
                     url: "http://localhost:8011/update_permitting_functions/v1/ftth.permitting_functions?permitting_rolt_number=" + responsedata.permitting_rolt_number + "&current_hub=" + responsedata.current_hub + "&id=_id_",
-                    data: function (d) {
+                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -861,9 +883,6 @@ $(document).ready(function () {
             console.log(error)
         }
     }
-    $("#log_out").on("click", function () {
-        alert("You Have Been Logged Out")
-        axios.get("http://localhost:8011/logout")
-    })
+
 });
 //end Document ready

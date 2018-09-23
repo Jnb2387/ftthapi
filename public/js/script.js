@@ -9,17 +9,27 @@ $(document).ready(function () {
     var homesresponsedata;
     var pni_or_netwin_name;
     var footagesresponsedata;
-    var username=$(".username");
-    var user_role=$(".user_role");
-    async function getUser(){
-        const response= await axios.post('http://localhost:8011/index.html')
-        responsedata=response.data
-        console.log(responsedata)
-        username.html(responsedata.name)
-        user_role.html(responsedata.role)
-    }
-    getUser()
-    
+   //USER STUFF
+   var username=$(".username");
+   var user_role=$(".user_role");
+   async function getUser(){
+       try{
+           const response= await axios.post('http://localhost:8011/getuser')
+           userdata=response.data
+           console.log(userdata)
+           username.html(userdata.name)
+           user_role.html(userdata.role)
+       }
+       catch(err){
+           console.log(err)
+       }
+   }
+   getUser();
+   $("#log_out").on("click", function () {
+       alert("You Have Been Logged Out")
+       axios.get("http://localhost:8011/logout")
+   });
+   // END USER STUFF
 
     async function getData(cell) {
         try {
@@ -380,7 +390,7 @@ $(document).ready(function () {
                     create: {
                         type: 'POST',
                         url: "http://localhost:8011/insert_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name,
-                        data: function (d) {
+                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -395,7 +405,7 @@ $(document).ready(function () {
                     edit: {
                         type: 'POST',
                         url: "http://localhost:8011/update_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name + "&id=_id_",
-                        data: function (d) {
+                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -521,8 +531,8 @@ $(document).ready(function () {
             }
             ]);
 
-            if(user_role.text()=='admin'){
-                console.log('disabled')
+            if(user_role.text() =='admin'){
+                console.log('Added Editing Buttons')
                 functiondatatable.buttons().container()
                     .appendTo($('.col-md-6:eq(0)', functiondatatable.table().container()));
                 // functiondatatable.buttons().disable()
@@ -696,6 +706,7 @@ $(document).ready(function () {
         var response;
         try {
             rolt = $("#construction_rolt").val();
+            //HAVE TO SEE WHICH WAY TO SEARCH BY ROLT OR THE CURRENT CELL SO CHECK THE STATUS OF THE BUTTON CLICK
             if (roltbuttonclicked == true && rolt.length > 1) {
                 response = await axios.get("http://localhost:8011/query/v1/ftth.construction_cell_tracker?columns=*&filter=permitting_rolt_number%20ilike%20'" + rolt + "'&limit=500");
             } else {
@@ -843,7 +854,7 @@ $(document).ready(function () {
                 create: {
                     type: 'POST',
                     url: "http://localhost:8011/insert_construction_tracker/v1/ftth.construction_cell_tracker",
-                    data: function (d) {
+                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -858,7 +869,7 @@ $(document).ready(function () {
                 edit: {
                     type: 'POST',
                     url: "http://localhost:8011/update_construction_tracker/v1/ftth.construction_cell_tracker?id=_id_",
-                    data: function (d) {
+                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -881,7 +892,7 @@ $(document).ready(function () {
                 name: "pni_cell_name",
                 label: "PNI Cell Name",
                 id: "pni_cell_name_editor",
-                // type: "autoComplete",
+                // type: "autoComplete", CANT FIGURE OUT
 
             }, {
                 name: "jso_location",
@@ -1123,10 +1134,6 @@ $(document).ready(function () {
         }, 1000)
 
     });
-    $("#log_out").on("click", function () {
-        alert("You Have Been Logged Out")
-        axios.get("http://localhost:8011/logout")
-    })
 
 
 

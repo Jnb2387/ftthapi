@@ -2,6 +2,29 @@ $(document).ready(function () {
     var myChart;
     var myLineChart;
     var doughnutChart;
+
+    //USER STUFF
+    var username=$(".username");
+    var user_role=$(".user_role");
+    async function getUser(){
+        try{
+            const response= await axios.post('http://localhost:8011/getuser')
+            userdata=response.data
+            console.log(userdata)
+            username.html(userdata.name)
+            user_role.html(userdata.role)
+        }
+        catch(err){
+            console.log(err)
+        }
+    }
+    getUser();
+    $("#log_out").on("click", function () {
+        alert("You Have Been Logged Out")
+        axios.get("http://localhost:8011/logout")
+    });
+    // END USER STUFF
+
     $("#cellsearch").autocomplete({
         minLength: 2,
         autoFocus: true,
