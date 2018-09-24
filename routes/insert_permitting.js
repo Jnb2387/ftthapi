@@ -15,6 +15,7 @@ function formatSQL(request) {
   .set("cabinet_type", request.payload.cabinet_type)
   .set("netwin_rolt_name", request.payload.netwin_rolt_name)
   .set("current_hub", request.payload.current_hub)
+  .set("future_hub", request.payload.future_hub)
   .set("approved_final_location", request.payload.approved_final_location)
   .set("permit_", request.payload.permit_)
   .set("blocked_y_n_", request.payload.blocked_y_n_)
@@ -22,7 +23,7 @@ function formatSQL(request) {
   .set("blocker_owner", request.payload.blocker_owner)
   .set("eta_blocker_resolution", request.payload.eta_blocker_resolution)
   .set("blocker_description", request.payload.blocker_description)
-  .set("future_hub", request.payload.future_hub)
+
 
   .set("first_franchise_town", request.payload.first_franchise_town)
   .set("first_hamlet", request.payload.first_hamlet)
@@ -55,7 +56,12 @@ function formatSQL(request) {
   .set("riser_pole", request.payload.riser_pole)
   .set("permitting_agency", request.payload.permitting_agency)
   .set("road_type", request.payload.road_type)
-  .set("pictures", request.payload.first_pictures);
+  .set("pictures", request.payload.pictures)
+//NOT ADD IN MODAL YET
+  // .set("ga_outreach_completed", request.payload.ga_outreach_completed)
+  // .set("municipality_climate", request.payload.municipality_climate)
+  // .set("original_build_yr", request.payload.original_build_yr)
+  // .set("actual_build_yr", request.payload.actual_build_yr)
 
   console.log(sql.toString());
   return sql.toString();
@@ -91,6 +97,11 @@ module.exports = [
         eta_blocker_resolution:Joi.string().replace(/'/g, "''").allow('').description('ETA Blocker Resolution'),
         blocker_description:Joi.string().replace(/'/g, "''").allow('').description('Blocker Description'),
         future_hub:Joi.string().replace(/'/g, "''").allow('').description('Future Hub'),
+//NOT ADD IN MODAL YET
+        // ga_outreach_completed:Joi.string().allow('').description('GA Outreach Completed'),
+        // municipality_climate:Joi.string().allow('').description('Municipality Climate'),
+        // original_build_yr:Joi.string().allow('').description('Original Build Year'),
+        // actual_build_yr:Joi.string().allow('').description('Actual Build Year'),
 
         first_franchise_town:Joi.string().replace(/'/g, "''").allow('').description('First Franchise Town'),
         first_hamlet:Joi.string().replace(/'/g, "''").allow('').description('First Hamlet'),

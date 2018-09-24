@@ -46,14 +46,14 @@ module.exports = [{
         },
         jsonp: 'callback',
         cache: config.cache,
-        handler: function (request, h) {
+        handler: function (request, reply) {
             db
                 .query(formatSQL(request))
                 .then(function (data) {
-                    return h.file('public/index.html')
+                    reply('User Successfully Created')
                 })
                 .catch(function (err) {
-                    console.log(err.detail);
+                    reply(err.detail);
                 });
         },
     },

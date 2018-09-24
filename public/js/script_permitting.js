@@ -8,7 +8,7 @@ $(document).ready(function () {
       try{
           const response= await axios.post('http://localhost:8011/getuser')
           userdata=response.data
-          console.log(userdata)
+          console.log(JSON.stringify(userdata))
           username.html(userdata.name)
           user_role.html(userdata.role)
       }
@@ -176,7 +176,7 @@ $(document).ready(function () {
         let first_franchise_town = $("#first_franchise_town_add_rolt").val()
         let first_hamlet = $("#first_hamlet_add_rolt").val()
         let first_street = $("#first_street_add_rolt").val()
-        let first_cross_street = $("#first_utility_strip_width_add_rolt").val()
+        let first_cross_street = $("#first_cross_street").val()
         let first_utlity_strip_width = $("#first_utility_strip_width_add_rolt").val()
         let first_lat_long = $("#first_lat_long_add_rolt").val()
         let first_riser_pole = $("#first_riser_pole_add_rolt").val()
@@ -203,6 +203,13 @@ $(document).ready(function () {
         let permitting_agency = $("#final_permitting_agency_add_rolt").val()
         let road_type = $("#final_road_type_add_rolt").val()
         let pictures = $("#final_pictures_add_rolt").val()
+// NOT ADD IN THE MODAL YET
+        // let ga_outreach_completed = $("#ga_outreach_completed").val()
+        // let municipality_climate = $("#municipality_climate").val()
+        // let original_build_yr = $("#original_build_yr").val()
+        // let actual_build_yr = $("#actual_build_yr").val()
+
+
         async function addPermitting() {
             try {
                 const response = await axios.post("http://localhost:8011/insert_permitting/v1/ftth.permitting", {
@@ -220,6 +227,12 @@ $(document).ready(function () {
                     eta_blocker_resolution: eta_blocker_resolution,
                     blocker_description: blocker_description,
                     future_hub: future_hub,
+// NOT ADD IN THE MODAL YET
+                    // ga_outreach_completed:ga_outreach_completed,
+                    // municipality_climate:municipality_climate,
+                    // original_build_yr:original_build_yr,
+                    // actual_build_yr:actual_build_yr,
+
                     first_franchise_town: first_franchise_town,
                     first_hamlet: first_hamlet,
                     first_street: first_street,
@@ -252,7 +265,6 @@ $(document).ready(function () {
                     pictures: pictures,
                 });
                 if (response.data == "Permitting Successfully Inserted.") {
-                    console.log('yuppp')
                     $("#addpermittingSuccess").modal('show'); // Set a timeout to hide the element again
                     setTimeout(function () {
                         $("#addpermittingSuccess").modal('hide');
@@ -263,7 +275,8 @@ $(document).ready(function () {
                 }
             } catch (error) {
                 // console.log(response.data)
-                alert('Error from adding Permitting ', error)
+                alert(error)
+                // alert('Error adding Permitting ', Error)
             }
         }
         addPermitting();

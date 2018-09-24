@@ -98,7 +98,7 @@ server.route({
 });
 
 
-//TRY WITh BASIC AUTH
+//TO LOG OUT
 server.route({
   method: 'GET',
   path: '/logout',
@@ -107,7 +107,7 @@ server.route({
   }
 });
 
-//I AM NOT SURE WHY I HAD TO DO THESE
+//NOT SURE IF THIS IS CORRECT BUT THIS IS TO GRAB THE fullname AND role FROM THE AUTHENTICATION REQUEST.
 server.route({
   method: 'POST',
   path: '/getuser',
@@ -117,11 +117,11 @@ server.route({
   handler: function (request, reply) {
     //TRY WITh BASIC AUTH 
     const user = request.auth.credentials;
-    console.log("Request.Auth.Credentials: ", user);
+    // console.log("Request.Auth.Credentials: ", user);
     reply(user);
   }
 });
-//THE LOGIN BUTTON SENDS A REQUEST TO THIS ROUTE WHICH IS THE ONLY
+//THE LOGIN BUTTON SENDS A REQUEST TO THIS ROUTE WHICH IS THE ONLY HTML ROUTE THAT HAS THE AUTH ON IT.
 server.route({
   method: 'GET',
   path: '/index.html',

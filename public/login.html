@@ -13,6 +13,8 @@
   <!-- Material Design Bootstrap -->
   <link href="css/mdb.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/generator-base.css">
+  <!-- My Stylesheet -->
+  <link rel="stylesheet" href="css/login.css">
 
 </head>
 
@@ -22,49 +24,52 @@
       <!-- Heading -->
       <div class="row d-flex justify-content-center ">
         <div class="col-6">
-            <h2 class="mb-5 text-center font-weight-bold">FTTH</h2> 
-          <a href="index.html" id='loginbtn'><button class="btn btn-info my-4 btn-block">Log In</button></a>
+          <h2 class="mb-5 text-center font-weight-bold">FTTH</h2>
+          <a href="index.html" id='loginbtn'>
+            <button class="btn btn-info my-4 btn-block">Log In</button>
+          </a>
           <hr>
           <br>
 
           <!-- Default form register -->
-          <form class="text-center border border-light p-5" method="POST" action="/insert_user">
+          <form class="text-center border border-light p-5" id="userform" method="POST" action="/insert_user">
 
             <p class="h4 mb-4">Create Account</p>
 
             <div class="form-row mb-4">
               <div class="col">
                 <!-- First name -->
-                <input type="text" id="newusername" name="newusername" class="form-control" placeholder="Username">
+                <input type="text" id="newusername" name="newusername" class="form-control " placeholder="Username" />
+                <span class="signup_error" id="newusernameerror"></span>
               </div>
               <div class="col">
                 <!-- Full Name -->
-                <input type="text" id="newuserfullname" name="newuserfullname" class="form-control" placeholder="Full Name">
+                <input type="text" id="newuserfullname" name="newuserfullname" class="form-control " placeholder="Full Name" />
+                <span class="signup_error" id="newuserfullnameerror"></span>
               </div>
             </div>
-            
+
             <label>Select Role:</label>
-            <select class="browser-default mb-4" id="newuserrole" name="newuserrole">
+            <select class="browser-default mb-4" id="newuserrole" name="newuserrole " required>
               <option value="" disabled selected>Choose your option</option>
               <option value="admin">Admin</option>
               <option value="User">User</option>
             </select>
+            <span class="signup_error" id="newuserroleerror"></span>
 
             <!-- Password -->
-            <input type="password" id="newuserpassword" name="newuserpassword" class="form-control" placeholder="Password">
-            <small id="firstRegisterFormPasswordHelpBlock" class="form-text text-muted mb-4">
-              At least 8 characters and 1 digit
+            <input type="password" id="newuserpassword" name="newuserpassword" class="form-control " placeholder="Password" />
+            <span class="signup_error" id="newuserpassworderror"></span>
+            <small id="firstRegisterFormPasswordHelpBlock" class="form-text text-muted mb-3">
+              At least 5 characters.
             </small>
             <!-- Password -->
-            <input type="password" id="newusersecondpassword" class="form-control" placeholder="Confirm Password">
-
-            <small id="secondRegisterFormPasswordHelpBlock" class="form-text text-muted mb-4">
-              At least 8 characters and 1 digit
-            </small>
+            <input type="password" id="newusersecondpassword" class="form-control " placeholder="Confirm Password" />
+            <span class="signup_error" id="newusersecondpassworderror"></span>
 
 
             <!-- Sign up button -->
-            <button class="btn btn-info my-4 btn-block" type="submit">Create Account</button>
+            <button class="btn btn-info my-4 btn-block" id="submitnewuser" type="button">Create Account</button>
           </form>
           <!-- Default form register -->
 
@@ -74,7 +79,8 @@
     </div>
   </main>
   <!-- SCRIPTS -->
-
+  <!-- Axios-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
   <!-- JQuery -->
   <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
   <!-- Bootstrap tooltips -->
@@ -84,6 +90,7 @@
   <script type="text/javascript" src="js/bootstrap.min.js"></script>
   <!-- MDB core JavaScript -->
   <script type="text/javascript" src="js/mdb.min.js"></script>
+  <script type="text/javascript" src="js/users.js"></script>
   <!-- Initializations -->
   <script type="text/javascript">
     // Animations initialization
