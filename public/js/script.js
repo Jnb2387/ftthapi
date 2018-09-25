@@ -9,27 +9,27 @@ $(document).ready(function () {
     var homesresponsedata;
     var pni_or_netwin_name;
     var footagesresponsedata;
-   //USER STUFF
-   var username=$(".username");
-   var user_role=$(".user_role");
-   async function getUser(){
-       try{
-           const response= await axios.post('http://localhost:8011/getuser')
-           userdata=response.data
-           console.log(userdata)
-           username.html(userdata.name)
-           user_role.html(userdata.role)
-       }
-       catch(err){
-           console.log(err)
-       }
-   }
-   getUser();
-   $("#log_out").on("click", function () {
-       alert("You Have Been Logged Out")
-       axios.get("http://localhost:8011/logout")
-   });
-   // END USER STUFF
+    //USER STUFF
+    var username = $(".username");
+    var user_role = $(".user_role");
+    async function getUser() {
+        try {
+            const response = await axios.post('http://localhost:8011/getuser')
+            userdata = response.data
+            console.log(userdata)
+            username.html(userdata.name)
+            user_role.html(userdata.role)
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+    getUser();
+    $("#log_out").on("click", function () {
+        alert("You Have Been Logged Out")
+        axios.get("http://localhost:8011/logout")
+    });
+    // END USER STUFF
 
     async function getData(cell) {
         try {
@@ -382,7 +382,7 @@ $(document).ready(function () {
                     [2, "desc"]
                 ]
             });
-            
+
             var editor = await new $.fn.dataTable.Editor({
                 ajax: {
                     dataType: 'json',
@@ -472,7 +472,7 @@ $(document).ready(function () {
                     name: "resource",
                     label: "Resource",
                     def: username.text()//grabbed from variable at the top
-                    
+
                 }, {
                     name: "date_complete",
                     label: "Date Complete",
@@ -531,13 +531,13 @@ $(document).ready(function () {
             }
             ]);
 
-            if(user_role.text() =='admin'){
+            if (user_role.text() == 'admin') {
                 console.log('Added Editing Buttons')
                 functiondatatable.buttons().container()
                     .appendTo($('.col-md-6:eq(0)', functiondatatable.table().container()));
                 // functiondatatable.buttons().disable()
             }
-            
+
         } catch (error) {
             console.log(error)
         }
@@ -618,14 +618,21 @@ $(document).ready(function () {
             e.stopPropagation(); // if there is no responsedata then dont open the modal
             return
         }
+        pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch AND PUT IT IN THE HEADER OF THE MODAL
         $("#editcellheader").html(pni_or_netwin_name)
         console.log('Editcellbtn data: ', responsedata)
+        Object.keys(responsedata).forEach(function (key) { //REPLACE ANY NULL VALUES WITH JUST A DASH
+            if (responsedata[key] == '-') {
+                responsedata[key] = null;
+            }
+        })
+        //PREFILL THE CELL DATA
         $("#netwin_cell_jso_name_edit").val(responsedata.netwin_cell_jso_name);
         $("#cell_state_edit").val(responsedata.cell_state);
         $("#cell_hub_edit").val(responsedata.cell_hub);
         $("#cell_ring_edit").val(responsedata.cell_ring)
         $("#rolt_id_edit").val(responsedata.rolt_id)
-        $("#cellid_edit").val(responsedata.cell)
+        $("#cell_edit").val(responsedata.cell)
         $("#netwin_project_name_edit").val(responsedata.netwin_project_name)
         $("#feeder_edit").val(responsedata.feeder)
         $("#permitting_rolt_number_edit").val(responsedata.permitting_rolt_number)
@@ -637,14 +644,78 @@ $(document).ready(function () {
         $("#nodes_within_cell_edit").val(responsedata.nodes_within_cell)
         $("#cell_rfs_date_edit").val(responsedata.cell_rfs_date)
         $("#homes_serviceable_edit").val(responsedata.homes_serviceable)
-        $("#remaining_homes_unserviceable_edit").val(responsedata.remaining_homes_unserviceable);
+        $("#remaining_homes_unserviceable_edit").val(responsedata.remaining_homes_unserviceable)
+        $("#jso_street_location_edit").val(responsedata.jso_street_location)
+        $("#jso_pole_number_edit").val(responsedata.jso_pole_number)
+        $("#jso_latitude_edit").val(responsedata.jso_latitude)
+        $("#jso_longitude_edit").val(responsedata.jso_longitude)
+        $("#cell_build_year_edit").val(responsedata.cell_build_year)
+        $("#market_year_edit").val(responsedata.market_year)
+        $("#jso_type_edit").val(responsedata.jso_type)
+        $("#cell_dc_edit").val(responsedata.cell_dc)
+        $("#dc_to_location_edit").val(responsedata.dc_to_location)
+        $("#dc_from_location_edit").val(responsedata.dc_from_location)
+        $("#cell_local_design_priority_edit").val(responsedata.cell_local_design_priority)
+        $("#cell_revision_comment_edit").val(responsedata.cell_revision_comment)
+        $("#cell_homes_pocketed_edit").val(responsedata.cell_homes_pocketed)
+        $("#cell_status_edit").val(responsedata.cell_status)
+        $("#number_of_pdos_edit").val(responsedata.number_of_pdos)
+        //PREFILL FOOTAGES DATA
+
+        //PREFILL HOMES PASSED DATA
+
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
+        // $("#region_edit").val(responsedata.region)
     });
     //SEND UPDATED CELL DATA
     $("#cellupdatebtn").on('click', function () {
         async function updateCellTable() {
             try {
+               
                 var netwin_jso_edited = $("#netwin_cell_jso_name_edit").val()
-                const response = await axios.post("http://localhost:8011/update/v1/ftth.cells?netwin_cell_jso_name=" + netwin_jso_edited + "&cell_id=" + cell_id + "");
+                const response = await axios.post("http://localhost:8011/update_cell/v1/ftth.cells?cell_id=" + cell_id + "", {
+                    netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
+                    cell_state:$("#cell_state_edit").val(),
+                    cell_hub:$("#cell_hub_edit").val(),
+                    cell_ring:$("#cell_ring_edit").val(),
+                    rolt_id:$("#rolt_id_edit").val(),
+                    cell:$("#cell_edit").val(),
+                    netwin_project_name:$("#netwin_project_name_edit").val(),
+                    feeder:$("#feeder_edit").val(),
+                    permitting_rolt_number:$("#permitting_rolt_number_edit").val(),
+                    pni_cell_name:$("#pni_cell_name_edit").val(),
+                    franchise:$("#franchise_edit").val(),
+                    town:$("#town_edit").val(),
+                    region:$("#region_edit").val(),
+                    map_number:$("#map_number_edit").val(),
+                    nodes_within_cell:$("#nodes_within_cell_edit").val(),
+                    cell_rfs_date:$("#cell_rfs_date_edit").val(),
+                    homes_serviceable:$("#homes_serviceable_edit").val(),
+                    remaining_homes_unserviceable:$("#remaining_homes_unserviceable_edit").val(),
+                    jso_street_location:$("#jso_street_location_edit").val(),
+                    jso_pole_number:$("#jso_pole_number_edit").val(),
+                    jso_latitude:$("#jso_latitude_edit").val(),
+                    jso_longitude:$("#jso_longitude_edit").val(),
+                    cell_build_year:$("#cell_build_year_edit").val(),
+                    market_year:$("#market_year_edit").val(),
+                    jso_type:$("#jso_type_edit").val(),
+                    cell_dc:$("#cell_dc_edit").val(),
+                    dc_to_location:$("#dc_to_location_edit").val(),
+                    dc_from_location:$("#dc_from_location_edit").val(),
+                    cell_local_design_priority:$("#cell_local_design_priority_edit").val(),
+                    cell_revision_comment:$("#cell_revision_comment_edit").val(),
+                    cell_homes_pocketed:$("#cell_homes_pocketed_edit").val(),
+                    cell_status:$("#cell_status_edit").val(),
+                    number_of_pdos:$("#number_of_pdos_edit").val(),
+                });
                 alert(response.data)
                 getData()
             } catch (error) {
@@ -835,8 +906,8 @@ $(document).ready(function () {
                     name: "Tested"
                 },
                 {
-                    data:"permitting_rolt_number",
-                    name:"Permitting Rolt Number"
+                    data: "permitting_rolt_number",
+                    name: "Permitting Rolt Number"
                 }
                 ],
                 // order: [
@@ -998,7 +1069,7 @@ $(document).ready(function () {
             }, {
                 name: "tested",
                 label: "Tested"
-            },{
+            }, {
                 name: "permitting_rolt_number",
                 label: "Permitting Rolt Number"
             }]

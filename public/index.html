@@ -61,14 +61,14 @@
                                 <span class="sr-only">(current)</span>
                             </a>
                         </li>
-                        
+
                     </ul>
                     <div class='nav-item m-0 p-0'>
                         <span class='username nav-link waves-effect m-0 p-0'></span>
                         <span class='user_role nav-link waves-effect m-0 p-0'></span>
                     </div>
                     <div class="nav-item ">
-                        <a class="nav-link waves-effect " id="log_out" href="login.html" >Log Out</a>
+                        <a class="nav-link waves-effect " id="log_out" href="login.html">Log Out</a>
                     </div>
                 </div>
 
@@ -124,7 +124,7 @@
                     <!--Card content-->
                     <div class="card-body row py-0 ">
                         <div class="col-lg-8 md-form">
-                            <!-- Grid column -->
+
 
                             <!-- Material input -->
                             <!-- <div class="md-form"> -->
@@ -136,7 +136,7 @@
                             </button>
                         </div>
                         <!-- </div> -->
-                        <!-- Grid column -->
+
 
                         <!-- Grid row -->
 
@@ -458,7 +458,7 @@
 
 
             <!-- No Cells Found Modal -->
-            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
                 data-backdrop='false'>
                 <div class="modal-dialog modal-notify modal-info modal-side modal-top-right mt-lg-5 d-block" role="document">
                     <!--Content-->
@@ -466,8 +466,8 @@
                         <!--Header-->
                         <div class="modal-header">
                             <p class="heading lead">No Cells Found</p>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true" class="white-text">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span  class="white-text">&times;</span>
                             </button>
                         </div>
                     </div>
@@ -503,66 +503,463 @@
                     </div>
                 </div>
             </div>
-            <!-- /Function Table -->
+            <!-- /Cell Function Table -->
 
-            <!-- Modal: celleditmodal -->
-            <div class="modal fade right" id="cellmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-side modal-top-right" role="document">
+            <!-- Modal: CELL EDIT MODAL -->
+            <div class="modal fade right" id="cellmodal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg  modal-right" role="document">
                     <div class="modal-content">
                         <!--Header-->
-                        <div class="modal-header">
+                        <div class="modal-header py-1">
                             <h4 class="modal-title" id="myModalLabel">Edit
                                 <strong>
                                     <span id="editcellheader"></span>
                                 </strong> Cell</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >×</span>
                             </button>
                         </div>
                         <!--Body-->
-                        <div class="modal-body">
+                        <div class="modal-body py-1">
                             <!-- Default auto-sizing form -->
-                            <form>
-                                <!-- Grid row -->
-                                <div class="form-row align-items-center">
-                                    <!-- Grid column -->
-                                    <div class="col-5">
-                                        <p>Netwin JSO</p>
-                                    </div>
-                                    <!-- Grid column -->
-                                    <!-- Grid column -->
-                                    <div class="col-7">
-                                        <!-- Default input -->
-                                        <div class="input-group mb-2">
-                                            <input type="text" class="form-control py-0" id="netwin_cell_jso_name_edit">
+                            <form method='post' action='http://localhost:8011/update_cell/v1/ftth.cells'>
+                                <!-- WHOLE ROW MODAL -->
+                                <div class="form-row ">
+                                    <!-- FIRST COLUMN -->
+                                    <div class="col-3">
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>Netwin JSO</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="netwin_cell_jso_name_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell State</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_state_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Hub</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_hub_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Ring</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_ring_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Rolt ID</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="rolt_id_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Netwin Project Name</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="netwin_project_name_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Feeder</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="feeder_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Permitting Rolt Number</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="permitting_rolt_number_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>PNI Cell Name</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="pni_cell_name_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Map Number</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="map_number_edit">
+                                                </div>
+                                            </div>
+                                            <!-- /Grid row -->
                                         </div>
                                     </div>
-                                    <!-- Grid column -->
+                                    <!-- END FIRST COLUMN -->
+                                    <!-- SECOND COLUMN -->
+                                    <div class="col-3">
+                                        <div class="form-row">
+                                            <div class="col-5">
+                                                <p>Nodes Within Cell</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="nodes_within_cell_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell RFS Date</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_rfs_date_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Homes Serviceable</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="homes_serviceable_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Remaining Homes Unserviceable</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="remaining_homes_unserviceable_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>JSO Street Location</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="jso_street_location_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>JSO Pole Number</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="jso_pole_number_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>JSO Latitude</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="jso_latitude_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>JSO Longitude</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="jso_longitude_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Build Year</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_build_year_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Market Year</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="market_year_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>JSO Type</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="jso_type_edit">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- /Grid row -->
+                                    </div>
+                                    <!-- END SECOND COLUMN -->
+                                    <!-- THIRD COLUMN -->
+                                    <div class="col-3 ">
+                                        <div class="form-row">
+                                            <!-- Grid row -->
+
+                                            <div class="col-5">
+                                                <p>Cell DC</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_dc_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>DC to Location</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="dc_to_location_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>DC From Location</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="dc_from_location_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Local Design Priority</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_local_design_priority_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Revision Comment</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_revision_comment_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Homes Pocketed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_homes_pocketed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cell Status</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cell_status_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Number Of PDO's</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="number_of_pdos_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Franchise</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="franchise_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Town</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="town_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Region</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="region_edit">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- END THIRD COLUMN -->
+                                    <!-- FOURTH COLUMN -->
+                                    <div class="col-3">
+                                        <div class="form-row">
+                                            <!-- START FOOTAGE TABLE -->
+                                            <div class="col-5">
+                                                <p>Building Attachment</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="building_attachment_footage_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Cable Bearing Strand Footage</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="cable_bearing_strand_footage_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>MDU Footage</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="mdu_footage_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Slack Footage</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="slack_footage_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>UG Footage</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="ug_footage_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Total Footage</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="total_footage_edit">
+                                                </div>
+                                            </div>
+                                            <!-- END FOOTAGES -->
+                                            <!-- START HOMES PASSED -->
+                                            <div class="col-5">
+                                                <p>Aerial Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="aerial_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>BA Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="ba_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Commerical Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="commerical_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- END FOURTH COLUMN -->
+
                                 </div>
-                                <!-- /Grid row -->
+                                <!-- END WHOLE ROW -->
                             </form>
                             <!-- Default auto-sizing form -->
                         </div>
                         <!--Footer-->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
-                            <button id="cellupdatebtn" class="btn btn-primary">Update</button>
+                            <button id="cellupdatebtn" type="button" class="btn btn-primary">Update</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- /Modal: celleditmodal -->
+            <!-- /Modal: CELL EDIT MODAL -->
 
 
             <!-- Add Cell modal -->
-            <div class="modal fade right" id="addcellmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade right" id="addcellmodal" tabindex="-1" role="dialog"  >
                 <div class="modal-dialog modal-side modal-top-right" role="document">
                     <div class="modal-content">
                         <!--Header-->
                         <div class="modal-header">
                             <h4 class="modal-title" id="myModalLabel">Add Cell</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >×</span>
                             </button>
                         </div>
                         <!--Body-->
@@ -571,39 +968,39 @@
                             <form>
                                 <!-- Grid row -->
                                 <div class="form-row align-items-center">
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Netwin JSO</p>
                                     </div>
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="netwin_cell_jso_name_add">
                                         </div>
                                     </div>
 
-                                    <!-- Grid column -->
-                                    <!-- Grid column -->
+
+
                                     <div class="col-5">
                                         <p>PNI Cell Name</p>
                                     </div>
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="pni_cell_name_add">
                                         </div>
                                     </div>
 
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>State</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <select class="browser-default custom-select form-control" id="cell_state_add">
                                                 <option value="" disabled>State</option>
@@ -614,131 +1011,131 @@
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Hub</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="cell_hub_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Ring</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="cell_ring_add">
                                         </div>
                                     </div>
-                                    <!-- Grid column -->
-                                    <!-- Grid column -->
+
+
                                     <div class="col-5">
                                         <p>Rolt</p>
                                     </div>
                                     <!--/ Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="rolt_id_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Netwin Prj. Name</p>
                                     </div>
                                     <!--/ Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="netwin_project_name_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Feeder</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="feeder_add">
                                         </div>
                                     </div>
                                     <!--/ Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Permitting Rolt</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="permitting_rolt_number_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Town</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="town_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Region</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="region_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Map Number</p>
                                     </div>
                                     <!--/ Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control" id="map_number_add">
                                         </div>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-5">
                                         <p>Nodes In Cell</p>
                                     </div>
                                     <!-- /Grid column -->
-                                    <!-- Grid column -->
+
                                     <div class="col-7">
-                                        <!-- Default input -->
+
                                         <div class="input-group mb-2">
                                             <input type="text" class="form-control " id="nodes_within_cell_add">
                                         </div>
@@ -759,7 +1156,7 @@
             </div>
             <!-- /Add Cell Modal -->
             <!-- Add Cell Success Modal -->
-            <div class="modal fade right" id="addcellSuccess" tabindex="-1" role="dialog" aria-labelledby="addcellSuccessLabel" aria-hidden="true"
+            <div class="modal fade right" id="addcellSuccess" tabindex="-1" role="dialog" aria-labelledby="addcellSuccessLabel" 
                 data-backdrop='false'>
                 <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
                     <!--Content-->
@@ -768,8 +1165,8 @@
                         <div class="modal-header">
                             <p class="heading lead">Success</p>
 
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true" class="white-text">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span  class="white-text">&times;</span>
                             </button>
                         </div>
 
@@ -792,13 +1189,13 @@
             <!-- /Add Cell Success Modal -->
 
             <!-- Cell Statistics Modal -->
-            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title w-100 text-center" id="myModalLabel">Cell Statistics</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -848,13 +1245,13 @@
 
 
             <!--  Cell Extract Modal -->
-            <div class="modal fade right" id="cellExtractModal" tabindex="-1" role="dialog" aria-labelledby="cellExtractModalLabel" aria-hidden="true">
+            <div class="modal fade right" id="cellExtractModal" tabindex="-1" role="dialog" aria-labelledby="cellExtractModalLabel" >
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="cellExtractModalLabel">Cell Extract</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -872,13 +1269,13 @@
 
             <!--  Construction Picker Modal -->
             <div class="modal fade right" id="constructionpickerModal" tabindex="-1" role="dialog" aria-labelledby="constructionpickerModalLabel"
-                aria-hidden="true">
+                >
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="constructionpickerModalLabel">Construction Tracker</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >&times;</span>
                             </button>
                         </div>
                         <div class="modal-body ">
@@ -914,14 +1311,14 @@
 
             <!-- Construction Tracker Modal -->
             <div class="modal fade right" id="construction_tracker_modal" tabindex="-1" role="dialog" aria-labelledby="construction_tracker_modalLabel"
-                aria-hidden="true">
+                >
                 <div class="modal-dialog modal-frame" role="document">
                     <div class="modal-content">
                         <div class="modal-header m-1 p-1">
                             <h4 class="modal-title w-100 text-center" id="construction_tracker_modalLabel">Cell Construction Tracker</h4>
                             <!-- <h6 class="modal-title" id="rolt_for_construction_tracker_display"></h6> -->
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >&times;</span>
                             </button>
 
                         </div>
@@ -972,13 +1369,13 @@
             <!-- /Construction Tracker Modal -->
 
             <!-- Map2 Modal -->
-            <div class="modal " id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal " id="basicExampleModal" tabindex="-1" role="dialog" >
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content m-0 p-0" style="height:auto;width:1050px;">
                         <div class="modal-header d-block m-lg-0 p-lg-0">
                             <h5 class="modal-title text-center" id="exampleModalLabel">Map Modal</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" >
+                                <span >&times;</span>
                             </button>
                             <button type="button" id="cellsinareabtn2" class="btn btn-primary waves-effect mr-lg-4 p-2 disabled float-right">Find Cells In View</button>
                         </div>

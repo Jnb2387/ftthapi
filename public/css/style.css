@@ -74,6 +74,10 @@
   width:100%;
   max-width: 1500px;
 }
+#cellmodal .modal-dialog {
+  width:100%;
+  max-width: 1700px;
+}
 
 .locationeditbtn[disabled] {
   /* don't let button block mouse events from reaching wrapper */
