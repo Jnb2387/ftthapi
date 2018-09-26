@@ -118,7 +118,7 @@ $(document).ready(function () {
                 $("#aerial_homes").html(homesresponsedata.aerial);
                 $("#ug_homes").html(homesresponsedata.ug);
                 $("#comm_aerial_homes").html(homesresponsedata.commercial);
-                $("#comm_ug_homes").html(homesresponsedata.commerical_ug);
+                $("#comm_ug_homes").html(homesresponsedata.commercial_ug);
                 $("#ba_homes").html(homesresponsedata.ba);
                 $("#mdu_homes").html(homesresponsedata.mdu);
                 $("#planned_homes").html(homesresponsedata.planned);
@@ -139,7 +139,7 @@ $(document).ready(function () {
                 $("#cbs_footages").html(footagesresponsedata.cable_bearing_strand);
                 $("#ba_footages").html(footagesresponsedata.building_attachment);
                 $("#mdu_footages").html(footagesresponsedata.mdu);
-                $("#commerical_ug_footages").html(footagesresponsedata.commerical_ug);
+                $("#commercial_ug_footages").html(footagesresponsedata.commercial_ug);
                 $("#slack_footages").html(footagesresponsedata.slack);
                 $("#ug_footages").html(footagesresponsedata.ug);
                 $("#total_footages").html(footagesresponsedata.total);
@@ -335,11 +335,6 @@ $(document).ready(function () {
         }
     }
     $("#cellsinareabtn").on("click", function () {
-
-        findcellsinarea();
-    });
-    $("#cellsinareabtn2").on("click", function () {
-
         findcellsinarea();
     });
     //FUNCTION TABLE
@@ -546,7 +541,7 @@ $(document).ready(function () {
     //Sheath TABLE
     async function getsheathtable(cell) {
         try {
-            const response = await axios.get("http://localhost:8011/query/v1/ftth.sheath?columns=*&filter=netwin_cell_jso_name%3D'" + cell + "'&limit=100");
+            const response = await axios.get("http://localhost:8011/query/v1/ftth.sheath?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=100");
             console.log('Sheath table data: ', response.data)
             dataArr = response.data
             datatable = $("#sheathtable").DataTable({
@@ -574,7 +569,7 @@ $(document).ready(function () {
     }
     async function getpdotable(cell) {
         try {
-            const response = await axios.get("http://localhost:8011/query/v1/ftth.pdo?columns=*&filter=netwin_cell_jso_name%3D'" + cell + "'&limit=100");
+            const response = await axios.get("http://localhost:8011/query/v1/ftth.pdo?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=100");
             console.log('PDO Table data: ', response.data)
             dataArr = response.data
             datatable = $("#pdotable").DataTable({
@@ -601,15 +596,15 @@ $(document).ready(function () {
         }
     }
     $("#cellstatisticsbtn").on('click', function (e) {
+        pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch
         if (!responsedata) {
             alert("Please Search for A Cell")
             // e.stopPropagation(); // if there is no responsedata then dont open the modal
             e.stopPropagation();
             return
         }
-        console.log('netwin cell jso name= ' + responsedata.netwin_cell_jso_name)
-        getsheathtable(responsedata.netwin_cell_jso_name);
-        getpdotable(responsedata.netwin_cell_jso_name)
+        getsheathtable(pni_or_netwin_name);
+        getpdotable(pni_or_netwin_name)
     })
     //EDIT A CELL FUNCTIONS
     $("#editcellbtn").on('click', function (e) {
@@ -621,11 +616,12 @@ $(document).ready(function () {
         pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch AND PUT IT IN THE HEADER OF THE MODAL
         $("#editcellheader").html(pni_or_netwin_name)
         console.log('Editcellbtn data: ', responsedata)
-        Object.keys(responsedata).forEach(function (key) { //REPLACE ANY NULL VALUES WITH JUST A DASH
+        Object.keys(responsedata).forEach(function (key) { //REMOVE THE '-' THAT WAS ADDED ABOVE SO THAT IT WONT GET SEND TO THE DATABASE
             if (responsedata[key] == '-') {
                 responsedata[key] = null;
             }
         })
+        $("#cellmodalform")[0].reset()//CLEAR ALL THE INPUTS SO THAT IF SOMETHING ISNT FILLED IN THE DATABASE IT WONT CLEAR THE PREVIOUS INPUT
         //PREFILL THE CELL DATA
         $("#netwin_cell_jso_name_edit").val(responsedata.netwin_cell_jso_name);
         $("#cell_state_edit").val(responsedata.cell_state);
@@ -661,107 +657,186 @@ $(document).ready(function () {
         $("#cell_status_edit").val(responsedata.cell_status)
         $("#number_of_pdos_edit").val(responsedata.number_of_pdos)
         //PREFILL FOOTAGES DATA
-
-        //PREFILL HOMES PASSED DATA
-
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-        // $("#region_edit").val(responsedata.region)
-    });
-    //SEND UPDATED CELL DATA
-    $("#cellupdatebtn").on('click', function () {
-        async function updateCellTable() {
-            try {
-               
-                var netwin_jso_edited = $("#netwin_cell_jso_name_edit").val()
-                const response = await axios.post("http://localhost:8011/update_cell/v1/ftth.cells?cell_id=" + cell_id + "", {
-                    netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
-                    cell_state:$("#cell_state_edit").val(),
-                    cell_hub:$("#cell_hub_edit").val(),
-                    cell_ring:$("#cell_ring_edit").val(),
-                    rolt_id:$("#rolt_id_edit").val(),
-                    cell:$("#cell_edit").val(),
-                    netwin_project_name:$("#netwin_project_name_edit").val(),
-                    feeder:$("#feeder_edit").val(),
-                    permitting_rolt_number:$("#permitting_rolt_number_edit").val(),
-                    pni_cell_name:$("#pni_cell_name_edit").val(),
-                    franchise:$("#franchise_edit").val(),
-                    town:$("#town_edit").val(),
-                    region:$("#region_edit").val(),
-                    map_number:$("#map_number_edit").val(),
-                    nodes_within_cell:$("#nodes_within_cell_edit").val(),
-                    cell_rfs_date:$("#cell_rfs_date_edit").val(),
-                    homes_serviceable:$("#homes_serviceable_edit").val(),
-                    remaining_homes_unserviceable:$("#remaining_homes_unserviceable_edit").val(),
-                    jso_street_location:$("#jso_street_location_edit").val(),
-                    jso_pole_number:$("#jso_pole_number_edit").val(),
-                    jso_latitude:$("#jso_latitude_edit").val(),
-                    jso_longitude:$("#jso_longitude_edit").val(),
-                    cell_build_year:$("#cell_build_year_edit").val(),
-                    market_year:$("#market_year_edit").val(),
-                    jso_type:$("#jso_type_edit").val(),
-                    cell_dc:$("#cell_dc_edit").val(),
-                    dc_to_location:$("#dc_to_location_edit").val(),
-                    dc_from_location:$("#dc_from_location_edit").val(),
-                    cell_local_design_priority:$("#cell_local_design_priority_edit").val(),
-                    cell_revision_comment:$("#cell_revision_comment_edit").val(),
-                    cell_homes_pocketed:$("#cell_homes_pocketed_edit").val(),
-                    cell_status:$("#cell_status_edit").val(),
-                    number_of_pdos:$("#number_of_pdos_edit").val(),
-                });
-                alert(response.data)
-                getData()
-            } catch (error) {
-                console.log(error)
-            }
+        if (footagesresponsedata) {
+            $("#building_attachment_footage_edit").val(footagesresponsedata.building_attachment)
+            $("#cable_bearing_strand_footage_edit").val(footagesresponsedata.cable_bearing_strand)
+            $("#mdu_footage_edit").val(footagesresponsedata.mdu)
+            $("#slack_footage_edit").val(footagesresponsedata.slack)
+            $("#ug_footage_edit").val(footagesresponsedata.ug)
+            $("#total_footage_edit").val(footagesresponsedata.total)
         }
-        updateCellTable()
+        //PREFILL HOMES PASSED DATA
+        if (homesresponsedata) {
+            $("#aerial_homes_passed_edit").val(homesresponsedata.aerial)
+            $("#ba_homes_passed_edit").val(homesresponsedata.ba)
+            $("#commercial_homes_passed_edit").val(homesresponsedata.commercial)
+            $("#commercial_ug_homes_passed_edit").val(homesresponsedata.commercial_ug)
+            $("#mdu_homes_passed_edit").val(homesresponsedata.mdu)
+            $("#planned_homes_passed_edit").val(homesresponsedata.planned)
+            $("#UG_homes_passed_edit").val(homesresponsedata.ug)
+            $("#total_homes_passed_edit").val(homesresponsedata.total)
+        }
+    });
+    async function updateCellTable() {
+        try {
+            // var netwin_jso_edited = $("#netwin_cell_jso_name_edit").val()
+            const response = await axios.post("http://localhost:8011/update_cell/v1/ftth.cells?cell_id=" + cell_id + "", {
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
+                cell_state: $("#cell_state_edit").val(),
+                cell_hub: $("#cell_hub_edit").val(),
+                cell_ring: $("#cell_ring_edit").val(),
+                rolt_id: $("#rolt_id_edit").val(),
+                cell: $("#cell_edit").val(),
+                netwin_project_name: $("#netwin_project_name_edit").val(),
+                feeder: $("#feeder_edit").val(),
+                permitting_rolt_number: $("#permitting_rolt_number_edit").val(),
+                pni_cell_name: $("#pni_cell_name_edit").val(),
+                franchise: $("#franchise_edit").val(),
+                town: $("#town_edit").val(),
+                region: $("#region_edit").val(),
+                map_number: $("#map_number_edit").val(),
+                nodes_within_cell: $("#nodes_within_cell_edit").val(),
+                cell_rfs_date: $("#cell_rfs_date_edit").val(),
+                homes_serviceable: $("#homes_serviceable_edit").val(),
+                remaining_homes_unserviceable: $("#remaining_homes_unserviceable_edit").val(),
+                jso_street_location: $("#jso_street_location_edit").val(),
+                jso_pole_number: $("#jso_pole_number_edit").val(),
+                jso_latitude: $("#jso_latitude_edit").val(),
+                jso_longitude: $("#jso_longitude_edit").val(),
+                cell_build_year: $("#cell_build_year_edit").val(),
+                market_year: $("#market_year_edit").val(),
+                jso_type: $("#jso_type_edit").val(),
+                cell_dc: $("#cell_dc_edit").val(),
+                dc_to_location: $("#dc_to_location_edit").val(),
+                dc_from_location: $("#dc_from_location_edit").val(),
+                cell_local_design_priority: $("#cell_local_design_priority_edit").val(),
+                cell_revision_comment: $("#cell_revision_comment_edit").val(),
+                cell_homes_pocketed: $("#cell_homes_pocketed_edit").val(),
+                cell_status: $("#cell_status_edit").val(),
+                number_of_pdos: $("#number_of_pdos_edit").val(),
+            });
+            alert(response.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //UPDATE FOOTAGES TABLE
+    async function updateFootagesTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/update_footages/v1/ftth.footages?id=" + footagesresponsedata.id + "", {
+                building_attachment: $("#building_attachment_footage_edit").val(),
+                cable_bearing_strand: $("#cable_bearing_strand_footage_edit").val(),
+                mdu: $("#mdu_footage_edit").val(),
+                slack: $("#slack_footage_edit").val(),
+                ug: $("#ug_footage_edit").val(),
+                total: $("#total_footage_edit").val()
+            });
+            console.log(response.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //INSERT FOOTAGES TABLE
+    async function insertFootagesTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/insert_footages/v1/ftth.footages", {
+                pni_cell_name: $("#pni_cell_name_edit").val(),
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
+                building_attachment: $("#building_attachment_footage_edit").val(),
+                cable_bearing_strand: $("#cable_bearing_strand_footage_edit").val(),
+                mdu: $("#mdu_footage_edit").val(),
+                slack: $("#slack_footage_edit").val(),
+                ug: $("#ug_footage_edit").val(),
+                total: $("#total_footage_edit").val()
+            });
+            console.log(response.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //UPDATE HOMES PASSED TABLE
+    async function updateHomesPassedTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/update_homes_passed/v1/ftth.homes_passed?id=" + homesresponsedata.id + "", {
+                aerial: $("#aerial_homes_passed_edit").val(),
+                ba: $("#ba_homes_passed_edit").val(),
+                commercial: $("#commercial_homes_passed_edit").val(),
+                commercial_ug: $("#commercial_ug_homes_passed_edit").val(),
+                mdu: $("#mdu_homes_passed_edit").val(),
+                planned: $("#planned_homes_passed_edit").val(),
+                ug: $("#UG_homes_passed_edit").val(),
+                total: $("#total_homes_passed_edit").val()
+            });
+            console.log(response.data)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //INSERT HOMES PASSED TABLE
+    async function insertHomesPassedTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/insert_homes_passed/v1/ftth.homes_passed", {
+                pni_cell_name: $("#pni_cell_name_edit").val(),
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
+                aerial: $("#aerial_homes_passed_edit").val(),
+                ba: $("#ba_homes_passed_edit").val(),
+                commercial: $("#commercial_homes_passed_edit").val(),
+                commercial_ug: $("#commercial_ug_homes_passed_edit").val(),
+                mdu: $("#mdu_homes_passed_edit").val(),
+                planned: $("#planned_homes_passed_edit").val(),
+                ug: $("#UG_homes_passed_edit").val(),
+                total: $("#total_homes_passed_edit").val()
+            });
+            console.log(response.data)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //NOW SEND ALL UPDATED CELL, FOOTAGES AND HOMES PASSED DATA
+    $("#cellupdatebtn").on('click', async function () {
+        await updateCellTable();
+        if (footagesresponsedata) {//IF THERE ISNT A FIELD IN THE FOOTAGES TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE footagesresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
+            await updateFootagesTable();
+        } else {
+            insertFootagesTable()
+        }
+        if (homesresponsedata) {// SAMETHING AS THE FOOTAGES TABLE
+            await updateHomesPassedTable();
+        } else {
+            await insertHomesPassedTable();
+        }
+        await getData(pni_or_netwin_name);// WHEN THE CELL IS UPDATED RELOAD THE VIEW AGAIN
+        await getHomesPassed(pni_or_netwin_name);
+        await getFootages(pni_or_netwin_name);
+        $("#cellmodal").modal('hide');//HIDE THE MODAL AFTER A SUCCESSFUL UPDATE
     });
     //ADD NEW CELL 
     $("#addcellbtn").on('click', function () {
-        let netwin_cell_jso_name = $("#netwin_cell_jso_name_add").val();
-        let pni_cell_name = $("#pni_cell_name_add").val()
-        let cell_state = $("#cell_state_add").val();
-        let cell_hub = $("#cell_hub_add").val();
-        let cell_ring = $("#cell_ring_add").val()
-        let rolt_id = $("#rolt_id_add").val()
-        let netwin_project_name = $("#netwin_project_name_add").val()
-        let feeder = $("#feeder_add").val()
-        let permitting_rolt_number = $("#permitting_rolt_number_add").val()
-        let town = $("#town_add").val()
-        let region = $("#region_add").val()
-        let map_number = $("#map_number_add").val()
-        let nodes_within_cell = $("#nodes_within_cell_add").val()
         async function addCell() {
             try {
                 const response = await axios.post("http://localhost:8011/insert_cell/v1/ftth.cells", {
-                    netwin_cell_jso_name: netwin_cell_jso_name,
-                    pni_cell_name: pni_cell_name,
-                    cell_state: cell_state,
-                    cell_hub: cell_hub,
-                    cell_ring: cell_ring,
-                    rolt_id: rolt_id,
-                    netwin_project_name: netwin_project_name,
-                    feeder: feeder,
-                    permitting_rolt_number: permitting_rolt_number,
-                    town: town,
-                    region: region,
-                    map_number: map_number,
-                    nodes_within_cell: nodes_within_cell
+                    netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
+                    pni_cell_name: $("#pni_cell_name_add").val(),
+                    cell_state: $("#cell_state_add").val(),
+                    cell_hub: $("#cell_hub_add").val(),
+                    cell_ring: $("#cell_ring_add").val(),
+                    rolt_id: $("#rolt_id_add").val(),
+                    netwin_project_name: $("#netwin_project_name_add").val(),
+                    feeder: $("#feeder_add").val(),
+                    permitting_rolt_number: $("#permitting_rolt_number_add").val(),
+                    town: $("#town_add").val(),
+                    region: $("#region_add").val(),
+                    map_number: $("#map_number_add").val(),
+                    nodes_within_cell: $("#nodes_within_cell_add").val()
                 });
                 if (response.data == "Cell Successfully Inserted.") {
                     $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
                     setTimeout(function () {
-                        $("#addcellSuccess").modal('hide');
+                        $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
                     }, 4000);
-                    $("#addcellmodal").modal('hide');
+                    $("#addcellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
                 } else {
                     alert('Was Not Successful', response.data)
                 }

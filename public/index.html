@@ -340,18 +340,18 @@
 
                     <!-- Row 6 -->
                     <div class="row col-12 card-deck">
-                        <!-- Commerical Aerial Card -->
+                        <!-- commercial Aerial Card -->
                         <div class="card col-lg-4 m-1">
                             <div class="card-body p-0">
-                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Commerical Aerial</p>
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">commercial Aerial</p>
                                 <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="comm_aerial_homes"></p>
                             </div>
                         </div>
                         <!-- /Card -->
-                        <!-- Commerical UG Card -->
+                        <!-- commercial UG Card -->
                         <div class="card col-lg-4 m-1">
                             <div class="card-body p-0">
-                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">Commerical UG</p>
+                                <p class="font-weight-bold text-center p-lg-1 m-lg-0">commercial UG</p>
                                 <p class="text-center homes_passed_null p-lg-1 m-lg-0" id="comm_ug_homes"></p>
                             </div>
                         </div>
@@ -375,7 +375,7 @@
                     </div>
                     <!-- Row 7 -->
                     <div class="row col-12 card-deck">
-                        <!-- Commerical Aerial Card -->
+                        <!-- commercial Aerial Card -->
                         <div class="card col-lg-4 m-1">
                             <div class="card-body p-0">
                                 <p class="font-weight-bold text-center p-lg-1 m-lg-0">CBS</p>
@@ -383,7 +383,7 @@
                             </div>
                         </div>
                         <!-- /Card -->
-                        <!-- Commerical UG Card -->
+                        <!-- commercial UG Card -->
                         <div class="card col-lg-4 m-1">
                             <div class="card-body p-0">
                                 <p class="font-weight-bold text-center p-lg-1 m-lg-0">BA</p>
@@ -458,16 +458,15 @@
 
 
             <!-- No Cells Found Modal -->
-            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
-                data-backdrop='false'>
+            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='false'>
                 <div class="modal-dialog modal-notify modal-info modal-side modal-top-right mt-lg-5 d-block" role="document">
                     <!--Content-->
                     <div class="modal-content">
                         <!--Header-->
                         <div class="modal-header">
                             <p class="heading lead">No Cells Found</p>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span  class="white-text">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span class="white-text">&times;</span>
                             </button>
                         </div>
                     </div>
@@ -515,14 +514,14 @@
                                 <strong>
                                     <span id="editcellheader"></span>
                                 </strong> Cell</h4>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >×</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>×</span>
                             </button>
                         </div>
                         <!--Body-->
                         <div class="modal-body py-1">
                             <!-- Default auto-sizing form -->
-                            <form method='post' action='http://localhost:8011/update_cell/v1/ftth.cells'>
+                            <form id="cellmodalform">
                                 <!-- WHOLE ROW MODAL -->
                                 <div class="form-row ">
                                     <!-- FIRST COLUMN -->
@@ -923,12 +922,58 @@
                                                 </div>
                                             </div>
                                             <div class="col-5">
-                                                <p>Commerical Homes Passed</p>
+                                                <p>Commercial Homes Passed</p>
                                             </div>
                                             <div class="col-7">
 
                                                 <div class="input-group mb-2">
-                                                    <input type="text" class="form-control py-0" id="commerical_homes_passed_edit">
+                                                    <input type="text" class="form-control py-0" id="commercial_homes_passed_edit">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-5">
+                                                <p>Commercial UG Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="commercial_ug_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>MDU Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="mdu_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Planned Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="planned_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>UG Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="UG_homes_passed_edit">
+                                                </div>
+                                            </div>
+                                            <div class="col-5">
+                                                <p>Total Homes Passed</p>
+                                            </div>
+                                            <div class="col-7">
+
+                                                <div class="input-group mb-2">
+                                                    <input type="text" class="form-control py-0" id="total_homes_passed_edit">
                                                 </div>
                                             </div>
                                         </div>
@@ -952,14 +997,14 @@
 
 
             <!-- Add Cell modal -->
-            <div class="modal fade right" id="addcellmodal" tabindex="-1" role="dialog"  >
+            <div class="modal fade right" id="addcellmodal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-side modal-top-right" role="document">
                     <div class="modal-content">
                         <!--Header-->
                         <div class="modal-header">
                             <h4 class="modal-title" id="myModalLabel">Add Cell</h4>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >×</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>×</span>
                             </button>
                         </div>
                         <!--Body-->
@@ -1156,8 +1201,7 @@
             </div>
             <!-- /Add Cell Modal -->
             <!-- Add Cell Success Modal -->
-            <div class="modal fade right" id="addcellSuccess" tabindex="-1" role="dialog" aria-labelledby="addcellSuccessLabel" 
-                data-backdrop='false'>
+            <div class="modal fade right" id="addcellSuccess" tabindex="-1" role="dialog" aria-labelledby="addcellSuccessLabel" data-backdrop='false'>
                 <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
                     <!--Content-->
                     <div class="modal-content">
@@ -1165,8 +1209,8 @@
                         <div class="modal-header">
                             <p class="heading lead">Success</p>
 
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span  class="white-text">&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span class="white-text">&times;</span>
                             </button>
                         </div>
 
@@ -1189,13 +1233,13 @@
             <!-- /Add Cell Success Modal -->
 
             <!-- Cell Statistics Modal -->
-            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title w-100 text-center" id="myModalLabel">Cell Statistics</h4>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -1245,13 +1289,13 @@
 
 
             <!--  Cell Extract Modal -->
-            <div class="modal fade right" id="cellExtractModal" tabindex="-1" role="dialog" aria-labelledby="cellExtractModalLabel" >
+            <div class="modal fade right" id="cellExtractModal" tabindex="-1" role="dialog" aria-labelledby="cellExtractModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="cellExtractModalLabel">Cell Extract</h5>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -1268,14 +1312,13 @@
             <!-- /Cell Extract Modal -->
 
             <!--  Construction Picker Modal -->
-            <div class="modal fade right" id="constructionpickerModal" tabindex="-1" role="dialog" aria-labelledby="constructionpickerModalLabel"
-                >
+            <div class="modal fade right" id="constructionpickerModal" tabindex="-1" role="dialog" aria-labelledby="constructionpickerModalLabel">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="constructionpickerModalLabel">Construction Tracker</h5>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
                             </button>
                         </div>
                         <div class="modal-body ">
@@ -1310,15 +1353,14 @@
             <!-- /Construction Picker Modal -->
 
             <!-- Construction Tracker Modal -->
-            <div class="modal fade right" id="construction_tracker_modal" tabindex="-1" role="dialog" aria-labelledby="construction_tracker_modalLabel"
-                >
+            <div class="modal fade right" id="construction_tracker_modal" tabindex="-1" role="dialog" aria-labelledby="construction_tracker_modalLabel">
                 <div class="modal-dialog modal-frame" role="document">
                     <div class="modal-content">
                         <div class="modal-header m-1 p-1">
                             <h4 class="modal-title w-100 text-center" id="construction_tracker_modalLabel">Cell Construction Tracker</h4>
                             <!-- <h6 class="modal-title" id="rolt_for_construction_tracker_display"></h6> -->
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
                             </button>
 
                         </div>
@@ -1369,13 +1411,13 @@
             <!-- /Construction Tracker Modal -->
 
             <!-- Map2 Modal -->
-            <div class="modal " id="basicExampleModal" tabindex="-1" role="dialog" >
+            <div class="modal " id="basicExampleModal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content m-0 p-0" style="height:auto;width:1050px;">
                         <div class="modal-header d-block m-lg-0 p-lg-0">
                             <h5 class="modal-title text-center" id="exampleModalLabel">Map Modal</h5>
-                            <button type="button" class="close" data-dismiss="modal" >
-                                <span >&times;</span>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
                             </button>
                             <button type="button" id="cellsinareabtn2" class="btn btn-primary waves-effect mr-lg-4 p-2 disabled float-right">Find Cells In View</button>
                         </div>
