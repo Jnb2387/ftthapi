@@ -14,17 +14,24 @@ $(document).ready(function () {
     var user_role = $(".user_role");
     async function getUser() {
         try {
-            const response = await axios.post('http://localhost:8011/getuser')
-            userdata = response.data
-            console.log(userdata)
-            username.html(userdata.name)
-            user_role.html(userdata.role)
+            const response = await axios.post('http://localhost:8011/getuser');
+            userdata = response.data;
+            console.log(userdata);
+            username.html(userdata.name);
+            user_role.html(userdata.role);
+            // DISABLE EDITING AND EXTRACT IF THE USER IS NOT AN ADMIN
+            if(userdata.role !== 'admin'){
+                // $(".editbtns").addClass('disabled');
+                $(".editbtns").prop("disabled", true);
+                return false;
+            }
         }
         catch (err) {
-            console.log(err)
+            console.log(err);
         }
     }
     getUser();
+    //THIS GET A 404 FROM THE SERVER TO REMOVE THE AUTH
     $("#log_out").on("click", function () {
         alert("You Have Been Logged Out")
         axios.get("http://localhost:8011/logout")
@@ -93,8 +100,6 @@ $(document).ready(function () {
                     .openPopup();
             } else {
                 console.log('No Geometry');
-                // $("#nocellsinareainfo p").text("No Geometry For Cell Found")
-                // $("#nocellsinareainfo").modal('show');
             }
         } catch (error) {
             console.log(error);
@@ -309,14 +314,7 @@ $(document).ready(function () {
             const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=10");
             cellsinareageom = response.data;
             console.log('Cell in area data: ', cellsinareageom);
-            //If there are NO cells in the view
-            if (cellsinareageom.features.length < 1) {
-                $("#nocellsinareainfo").modal('show'); // Set a timeout to hide the element again
-                setTimeout(function () {
-                    $("#nocellsinareainfo").modal('hide');
-                }, 3000);
-            }
-
+        
             var cellsinareastyle = {
                 "color": "red",
                 "weight": 5,

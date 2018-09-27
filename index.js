@@ -19,6 +19,8 @@ server.connection({
   }
 });
 
+ 
+
 //THIS FUNCTION TAKES IN THE INPUT FROM THE LOG IN AND RUNS A QUERY TO THE DATABASE CHECKS FOR THE USER NAME AND THEN COMPARES THE ENCRYPTED PASSWORDS
 var validate = function (request, username, password, callback) {
   console.log('Validating Request From: ', username);

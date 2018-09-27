@@ -69,7 +69,7 @@
   color:"grey";
 }
 
-
+/* BOTH MODALS HAVE 4 COLUMNS AND ARE SUPER WIDE */
 #addpermittingmodal .modal-dialog {
   width:100%;
   max-width: 1500px;
@@ -114,16 +114,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
 body::-webkit-scrollbar {
   width: 1em;
 }
@@ -136,6 +126,7 @@ body::-webkit-scrollbar-thumb {
 background-color: darkgrey;
 outline: 1px solid slategrey;
 }
+
 
 
 

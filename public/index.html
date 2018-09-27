@@ -93,7 +93,7 @@
                 <a href="dashboard.html" id="dashboard_pagebtn" class="list-group-item list-group-item-action waves-effect">
                     <i class="fa fa-pie-chart mr-3"></i>Dashboard
                 </a>
-                <a href="#" id="celldataextractbtn" data-toggle="tooltip" data-placement="right" title="Download Cell Data AS CSV" class="list-group-item list-group-item-action waves-effect">
+                <a href="#" id="celldataextractbtn" data-toggle="tooltip" data-placement="right" title="Download Cell Data AS CSV" class="list-group-item list-group-item-action waves-effect editbtns">
                     <i class="fa fa-download mr-3"></i>Cell Extract</a>
                 <!-- <a href="#mapdiv" id="mapdivbtn" data-toggle="modal" data-target="#basicExampleModal" class="list-group-item list-group-item-action waves-effect">
                     <i class="fa fa-map mr-3"></i>Map</a> -->
@@ -101,7 +101,7 @@
                     <i class="fa fa-columns mr-3"></i>Permitting</a>
                 <a href="#" id="construction_pickerbtn" data-toggle="modal" data-target="#constructionpickerModal" class="list-group-item list-group-item-action waves-effect">
                     <i class="fa fa-check-square-o mr-3"></i>Construction Tracker</a>
-                <a href="#addcellmodal" data-toggle="modal" data-target="#addcellmodal" class="list-group-item list-group-item-action waves-effect">
+                <a href="#addcellmodal" data-toggle="modal" data-target="#addcellmodal" class="list-group-item list-group-item-action waves-effect editbtns">
                     <i class="fa fa-plus mr-3"></i>Add New Cell</a>
             </div>
 
@@ -448,32 +448,13 @@
                     <!--/.Card-->
                     <div class="row">
                         <!-- Button trigger Cell Statistics modal & Edit Cell modal-->
-                        <button type="button" id="editcellbtn" class="btn btn-success waves-effect mt-3 ml-1" data-toggle="modal" data-target="#cellmodal">Edit Cell</button>
+                        <button type="button" id="editcellbtn" class="btn btn-success waves-effect mt-3 ml-1 editbtns" data-toggle="modal" data-target="#cellmodal">Edit Cell</button>
                         <button type="button" id="cellstatisticsbtn" class="btn btn-primary waves-effect mt-3 " data-toggle="modal" data-target="#cellstatisticsmodal">Cell Statistics</button>
                     </div>
                 </div>
                 <!-- END MAP CARD -->
             </div>
             <!--/.END MAIN ROW-->
-
-
-            <!-- No Cells Found Modal -->
-            <div class="modal fade right " id="nocellsinareainfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='false'>
-                <div class="modal-dialog modal-notify modal-info modal-side modal-top-right mt-lg-5 d-block" role="document">
-                    <!--Content-->
-                    <div class="modal-content">
-                        <!--Header-->
-                        <div class="modal-header">
-                            <p class="heading lead">No Cells Found</p>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span class="white-text">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                    <!--/.Content-->
-                </div>
-            </div>
-            <!-- /No Cells Found Modal-->
 
             <!-- Line Break -->
             <hr class="my-4">
@@ -520,7 +501,7 @@
                         </div>
                         <!--Body-->
                         <div class="modal-body py-1">
-                            <!-- Default auto-sizing form -->
+                           
                             <form id="cellmodalform">
                                 <!-- WHOLE ROW MODAL -->
                                 <div class="form-row ">
@@ -983,7 +964,7 @@
                                 </div>
                                 <!-- END WHOLE ROW -->
                             </form>
-                            <!-- Default auto-sizing form -->
+                           
                         </div>
                         <!--Footer-->
                         <div class="modal-footer">
@@ -1009,7 +990,7 @@
                         </div>
                         <!--Body-->
                         <div class="modal-body">
-                            <!-- Default auto-sizing form -->
+                           
                             <form>
                                 <!-- Grid row -->
                                 <div class="form-row align-items-center">
@@ -1189,7 +1170,7 @@
                                 </div>
                                 <!-- /Grid row -->
                             </form>
-                            <!-- Default auto-sizing form -->
+                           
                         </div>
                         <!--Footer-->
                         <div class="modal-footer">
@@ -1233,7 +1214,7 @@
             <!-- /Add Cell Success Modal -->
 
             <!-- Cell Statistics Modal -->
-            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal fade bottom " id="cellstatisticsmodal" tabindex="-1" role="dialog" >
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">

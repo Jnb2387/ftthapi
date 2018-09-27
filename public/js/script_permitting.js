@@ -10,7 +10,12 @@ $(document).ready(function () {
           userdata=response.data
           console.log(JSON.stringify(userdata))
           username.html(userdata.name)
-          user_role.html(userdata.role)
+          user_role.html(userdata.role);
+           // DISABLE EDITING AND EXTRACT IF THE USER IS NOT AN ADMIN
+           if(userdata.role !== 'admin'){
+            $(".editbtns").addClass('disabled');
+            
+        }
       }
       catch(err){
           console.log(err)
@@ -694,11 +699,6 @@ $(document).ready(function () {
     })
     async function updatePermittingTableFirstLocation() {
         try {
-            // var first_ut= $('input[name="first_utlity_strip_width"]').val()
-            // console.log(first_ut)
-            // first_ut= first_ut.replace(/'/g, "\\'")
-            // console.log("Changed",first_ut)
-
             var permitting_rolt_number = responsedata.permitting_rolt_number;
             var permitting_id = responsedata.id;
             var response = await axios({

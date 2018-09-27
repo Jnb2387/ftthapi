@@ -44,7 +44,7 @@ function formatSQL(request) {
     // .set("cell_homes_pocketed", request.payload.cell_homes_pocketed)
     // .set("cell_status", request.payload.cell_status)
     // .set("number_of_pdos", request.payload.number_of_pdos)
-  console.log(sql.toString())
+  console.log(sql.toString(),"\n")
   return sql.toString();
 }
 

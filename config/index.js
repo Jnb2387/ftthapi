@@ -1,10 +1,10 @@
 var username = "postgres";
-var host = "fgi-database";
-var database = "fgi_web_gis";
-var password="admin";
-// var host = "localhost";
-// var database = "jeffreydb";
-// var password = 'navy23';
+// var host = "fgi-database";
+// var database = "fgi_web_gis";
+// var password="admin";
+var host = "localhost";
+var database = "jeffreydb";
+var password = 'navy23';
 
 module.exports = {
     schemes: ['http'],
@@ -31,7 +31,7 @@ module.exports = {
             columns: `c.cell_id as id, c.pni_cell_name as label, 'CELL' as type, c.netwin_project_name, c.feeder, c.permitting_rolt_number, c.franchise, c.town, hp.total`,
             where: `c.pni_cell_name ilike ? OR c.netwin_cell_jso_name ilike ?`,
             format: function(query) {
-                console.log(query)
+                console.log(query,"<br><br>")
                 return '%' + query.trim() + '%';
             }
         },

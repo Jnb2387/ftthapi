@@ -55,7 +55,12 @@ module.exports = [{
                 second_permitting_agency: Joi.string().description("Second Permitting Agency"),
                 second_road_type: Joi.string().description("Second Road Type"),
                 second_pictures: Joi.string().description("Second Pictures")
-            }
+            },
+            failAction(request, reply, source, error) {
+                reply({
+                  error: 'badRequest',
+                }).code(400);
+              },
         },
         jsonp: 'callback',
         cache: config.cache,
@@ -67,10 +72,7 @@ module.exports = [{
                 })
                 .catch(function (err) {
                     console.log(err)
-                    reply({
-                        'error': 'error running query',
-                        'error_details': err
-                    });
+                    reply(err);
                 });
         }
     }
