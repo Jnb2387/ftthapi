@@ -165,122 +165,71 @@ $(document).ready(function () {
     });
     //ADD NEW PERMITTING
     $("#addpermittingbtn").on('click', function () {
-        let permitting_rolt_number = $("#permitting_rolt_add_rolt").val()
-        let rolt_status = $("#rolt_status_add_rolt").val()
-        let cabinet_type = $("#cabinet_type_add_rolt").val()
-        let netwin_rolt_name = $("#netwin_rolt_name_add_rolt").val()
-        let current_hub = $("#current_hub_add_rolt").val()
-        let future_hub = $("#future_hub_add_rolt").val()
-        let approved_final_location = $("#approved_final_add_rolt").val()
-        let permit_ = $("#permit_add_rolt").val()
-        let blocked_y_n_ = $("#blocked_y_n_add_rolt").val()
-        let blocked_by = $("#blocked_by_add_rolt").val()
-        let blocker_owner = $("#blocker_owner_add_rolt").val()
-        let eta_blocker_resolution = $("#eta_blocker_resolution_add_rolt").val()
-        let blocker_description = $("#blocker_description_add_rolt").val()
-        let first_franchise_town = $("#first_franchise_town_add_rolt").val()
-        let first_hamlet = $("#first_hamlet_add_rolt").val()
-        let first_street = $("#first_street_add_rolt").val()
-        let first_cross_street = $("#first_cross_street").val()
-        let first_utlity_strip_width = $("#first_utility_strip_width_add_rolt").val()
-        let first_lat_long = $("#first_lat_long_add_rolt").val()
-        let first_riser_pole = $("#first_riser_pole_add_rolt").val()
-        let first_permitting_agency = $("#first_permitting_agency_add_rolt").val()
-        let first_road_type = $("#first_road_type_add_rolt").val()
-        let first_pictures = $("#first_pictures_add_rolt").val()
-        let second_franchise_town = $("#second_franchise_town_add_rolt").val()
-        let second_hamlet = $("#second_hamlet_add_rolt").val()
-        let second_street = $("#second_street_add_rolt").val()
-        let second_cross_street = $("#second_cross_street_add_rolt").val()
-        let second_utility_strip_width = $("#second_utility_strip_width_add_rolt").val()
-        let second_lat_long = $("#second_lat_long_add_rolt").val()
-        let second_riser_pole = $("#second_riser_pole_add_rolt").val()
-        let second_permitting_agency = $("#second_permitting_agency_add_rolt").val()
-        let second_road_type = $("#second_road_type_add_rolt").val()
-        let second_pictures = $("#second_pictures_add_rolt").val()
-        let franchise_town = $("#final_franchise_town_add_rolt").val()
-        let hamlett = $("#final_hamlet_add_rolt").val()
-        let street = $("#final_street_add_rolt").val()
-        let cross_street = $("#final_cross_street_add_rolt").val()
-        let utility_strip_width = $("#final_utility_strip_width_add_rolt").val()
-        let lat_long = $("#final_lat_long_add_rolt").val()
-        let riser_pole = $("#final_riser_pole_add_rolt").val()
-        let permitting_agency = $("#final_permitting_agency_add_rolt").val()
-        let road_type = $("#final_road_type_add_rolt").val()
-        let pictures = $("#final_pictures_add_rolt").val()
-// NOT ADD IN THE MODAL YET
-        // let ga_outreach_completed = $("#ga_outreach_completed").val()
-        // let municipality_climate = $("#municipality_climate").val()
-        // let original_build_yr = $("#original_build_yr").val()
-        // let actual_build_yr = $("#actual_build_yr").val()
-
-
         async function addPermitting() {
             try {
                 const response = await axios.post("http://localhost:8011/insert_permitting/v1/ftth.permitting", {
-                    permitting_rolt_number: permitting_rolt_number,
-                    rolt_status: rolt_status,
-                    cabinet_type: cabinet_type,
-                    netwin_rolt_name: netwin_rolt_name,
-                    current_hub: current_hub,
-                    future_hub: future_hub,
-                    approved_final_location: approved_final_location,
-                    permit_: permit_,
-                    blocked_y_n_: blocked_y_n_,
-                    blocked_by: blocked_by,
-                    blocker_owner: blocker_owner,
-                    eta_blocker_resolution: eta_blocker_resolution,
-                    blocker_description: blocker_description,
-                    future_hub: future_hub,
+                    permitting_rolt_number: $("#permitting_rolt_add_rolt").val(),
+                    rolt_status:  $("#rolt_status_add_rolt").val(),
+                    cabinet_type: $("#cabinet_type_add_rolt").val(),
+                    netwin_rolt_name: $("#netwin_rolt_name_add_rolt").val(),
+                    current_hub: $("#current_hub_add_rolt").val(),
+                    future_hub: $("#future_hub_add_rolt").val(),
+                    approved_final_location: $("#approved_final_add_rolt").val(),
+                    permit_:  $("#permit_add_rolt").val(),
+                    blocked_y_n_: $("#blocked_y_n_add_rolt").val(),
+                    blocked_by: $("#blocked_by_add_rolt").val(),
+                    blocker_owner: $("#blocker_owner_add_rolt").val(),
+                    eta_blocker_resolution: $("#eta_blocker_resolution_add_rolt").val(),
+                    blocker_description: $("#blocker_description_add_rolt").val(),
 // NOT ADD IN THE MODAL YET
-                    // ga_outreach_completed:ga_outreach_completed,
-                    // municipality_climate:municipality_climate,
-                    // original_build_yr:original_build_yr,
-                    // actual_build_yr:actual_build_yr,
+                    // ga_outreach_completed:$("#ga_outreach_completed_add_rolt").val(),
+                    // municipality_climate:$("#municipality_climate_add_rolt").val(),
+                    // original_build_yr:$("#original_build_yr_add_rolt").val(),
+                    // actual_build_yr:$("#actual_build_yr_add_rolt").val(),
 
-                    first_franchise_town: first_franchise_town,
-                    first_hamlet: first_hamlet,
-                    first_street: first_street,
-                    first_cross_street: first_cross_street,
-                    first_utlity_strip_width: first_utlity_strip_width,
-                    first_lat_long: first_lat_long,
-                    first_riser_pole: first_riser_pole,
-                    first_permitting_agency: first_permitting_agency,
-                    first_road_type: first_road_type,
-                    first_pictures: first_pictures,
-                    second_franchise_town: second_franchise_town,
-                    second_hamlet: second_hamlet,
-                    second_street: second_street,
-                    second_cross_street: second_cross_street,
-                    second_utility_strip_width: second_utility_strip_width,
-                    second_lat_long: second_lat_long,
-                    second_riser_pole: second_riser_pole,
-                    second_permitting_agency: second_permitting_agency,
-                    second_road_type: second_road_type,
-                    second_pictures: second_pictures,
-                    franchise_town: franchise_town,
-                    hamlett: hamlett,
-                    street: street,
-                    cross_street: cross_street,
-                    utility_strip_width: utility_strip_width,
-                    lat_long: lat_long,
-                    riser_pole: riser_pole,
-                    permitting_agency: permitting_agency,
-                    road_type: road_type,
-                    pictures: pictures,
+                    first_franchise_town: $("#first_franchise_town_add_rolt").val(),
+                    first_hamlet: $("#first_hamlet_add_rolt").val(),
+                    first_street: $("#first_street_add_rolt").val(),
+                    first_cross_street: $("#first_cross_street_add_rolt").val(),
+                    first_utlity_strip_width: $("#first_utility_strip_width_add_rolt").val(),
+                    first_lat_long: $("#first_lat_long_add_rolt").val(),
+                    first_riser_pole: $("#first_riser_pole_add_rolt").val(),
+                    first_permitting_agency: $("#first_permitting_agency_add_rolt").val(),
+                    first_road_type: $("#first_road_type_add_rolt").val(),
+                    first_pictures: $("#first_pictures_add_rolt").val(),
+                    second_franchise_town: $("#second_franchise_town_add_rolt").val(),
+                    second_hamlet: $("#second_hamlet_add_rolt").val(),
+                    second_street: $("#second_street_add_rolt").val(),
+                    second_cross_street: $("#second_cross_street_add_rolt").val(),
+                    second_utility_strip_width: $("#second_utility_strip_width_add_rolt").val(),
+                    second_lat_long: $("#second_lat_long_add_rolt").val(),
+                    second_riser_pole: $("#second_riser_pole_add_rolt").val(),
+                    second_permitting_agency: $("#second_permitting_agency_add_rolt").val(),
+                    second_road_type: $("#second_road_type_add_rolt").val(),
+                    second_pictures: $("#second_pictures_add_rolt").val(),
+                    franchise_town: $("#final_franchise_town_add_rolt").val(),
+                    hamlett: $("#final_hamlet_add_rolt").val(),
+                    street: $("#final_street_add_rolt").val(),
+                    cross_street: $("#final_cross_street_add_rolt").val(),
+                    utility_strip_width: $("#final_utility_strip_width_add_rolt").val(),
+                    lat_long: $("#final_lat_long_add_rolt").val(),
+                    riser_pole: $("#final_riser_pole_add_rolt").val(),
+                    permitting_agency: $("#final_permitting_agency_add_rolt").val(),
+                    road_type: $("#final_road_type_add_rolt").val(),
+                    pictures: $("#final_pictures_add_rolt").val(),
                 });
                 if (response.data == "Permitting Successfully Inserted.") {
                     $("#addpermittingSuccess").modal('show'); // Set a timeout to hide the element again
                     setTimeout(function () {
                         $("#addpermittingSuccess").modal('hide');
-                    }, 4000);
+                    }, 3000);
                     $("#addpermittingmodal").modal('hide');
                 } else {
                     alert(response.data)
                 }
             } catch (error) {
                 // console.log(response.data)
-                alert(error)
+                console.log(error.message)
                 // alert('Error adding Permitting ', Error)
             }
         }
@@ -607,9 +556,14 @@ $(document).ready(function () {
             title: responsedata.permitting_rolt_number + '_Permitting_Functions_Export'
         }
         ]);
+        // ONLY ADD THE EDITING AND EXTRACT BUTTONS IF THE USER IS ADMIN
+        if (user_role.text() == 'admin') {
+            console.log('Editing Buttons Enabled')
+            // permittingfunctiondatatable.buttons().disable()
+            permittingfunctiondatatable.buttons().container()
+                .appendTo($('.col-md-6:eq(0)', permittingfunctiondatatable.table().container()));
+        }
 
-        permittingfunctiondatatable.buttons().container()
-            .appendTo($('.col-md-6:eq(0)', permittingfunctiondatatable.table().container()));
 
     }
     //WHEN THE DATA EXTRACT BUTTON IS CLICKED DOWNLOAD THEPERMITTING DATA AS CSV

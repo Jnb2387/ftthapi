@@ -69,12 +69,18 @@
   color:"grey";
 }
 
-/* BOTH MODALS HAVE 4 COLUMNS AND ARE SUPER WIDE */
+/* ALL THESE MODALS HAVE 4 COLUMNS AND ARE SUPER WIDE */
 #addpermittingmodal .modal-dialog {
   width:100%;
   max-width: 1500px;
 }
 #cellmodal .modal-dialog {
+  width:100%;
+  max-width: 1700px;
+  font-size:13px;
+}
+
+#addcellmodal .modal-dialog{
   width:100%;
   max-width: 1700px;
   font-size:13px;

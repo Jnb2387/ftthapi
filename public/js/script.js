@@ -20,9 +20,9 @@ $(document).ready(function () {
             username.html(userdata.name);
             user_role.html(userdata.role);
             // DISABLE EDITING AND EXTRACT IF THE USER IS NOT AN ADMIN
-            if(userdata.role !== 'admin'){
-                // $(".editbtns").addClass('disabled');
-                $(".editbtns").prop("disabled", true);
+            if (userdata.role !== 'admin') {
+                $(".editbtns").addClass('disabled');
+                // $(".editbtns").prop("disabled", true);
                 return false;
             }
         }
@@ -37,7 +37,54 @@ $(document).ready(function () {
         axios.get("http://localhost:8011/logout")
     });
     // END USER STUFF
-
+ //Autocomplete for the Search Cell
+ $("#cellsearch").autocomplete({
+    minLength: 2,
+    autoFocus: true,
+    sortResults: true,
+    source: function (request, response) {
+        var term = request.term; // The term being typed in the input
+        let cellname = []; // To hold all the response names
+        $.getJSON("http://localhost:8011/query/v1/ftth.cells?columns=pni_cell_name,netwin_cell_jso_name&filter=pni_cell_name%20ilike%20'" + term + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + term + "%25'&limit=20", function (data, status, xhr) {
+            data.map(function (pni_cell_name, netwin_cell_jso_name) { // loop through the array from the getJSON request
+                cellname.push(pni_cell_name.pni_cell_name); // add the name of the pni_cell_name to the cellname Array created above.
+                cellname.push(pni_cell_name.netwin_cell_jso_name); // add the name of the netwin_cell_jso_name to the cellname Array created above
+            });
+            console.log('Data From autocomplete: ', data)
+            var desiredcellnames = cellname.filter(function (value) { // now that both values are in the cellname Array, filter out the ones that start with the same characters as the search term
+                if (value !== null && value.toUpperCase().substring(0, 2) == term.toUpperCase().substring(0, 2)) { // make them both uppercase to match.
+                    return value; // return only the matching values into the desiredcellnames
+                }
+            });
+            desiredcellnames.sort() //ITS DIFFICULT TO SORT IN THE DATABASE BECAUSE IT CAN BE EITHER pni_cell_name OR netwin_cell_jso_name
+            response(desiredcellnames); // just send the desiredcellnames.
+        });
+    }, //IF THERE IS NO DATA IN THE RESPONSE
+    response: function (event, ui) {
+        if (!ui.content.length) {
+            var noResult = {
+                value: "",
+                label: "No results found"
+            };
+            ui.content.push(noResult);
+        }
+    }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
+    select: async function (e, data) {
+        await getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
+        await getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
+        await getHomesPassed(data.item.value);
+        await getFootages(data.item.value);
+    }
+});
+//WHEN THE PAGE IS SCROLLED THE USER WONT SEE WHAT CELL THEY SEARCHED FOR SO ADD IT TO THE NAVBAR
+$(window).scroll(function () {
+    if ($(".navbar").hasClass("top-nav-collapse")) {
+        var cell = $("#cellsearch").val();
+        $("#nav_cell_name").html(cell);
+    } else {
+        $("#nav_cell_name").empty()
+    }
+});
     async function getData(cell) {
         try {
             const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&filter=pni_cell_name%20ilike%20'" + cell + "'OR%20netwin_cell_jso_name%20ilike%20'" + cell + "'&limit=100");
@@ -81,8 +128,6 @@ $(document).ready(function () {
                     map.removeLayer(jsomarker);
                     if (map.hasLayer(cellsinarea_map)) {
                         map.removeLayer(cellsinarea_map);
-                        // map2.removeLayer(cellsinarea_map2);
-
                         console.log('cellsinarea_map Removed.');
                     }
                 }
@@ -220,58 +265,9 @@ $(document).ready(function () {
         }
     }
     //================= END EXTRACT CELL DATA
-    //Autocomplete for the Search Cell
-    $("#cellsearch").autocomplete({
-        minLength: 2,
-        autoFocus: true,
-        sortResults: true,
-        source: function (request, response) {
-            var term = request.term; // The term being typed in the input
-            let cellname = []; // To hold all the response names
-            $.getJSON("http://localhost:8011/query/v1/ftth.cells?columns=pni_cell_name,netwin_cell_jso_name&filter=pni_cell_name%20ilike%20'" + term + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + term + "%25'&limit=20", function (data, status, xhr) {
-                data.map(function (pni_cell_name, netwin_cell_jso_name) { // loop through the array from the getJSON request
-                    cellname.push(pni_cell_name.pni_cell_name); // add the name of the pni_cell_name to the cellname Array created above.
-                    cellname.push(pni_cell_name.netwin_cell_jso_name); // add the name of the netwin_cell_jso_name to the cellname Array created above
-                });
-                console.log('Data From autocomplete: ', data)
-                var desiredcellnames = cellname.filter(function (value) { // now that both values are in the cellname Array, filter out the ones that start with the same characters as the search term
-                    if (value !== null && value.toUpperCase().substring(0, 2) == term.toUpperCase().substring(0, 2)) { // make them both uppercase to match.
-                        return value; // return only the matching values into the desiredcellnames
-                    }
-                });
-                desiredcellnames.sort() //ITS DIFFICULT TO SORT IN THE DATABASE BECAUSE IT CAN BE EITHER pni_cell_name OR netwin_cell_jso_name
-                response(desiredcellnames); // just send the desiredcellnames.
-            });
-        }, //IF THERE IS NO DATA IN THE RESPONSE
-        response: function (event, ui) {
-            if (!ui.content.length) {
-                var noResult = {
-                    value: "",
-                    label: "No results found"
-                };
-                ui.content.push(noResult);
-            }
-        }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
-        select: async function (e, data) {
-            await getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
-            await getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
-            await getHomesPassed(data.item.value);
-            await getFootages(data.item.value);
-        }
-    });
-    //WHEN THE PAGE IS SCROLLED THE USER WONT SEE WHAT CELL THEY SEARCHED FOR SO ADD IT TO THE NAVBAR
-    $(window).scroll(function () {
-        if ($(".navbar").hasClass("top-nav-collapse")) {
-            var cell = $("#cellsearch").val();
-            $("#nav_cell_name").html(cell);
-        } else {
-            $("#nav_cell_name").empty()
-        }
-    });
+   
     //LEAFLET MAP SET UP
     var map;
-    // var map2;
-
     function regular_map() {
         map = L.map('map').setView([42, -74.09], 7);
 
@@ -284,18 +280,14 @@ $(document).ready(function () {
         }).addTo(map);
     }
     regular_map();
-
     //Disable and Enable the find cells in view button based on zoom level
     map.on('zoomend', function () {
-        if (map.getZoom() < 14) { // if the current zoom level is higher than 14 then enable the button else keep it disabled.
+        if (map.getZoom() < 15) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
             $("#cellsinareabtn").addClass("disabled");
-            $("#cellsinareabtn2").addClass("disabled")
         } else {
             $("#cellsinareabtn").removeClass("disabled");
-            $("#cellsinareabtn2").removeClass("disabled");
         }
     });
-
     async function findcellsinarea(coords) {
         try {
             // DONT RUN FUNCTION IF THERE IS NO CELL SEARCHED
@@ -306,15 +298,14 @@ $(document).ready(function () {
             map.eachLayer(function (layer) {
                 if (map.hasLayer(cellsinarea_map)) {
                     map.removeLayer(cellsinarea_map);
-                    // map2.removeLayer(cellsinarea_map2);//NOT WORKING
-                    console.log('cellsinareageom Layer Removed down');
+                    console.log('cellsinareageom Layer Removed');
                 }
             });
             let bounds = map.getBounds().toBBoxString();
-            const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=10");
+            const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
             cellsinareageom = response.data;
             console.log('Cell in area data: ', cellsinareageom);
-        
+
             var cellsinareastyle = {
                 "color": "red",
                 "weight": 5,
@@ -335,7 +326,7 @@ $(document).ready(function () {
     $("#cellsinareabtn").on("click", function () {
         findcellsinarea();
     });
-    //FUNCTION TABLE
+    //CELL FUNCTION TABLE
     async function getfunctiontable(cell) {
         try {
             const response = await axios.get("http://localhost:8011/query/v1/ftth.functions_table?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=100");
@@ -383,7 +374,7 @@ $(document).ready(function () {
                     create: {
                         type: 'POST',
                         url: "http://localhost:8011/insert_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name,
-                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -398,7 +389,7 @@ $(document).ready(function () {
                     edit: {
                         type: 'POST',
                         url: "http://localhost:8011/update_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name + "&id=_id_",
-                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -473,13 +464,13 @@ $(document).ready(function () {
                     def: function () {
                         return new Date();
                     },
-                    format: 'M/DD/YYYY',
+                    format: 'M/DD/YYYY',//THIS MAKES SURE THE DATE COLUMN MATCHES THIS FORMAT
                 }, {
                     name: "comment",
                     label: "Comment"
                 }]
             });
-            // IF THEY DIDNT CHANGE THE design_function field THEN DONT SUBMIT
+            // MAKE THE design_function AND resource A REQUIRED FIELD
             editor.on('preSubmit', function (e, o, action) {
                 if (action !== 'remove') {
                     var design_function = this.field('design_function');
@@ -525,7 +516,7 @@ $(document).ready(function () {
             ]);
 
             if (user_role.text() == 'admin') {
-                console.log('Added Editing Buttons')
+                console.log('Editing Buttons Enabled')
                 functiondatatable.buttons().container()
                     .appendTo($('.col-md-6:eq(0)', functiondatatable.table().container()));
                 // functiondatatable.buttons().disable()
@@ -536,7 +527,7 @@ $(document).ready(function () {
         }
     }
 
-    //Sheath TABLE
+    //SHEATH TABLE
     async function getsheathtable(cell) {
         try {
             const response = await axios.get("http://localhost:8011/query/v1/ftth.sheath?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=100");
@@ -565,6 +556,7 @@ $(document).ready(function () {
             console.log(error)
         }
     }
+    //PDO TABLE
     async function getpdotable(cell) {
         try {
             const response = await axios.get("http://localhost:8011/query/v1/ftth.pdo?columns=*&filter=pni_cell_name%20ilike%20'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + cell + "%25'&limit=100");
@@ -597,14 +589,13 @@ $(document).ready(function () {
         pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch
         if (!responsedata) {
             alert("Please Search for A Cell")
-            // e.stopPropagation(); // if there is no responsedata then dont open the modal
-            e.stopPropagation();
+            e.stopPropagation();// if there is no responsedata then dont open the modal
             return
         }
         getsheathtable(pni_or_netwin_name);
         getpdotable(pni_or_netwin_name)
     })
-    //EDIT A CELL FUNCTIONS
+    //========EDIT A CELL, FOOTAGES AND HOMES PASSED
     $("#editcellbtn").on('click', function (e) {
         if (!responsedata) {
             alert("Please Search for A Cell")
@@ -613,7 +604,7 @@ $(document).ready(function () {
         }
         pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch AND PUT IT IN THE HEADER OF THE MODAL
         $("#editcellheader").html(pni_or_netwin_name)
-        console.log('Editcellbtn data: ', responsedata)
+        console.log('Edit Cell Prefilled Data: ', responsedata)
         Object.keys(responsedata).forEach(function (key) { //REMOVE THE '-' THAT WAS ADDED ABOVE SO THAT IT WONT GET SEND TO THE DATABASE
             if (responsedata[key] == '-') {
                 responsedata[key] = null;
@@ -675,9 +666,9 @@ $(document).ready(function () {
             $("#total_homes_passed_edit").val(homesresponsedata.total)
         }
     });
+    var cellupdateresponse;
     async function updateCellTable() {
         try {
-            // var netwin_jso_edited = $("#netwin_cell_jso_name_edit").val()
             const response = await axios.post("http://localhost:8011/update_cell/v1/ftth.cells?cell_id=" + cell_id + "", {
                 netwin_cell_jso_name: $("#netwin_cell_jso_name_edit").val(),
                 cell_state: $("#cell_state_edit").val(),
@@ -713,12 +704,14 @@ $(document).ready(function () {
                 cell_status: $("#cell_status_edit").val(),
                 number_of_pdos: $("#number_of_pdos_edit").val(),
             });
-            alert(response.data)
+            console.log("Updated Cells Table")
+            cellupdateresponse = response.data;
         } catch (error) {
             console.log(error)
         }
     }
-    //UPDATE FOOTAGES TABLE
+    //UPDATE FOOTAGES TABLE, ALSO NEED THE INSERT IF THE NETWIN OR PNI NAME DOESNT EXIST
+    var footagesupdateresponse;
     async function updateFootagesTable() {
         try {
             const response = await axios.post("http://localhost:8011/update_footages/v1/ftth.footages?id=" + footagesresponsedata.id + "", {
@@ -729,13 +722,14 @@ $(document).ready(function () {
                 ug: $("#ug_footage_edit").val(),
                 total: $("#total_footage_edit").val()
             });
-            console.log(response.data)
+            console.log("Updated Footages Table")
+            footagesupdateresponse = response.data;
         } catch (error) {
             console.log(error)
         }
     }
     //INSERT FOOTAGES TABLE
-    async function insertFootagesTable() {
+    async function insertFootagesTableFromEdit() {
         try {
             const response = await axios.post("http://localhost:8011/insert_footages/v1/ftth.footages", {
                 pni_cell_name: $("#pni_cell_name_edit").val(),
@@ -747,12 +741,14 @@ $(document).ready(function () {
                 ug: $("#ug_footage_edit").val(),
                 total: $("#total_footage_edit").val()
             });
-            console.log(response.data)
+            console.log("Inserted into Footages Table")
+            footagesupdateresponse = response.data;
         } catch (error) {
             console.log(error)
         }
     }
-    //UPDATE HOMES PASSED TABLE
+    //UPDATE HOMES PASSED TABLE ALSO NEED THE INSERT IF THE NETWIN OR PNI NAME DOESNT EXIST
+    var homespassedupdateresponse;
     async function updateHomesPassedTable() {
         try {
             const response = await axios.post("http://localhost:8011/update_homes_passed/v1/ftth.homes_passed?id=" + homesresponsedata.id + "", {
@@ -765,14 +761,14 @@ $(document).ready(function () {
                 ug: $("#UG_homes_passed_edit").val(),
                 total: $("#total_homes_passed_edit").val()
             });
-            console.log(response.data)
-
+            console.log("Updated Homes Passed Table")
+            homespassedupdateresponse = response.data;
         } catch (error) {
             console.log(error)
         }
     }
     //INSERT HOMES PASSED TABLE
-    async function insertHomesPassedTable() {
+    async function insertHomesPassedTableFromEdit() {
         try {
             const response = await axios.post("http://localhost:8011/insert_homes_passed/v1/ftth.homes_passed", {
                 pni_cell_name: $("#pni_cell_name_edit").val(),
@@ -786,8 +782,8 @@ $(document).ready(function () {
                 ug: $("#UG_homes_passed_edit").val(),
                 total: $("#total_homes_passed_edit").val()
             });
-            console.log(response.data)
-
+            console.log("Inserted into Homes Passed Table")
+            homespassedupdateresponse = response.data;
         } catch (error) {
             console.log(error)
         }
@@ -798,53 +794,140 @@ $(document).ready(function () {
         if (footagesresponsedata) {//IF THERE ISNT A FIELD IN THE FOOTAGES TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE footagesresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
             await updateFootagesTable();
         } else {
-            insertFootagesTable()
+            insertFootagesTableFromEdit()
         }
-        if (homesresponsedata) {// SAMETHING AS THE FOOTAGES TABLE
+        if (homesresponsedata) {//IF THERE ISNT A FIELD IN THE HOMES PASSED TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE homessresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
             await updateHomesPassedTable();
         } else {
-            await insertHomesPassedTable();
+            await insertHomesPassedTableFromEdit();
         }
         await getData(pni_or_netwin_name);// WHEN THE CELL IS UPDATED RELOAD THE VIEW AGAIN
         await getHomesPassed(pni_or_netwin_name);
         await getFootages(pni_or_netwin_name);
-        $("#cellmodal").modal('hide');//HIDE THE MODAL AFTER A SUCCESSFUL UPDATE
-    });
-    //ADD NEW CELL 
-    $("#addcellbtn").on('click', function () {
-        async function addCell() {
-            try {
-                const response = await axios.post("http://localhost:8011/insert_cell/v1/ftth.cells", {
-                    netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
-                    pni_cell_name: $("#pni_cell_name_add").val(),
-                    cell_state: $("#cell_state_add").val(),
-                    cell_hub: $("#cell_hub_add").val(),
-                    cell_ring: $("#cell_ring_add").val(),
-                    rolt_id: $("#rolt_id_add").val(),
-                    netwin_project_name: $("#netwin_project_name_add").val(),
-                    feeder: $("#feeder_add").val(),
-                    permitting_rolt_number: $("#permitting_rolt_number_add").val(),
-                    town: $("#town_add").val(),
-                    region: $("#region_add").val(),
-                    map_number: $("#map_number_add").val(),
-                    nodes_within_cell: $("#nodes_within_cell_add").val()
-                });
-                if (response.data == "Cell Successfully Inserted.") {
-                    $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
-                    setTimeout(function () {
-                        $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
-                    }, 4000);
-                    $("#addcellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
-                } else {
-                    alert('Was Not Successful', response.data)
-                }
-            } catch (error) {
-                alert('Error from adding cell ', error)
-            }
+        //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
+        if (homespassedupdateresponse == 'Successful' && footagesupdateresponse == 'Successful' && cellupdateresponse == 'Successful') {
+            $("#addcellSuccess .modal-body p").text("Cell Successfully Updated")//CHANGE THE TEXT OF THE MODAL
+            $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
+            setTimeout(function () {
+                $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
+            }, 4000);
+            $("#cellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
         }
-        addCell();
+        else {
+            alert("Error Updating Cell Please Check All Columns")
+        }
     });
-    // Construction Tracker Stuff
+    // END UPDATE CELL FOOTAGES AND HOMES PASSED
+
+    //====================================ADD NEW CELL, FOOTAGES AND HOMES PASSED==========================================================
+    var cellinsertresponse;
+    async function addCell() {
+        try {
+            const response = await axios.post("http://localhost:8011/insert_cell/v1/ftth.cells", {
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
+                pni_cell_name: $("#pni_cell_name_add").val(),
+                cell_state: $("#cell_state_add").val(),
+                cell_hub: $("#cell_hub_add").val(),
+                cell_ring: $("#cell_ring_add").val(),
+                rolt_id: $("#rolt_id_add").val(),
+                cell: $("#cell_add").val(),
+                netwin_project_name: $("#netwin_project_name_add").val(),
+                feeder: $("#feeder_add").val(),
+                permitting_rolt_number: $("#permitting_rolt_number_add").val(),
+                town: $("#town_add").val(),
+                franchise: $("#franchise_add").val(),
+                region: $("#region_add").val(),
+                map_number: $("#map_number_add").val(),
+                nodes_within_cell: $("#nodes_within_cell_add").val(),
+                cell_rfs_date: $("#cell_rfs_date_add").val(),
+                homes_serviceable: $("#homes_serviceable_add").val(),
+                remaining_homes_unserviceable: $("#remaining_homes_unserviceable_add").val(),
+                jso_street_location: $("#jso_street_location_add").val(),
+                jso_pole_number: $("#jso_pole_number_add").val(),
+                jso_latitude: $("#jso_latitude_add").val(),
+                jso_longitude: $("#jso_longitude_add").val(),
+                cell_build_year: $("#cell_build_year_add").val(),
+                market_year: $("#market_year_add").val(),
+                jso_type: $("#jso_type_add").val(),
+                cell_dc: $("#cell_dc_add").val(),
+                dc_to_location: $("#dc_to_location_add").val(),
+                dc_from_location: $("#dc_from_location_add").val(),
+                cell_local_design_priority: $("#cell_local_design_priority_add").val(),
+                cell_revision_comment: $("#cell_revision_comment_add").val(),
+                cell_homes_pocketed: $("#cell_homes_pocketed_add").val(),
+                cell_status: $("#cell_status_add").val(),
+                number_of_pdos: $("#number_of_pdos_add").val(),
+            });
+            console.log("Inserted into Cells Table")
+            cellinsertresponse = response.data;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //INSERT FOOTAGES TABLE
+    var footagesinsertresponse;
+    async function insertFootagesTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/insert_footages/v1/ftth.footages", {
+                pni_cell_name: $("#pni_cell_name_add").val(),
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
+                building_attachment: $("#building_attachment_footage_add").val(),
+                cable_bearing_strand: $("#cable_bearing_strand_footage_add").val(),
+                mdu: $("#mdu_footage_add").val(),
+                slack: $("#slack_footage_add").val(),
+                ug: $("#ug_footage_add").val(),
+                total: $("#total_footage_add").val()
+            });
+            console.log("Inserted into Footages Table")
+            footagesinsertresponse = response.data;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    //INSERT HOMES PASSED TABLE
+    var homespassedinsertresponse;
+    async function insertHomesPassedTable() {
+        try {
+            const response = await axios.post("http://localhost:8011/insert_homes_passed/v1/ftth.homes_passed", {//THIS USES THE SAME ROUTE AS THE INSERTFROMEDIT ONE JUST WITH THE ID ITS GRABBING CHANGED FROM _edit TO _add
+                pni_cell_name: $("#pni_cell_name_add").val(),
+                netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
+                aerial: $("#aerial_homes_passed_add").val(),
+                ba: $("#ba_homes_passed_add").val(),
+                commercial: $("#commercial_homes_passed_add").val(),
+                commercial_ug: $("#commercial_ug_homes_passed_add").val(),
+                mdu: $("#mdu_homes_passed_add").val(),
+                planned: $("#planned_homes_passed_add").val(),
+                ug: $("#UG_homes_passed_add").val(),
+                total: $("#total_homes_passed_add").val()
+            });
+            console.log("Inserted into Homes Passed Table")
+            homespassedinsertresponse = response.data
+        } catch (error) {
+            alert(error)
+        }
+    }
+    // WHEN THE ADD CELL BUTTON IS CLICKED RUN EACH FUNCTION TO ADD THE CELL AND THEN THE FOOTAGES AND THEN THE HOMES PASSED
+    $("#addcellbtn").on('click', async function () {
+        await addCell();
+        await insertFootagesTable();
+        await insertHomesPassedTable();
+        //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
+        if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
+            $("#addcellSuccess .modal-body p").text("Cell Successfully Inserted")//CHANGE THE TEXT OF THE MODAL 
+            $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
+            setTimeout(function () {
+                $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
+            }, 4000);
+            $("#addcellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
+        }
+        else {
+            alert(cellinsertresponse)
+        }
+    });
+
+    // ===========================================END ADD A NEW CELL FOOTAGE AND HOMES PASSED=================================================
+
+    // ==================================================CONSTRUCTION TRACKER STUFF===========================================================
     var construction_tracker_table;
     async function getConstuctionTrackerFunction(cell, rolt) {
         var response;
@@ -990,7 +1073,7 @@ $(document).ready(function () {
         } catch (error) {
             console.log(error)
         }
-
+        // CONSTRUCTION TRACKER EDITOR
         var editor = new $.fn.dataTable.Editor({
             ajax: {
                 dataType: 'json',
@@ -1168,6 +1251,7 @@ $(document).ready(function () {
             title: 'Construction_Tracker_Export'
         }
         ]);
+        //WHEN CREATING A NEW CONSTRUCTION TRACKER FUNCTION DEPENDING ON WHICH WAY THEY SEARCHED EITHER BY cell OR rolt THEN UPDATE THE FUNCTION AND REFRESH THE TABLE BY cell OR rolt
         editor.on('create', function (e, o, action) {
             if (roltbuttonclicked === true) {
                 var permitting_rolt_number = $("#construction_rolt").val().toUpperCase();
@@ -1180,9 +1264,17 @@ $(document).ready(function () {
             }
 
         });
-
-        construction_tracker_table.buttons().container()
+        //IF THE USER IS ADMIN THEN ADD THE EDIT BUTTONS
+        if (user_role.text() == 'admin') {
+            console.log('Construction Tracker Editing Buttons Enabled')
+            construction_tracker_table.buttons().container()
             .appendTo($('.col-md-6:eq(0)', construction_tracker_table.table().container()));
+            // functiondatatable.buttons().disable()
+        }
+        else{
+            console.log('User Can NOT Edit')
+        }
+        
         //THESE ENABLE THE EDITOR POPUP TO BE ASSIGNED A CLASS SO THAT I CAN MAKE THE MODAL WIDER
         editor.on('open', function (e, mode, action) {
             $('.modal-dialog').addClass('DTED_Stacked');

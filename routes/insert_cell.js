@@ -25,25 +25,24 @@ function formatSQL(request) {
     .set("region", request.payload.region)
     .set("map_number", request.payload.map_number)
     .set("nodes_within_cell", request.payload.nodes_within_cell)
-    // NEED TO ADD TO THE FRONT END MODAL
-    // .set("cell_rfs_date", request.payload.cell_rfs_date)
-    // .set("homes_serviceable", request.payload.homes_serviceable)
-    // .set("remaining_homes_unserviceable", request.payload.remaining_homes_unserviceable)
-    // .set("jso_street_location", request.payload.jso_street_location)
-    // .set("jso_pole_number", request.payload.jso_pole_number)
-    // .set("jso_latitude", request.payload.jso_latitude)
-    // .set("jso_longitude", request.payload.jso_longitude)
-    // .set("cell_build_year", request.payload.cell_build_year)
-    // .set("market_year", request.payload.market_year)
-    // .set("jso_type", request.payload.jso_type)
-    // .set("cell_dc", request.payload.cell_dc)
-    // .set("dc_to_location", request.payload.dc_to_location)
-    // .set("dc_from_location", request.payload.dc_from_location)
-    // .set("cell_local_design_priority", request.payload.cell_local_design_priority)
-    // .set("cell_revision_comment", request.payload.cell_revision_comment)
-    // .set("cell_homes_pocketed", request.payload.cell_homes_pocketed)
-    // .set("cell_status", request.payload.cell_status)
-    // .set("number_of_pdos", request.payload.number_of_pdos)
+    .set("cell_rfs_date", request.payload.cell_rfs_date)
+    .set("homes_serviceable", request.payload.homes_serviceable)
+    .set("remaining_homes_unserviceable", request.payload.remaining_homes_unserviceable)
+    .set("jso_street_location", request.payload.jso_street_location)
+    .set("jso_pole_number", request.payload.jso_pole_number)
+    .set("jso_latitude", request.payload.jso_latitude)
+    .set("jso_longitude", request.payload.jso_longitude)
+    .set("cell_build_year", request.payload.cell_build_year)
+    .set("market_year", request.payload.market_year)
+    .set("jso_type", request.payload.jso_type)
+    .set("cell_dc", request.payload.cell_dc)
+    .set("dc_to_location", request.payload.dc_to_location)
+    .set("dc_from_location", request.payload.dc_from_location)
+    .set("cell_local_design_priority", request.payload.cell_local_design_priority)
+    .set("cell_revision_comment", request.payload.cell_revision_comment)
+    .set("cell_homes_pocketed", request.payload.cell_homes_pocketed)
+    .set("cell_status", request.payload.cell_status)
+    .set("number_of_pdos", request.payload.number_of_pdos)
   console.log(sql.toString(),"\n")
   return sql.toString();
 }
@@ -80,25 +79,24 @@ module.exports = [
           franchise:Joi.string().allow('').description('Franchise'),
           map_number:Joi.string().allow('').description('Map Number'),
           nodes_within_cell:Joi.string().allow('').description('Nodes Within Cell'),
-          // NEED TO ADD TO THE FRONT END MODAL
-          // cell_rfs_date:Joi.string().allow('').description('Region'),
-          // homes_serviceable:Joi.string().allow('').description('Region'),
-          // remaining_homes_unserviceable:Joi.string().allow('').description('Region'),
-          // jso_street_location:Joi.string().allow('').description('Region'),
-          // jso_pole_number:Joi.string().allow('').description('Region'),
-          // jso_latitude:Joi.string().allow('').description('Region'),
-          // jso_longitude:Joi.string().allow('').description('Region'),
-          // cell_build_year:Joi.string().allow('').description('Region'),
-          // market_year:Joi.string().allow('').description('Region'),
-          // jso_type:Joi.string().allow('').description('Region'),
-          // cell_dc:Joi.string().allow('').description('Region'),
-          // dc_to_location:Joi.string().allow('').description('Region'),
-          // dc_from_location:Joi.string().allow('').description('Region'),
-          // cell_local_design_priority:Joi.string().allow('').description('Region'),
-          // cell_revision_comment:Joi.string().allow('').description('Region'),
-          // cell_homes_pocketed:Joi.string().allow('').description('Region'),
-          // cell_status:Joi.string().allow('').description('Region'),
-          // number_of_pdos:Joi.string().allow('').description('Region'),
+          cell_rfs_date:Joi.string().allow('').description('Region'),
+          homes_serviceable:Joi.string().allow('').description('Region'),
+          remaining_homes_unserviceable:Joi.string().allow('').description('Region'),
+          jso_street_location:Joi.string().allow('').description('Region'),
+          jso_pole_number:Joi.string().allow('').description('Region'),
+          jso_latitude:Joi.string().allow('').description('Region'),
+          jso_longitude:Joi.string().allow('').description('Region'),
+          cell_build_year:Joi.string().allow('').description('Region'),
+          market_year:Joi.string().allow('').description('Region'),
+          jso_type:Joi.string().allow('').description('Region'),
+          cell_dc:Joi.string().allow('').description('Region'),
+          dc_to_location:Joi.string().allow('').description('Region'),
+          dc_from_location:Joi.string().allow('').description('Region'),
+          cell_local_design_priority:Joi.string().allow('').description('Region'),
+          cell_revision_comment:Joi.string().allow('').description('Region'),
+          cell_homes_pocketed:Joi.string().allow('').description('Region'),
+          cell_status:Joi.string().allow('').description('Region'),
+          number_of_pdos:Joi.string().allow('').description('Region'),
         },
       },
       jsonp: 'callback',
@@ -107,7 +105,7 @@ module.exports = [
         db
           .query(formatSQL(request))
           .then(function (data) {
-            reply("Cell Successfully Inserted.");
+            reply("Successful");
           })
           .catch(function (err) {
             reply(err.detail, console.log(err.detail));

@@ -68,7 +68,7 @@
                         <span class='user_role nav-link waves-effect m-0 p-0'></span>
                     </div>
                     <div class="nav-item ">
-                        <a class="nav-link waves-effect " id="log_out" href="login.html" >Log Out</a>
+                        <a class="nav-link waves-effect " id="log_out" href="login.html">Log Out</a>
                     </div>
                 </div>
 
@@ -124,9 +124,9 @@
 
                                 <label for="permitting_rolt_search" class="col-4 m-0 p-1 col-form-label">Permitting Rolt
                                 </label>
-                                
+
                                 <input type="text" class=" col-6 m-0 p-1 form-control" name="permitting_rolt_search" id="permitting_rolt_search" placeholder="Search for ROLT-.."
-                                autofocus>
+                                    autofocus>
                                 <p class=" " id="no_results"></p>
                                 <i class="fa fa-search p-2" aria-hidden="true"></i>
                                 <!-- Search form -->
@@ -294,7 +294,7 @@
                                 <li class="list-group-item mb-1" id="first_pictures">Pictures</li>
                                 <input type="hidden" name="permitting_rolt_number" id="permitting_rolt_number" />
                                 <input type="hidden" name="id" id="id" />
-                                <span class='locationeditbtnspan editbtns'  data-toggle="tooltip" data-placement="left" title="Edit First Location">
+                                <span class='locationeditbtnspan editbtns' data-toggle="tooltip" data-placement="left" title="Edit First Location">
                                     <button type="button" class="btn btn-primary btn-md col-lg-12 locationeditbtn editbtns">Edit</button>
                                 </span>
                             </ul>
@@ -394,35 +394,20 @@
             </div>
             <!-- /Permitting Function Table -->
 
-
-            <!-- <button type="button" id="permittingTableSuccessbtn" class="btn btn-primary waves-effect mt-3 " data-toggle="modal" data-target="#permittingTableSuccess">Success Modal</button> -->
-
-
             <!-- Permitting Update Success Modal -->
-            <div class="modal fade right" id="permittingTableSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
-                data-backdrop='false'>
-                <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
+            <div class="modal fade bottom" id="permittingTableSuccess" tabindex="-1" role="dialog" data-backdrop='false'>
+                <div class="modal-dialog modal-success modal-notify modal-frame modal-bottom" role="document">
                     <!--Content-->
                     <div class="modal-content">
-                        <!--Header-->
-                        <div class="modal-header">
-                            <p class="heading lead">Success</p>
-
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true" class="white-text">&times;</span>
-                            </button>
-                        </div>
-
                         <!--Body-->
-                        <div class="modal-body">
+                        <div class="modal-body m-0 p-0">
                             <div class="text-center">
                                 <i class="fa fa-check fa-4x mb-3 animated rotateIn"></i>
                                 <p>Permitting Table Successfully Updated</p>
                             </div>
                         </div>
-
                         <!--Footer-->
-                        <div class="modal-footer justify-content-center">
+                        <div class="modal-footer justify-content-center m-0 p-0">
                             <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal">Close</a>
                         </div>
                     </div>
@@ -433,7 +418,7 @@
 
 
             <!-- Add Permitting Modal -->
-            <div class="modal fade right" id="addpermittingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade right" id="addpermittingmodal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg  modal-right" role="document">
                     <div class="modal-content ">
                         <!--Header-->
@@ -448,7 +433,6 @@
                         <div class="modal-body py-1 ">
                             <!-- Default auto-sizing form -->
                             <form>
-                                <!-- method='POST' actions='http://localhost:8011/insert_permitting/v1/ftth.permitting'> -->
                                 <!-- Main Modal Grid row -->
                                 <div class="form-row ">
                                     <!-- Generic Permitting Stuff -->
@@ -825,13 +809,11 @@
                                 </div>
                                 <!-- END MAIN ROW MODAL -->
                                 <!-- Default auto-sizing form -->
+                            </form>
                         </div>
-                        </form>
                         <!--Footer-->
                         <!-- <div class="d-flex justify-content-center pb-2 fixed-bottom"> -->
-                                <div class="modal-footer d-flex justify-content-around">
-                                   
-             
+                        <div class="modal-footer d-flex justify-content-around">
                             <button id="addpermittingbtn" class="btn btn-primary">Add Permitting</button>
                             <!-- <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button> -->
                         </div>
@@ -841,22 +823,13 @@
             </div>
             <!-- /ADD Permitting Modal -->
             <!-- Add Permitting Success Modal -->
-            <div class="modal fade right" id="addpermittingSuccess" tabindex="-1" role="dialog" aria-labelledby="addpermittingSuccessLabel"
-                aria-hidden="true" data-backdrop='false'>
-                <div class="modal-dialog modal-notify modal-success modal-side modal-bottom-right" role="document">
+            <div class="modal fade bottom" id="addpermittingSuccess" tabindex="-1" role="dialog" data-backdrop='false'>
+                <div class="modal-dialog modal-success modal-notify modal-frame modal-bottom" role="document">
                     <!--Content-->
                     <div class="modal-content">
-                        <!--Header-->
-                        <div class="modal-header">
-                            <p class="heading lead">Success</p>
-
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true" class="white-text">&times;</span>
-                            </button>
-                        </div>
 
                         <!--Body-->
-                        <div class="modal-body">
+                        <div class="modal-body m-0 p-0">
                             <div class="text-center">
                                 <i class="fa fa-check fa-4x mb-3 animated rotateIn"></i>
                                 <p>New Permitting Successfully Added</p>
@@ -864,7 +837,7 @@
                         </div>
 
                         <!--Footer-->
-                        <div class="modal-footer justify-content-center">
+                        <div class="modal-footer justify-content-center m-0 p-0">
                             <a type="button" class="btn btn-outline-success waves-effect" data-dismiss="modal">Close</a>
                         </div>
                     </div>

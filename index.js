@@ -7,7 +7,6 @@ const config = require('./config');
 const Basic = require('hapi-auth-basic');
 const Bcrypt = require('bcrypt');
 const db = require('./config/db.js');
-// const Users = require('./config/users');
 
 // Create a server with a host and port
 const server = new Hapi.Server();
@@ -19,7 +18,13 @@ server.connection({
   }
 });
 
- 
+//THIS IS CONVOLUTED FOR SOME REASON EVERY JOI VALIDATION ERROR JUST COMES BACK AS A 400
+server.ext('onPreResponse', function (request, reply) {
+  if (request.response.statusCode !== 200 ){
+    return reply(request.response.output.payload.message);
+  }
+  return reply.continue();
+});
 
 //THIS FUNCTION TAKES IN THE INPUT FROM THE LOG IN AND RUNS A QUERY TO THE DATABASE CHECKS FOR THE USER NAME AND THEN COMPARES THE ENCRYPTED PASSWORDS
 var validate = function (request, username, password, callback) {

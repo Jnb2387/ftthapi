@@ -110,7 +110,7 @@ module.exports = [
         db
           .query(formatSQL(request))
           .then(function (data) {
-            reply("Cell Successfully Updated.");
+            reply("Successful");
           })
           .catch(function (err) {
             reply(err.detail, console.log(err));
