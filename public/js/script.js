@@ -25,8 +25,7 @@ $(document).ready(function () {
                 // $(".editbtns").prop("disabled", true);
                 return false;
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.log(err);
         }
     }
@@ -37,54 +36,54 @@ $(document).ready(function () {
         axios.get("http://localhost:8011/logout")
     });
     // END USER STUFF
- //Autocomplete for the Search Cell
- $("#cellsearch").autocomplete({
-    minLength: 2,
-    autoFocus: true,
-    sortResults: true,
-    source: function (request, response) {
-        var term = request.term; // The term being typed in the input
-        let cellname = []; // To hold all the response names
-        $.getJSON("http://localhost:8011/query/v1/ftth.cells?columns=pni_cell_name,netwin_cell_jso_name&filter=pni_cell_name%20ilike%20'" + term + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + term + "%25'&limit=20", function (data, status, xhr) {
-            data.map(function (pni_cell_name, netwin_cell_jso_name) { // loop through the array from the getJSON request
-                cellname.push(pni_cell_name.pni_cell_name); // add the name of the pni_cell_name to the cellname Array created above.
-                cellname.push(pni_cell_name.netwin_cell_jso_name); // add the name of the netwin_cell_jso_name to the cellname Array created above
+    //Autocomplete for the Search Cell
+    $("#cellsearch").autocomplete({
+        minLength: 2,
+        autoFocus: true,
+        sortResults: true,
+        source: function (request, response) {
+            var term = request.term; // The term being typed in the input
+            let cellname = []; // To hold all the response names
+            $.getJSON("http://localhost:8011/query/v1/ftth.cells?columns=pni_cell_name,netwin_cell_jso_name&filter=pni_cell_name%20ilike%20'" + term + "%25'%20OR%20netwin_cell_jso_name%20ilike%20'" + term + "%25'&limit=20", function (data, status, xhr) {
+                data.map(function (pni_cell_name, netwin_cell_jso_name) { // loop through the array from the getJSON request
+                    cellname.push(pni_cell_name.pni_cell_name); // add the name of the pni_cell_name to the cellname Array created above.
+                    cellname.push(pni_cell_name.netwin_cell_jso_name); // add the name of the netwin_cell_jso_name to the cellname Array created above
+                });
+                console.log('Data From autocomplete: ', data)
+                var desiredcellnames = cellname.filter(function (value) { // now that both values are in the cellname Array, filter out the ones that start with the same characters as the search term
+                    if (value !== null && value.toUpperCase().substring(0, 2) == term.toUpperCase().substring(0, 2)) { // make them both uppercase to match.
+                        return value; // return only the matching values into the desiredcellnames
+                    }
+                });
+                desiredcellnames.sort() //ITS DIFFICULT TO SORT IN THE DATABASE BECAUSE IT CAN BE EITHER pni_cell_name OR netwin_cell_jso_name
+                response(desiredcellnames); // just send the desiredcellnames.
             });
-            console.log('Data From autocomplete: ', data)
-            var desiredcellnames = cellname.filter(function (value) { // now that both values are in the cellname Array, filter out the ones that start with the same characters as the search term
-                if (value !== null && value.toUpperCase().substring(0, 2) == term.toUpperCase().substring(0, 2)) { // make them both uppercase to match.
-                    return value; // return only the matching values into the desiredcellnames
-                }
-            });
-            desiredcellnames.sort() //ITS DIFFICULT TO SORT IN THE DATABASE BECAUSE IT CAN BE EITHER pni_cell_name OR netwin_cell_jso_name
-            response(desiredcellnames); // just send the desiredcellnames.
-        });
-    }, //IF THERE IS NO DATA IN THE RESPONSE
-    response: function (event, ui) {
-        if (!ui.content.length) {
-            var noResult = {
-                value: "",
-                label: "No results found"
-            };
-            ui.content.push(noResult);
+        }, //IF THERE IS NO DATA IN THE RESPONSE
+        response: function (event, ui) {
+            if (!ui.content.length) {
+                var noResult = {
+                    value: "",
+                    label: "No results found"
+                };
+                ui.content.push(noResult);
+            }
+        }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
+        select: async function (e, data) {
+            await getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
+            await getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
+            await getHomesPassed(data.item.value);
+            await getFootages(data.item.value);
         }
-    }, //WHEN SOMEONE SELECTS A VALUE FROM THE AUTOCOMPLETE DROPDOWN
-    select: async function (e, data) {
-        await getData(data.item.value); // Run the getData function with the parameters of the selected value in the autocomplete
-        await getfunctiontable(data.item.value); // Run the getfunctiontable for the associated selected value.
-        await getHomesPassed(data.item.value);
-        await getFootages(data.item.value);
-    }
-});
-//WHEN THE PAGE IS SCROLLED THE USER WONT SEE WHAT CELL THEY SEARCHED FOR SO ADD IT TO THE NAVBAR
-$(window).scroll(function () {
-    if ($(".navbar").hasClass("top-nav-collapse")) {
-        var cell = $("#cellsearch").val();
-        $("#nav_cell_name").html(cell);
-    } else {
-        $("#nav_cell_name").empty()
-    }
-});
+    });
+    //WHEN THE PAGE IS SCROLLED THE USER WONT SEE WHAT CELL THEY SEARCHED FOR SO ADD IT TO THE NAVBAR
+    $(window).scroll(function () {
+        if ($(".navbar").hasClass("top-nav-collapse")) {
+            var cell = $("#cellsearch").val();
+            $("#nav_cell_name").html(cell);
+        } else {
+            $("#nav_cell_name").empty()
+        }
+    });
     async function getData(cell) {
         try {
             const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&filter=pni_cell_name%20ilike%20'" + cell + "'OR%20netwin_cell_jso_name%20ilike%20'" + cell + "'&limit=100");
@@ -121,31 +120,91 @@ $(window).scroll(function () {
             $("#remaining_homes_unserviceable").html(responsedata.remaining_homes_unserviceable);
             $("#netwin_project_name").html(responsedata.netwin_project_name);
 
-            //REMOVE THE PREVIOUS cellLayer
-            map.eachLayer(function (layer) {
-                if (map.hasLayer(cellLayer)) {
-                    map.removeLayer(cellLayer);
-                    map.removeLayer(jsomarker);
-                    if (map.hasLayer(cellsinarea_map)) {
-                        map.removeLayer(cellsinarea_map);
-                        console.log('cellsinarea_map Removed.');
-                    }
+            //=====================MAPBOX
+            // Insert the layer beneath any symbol layer.
+            var layers = map.getStyle().layers; //GET ALL THE LAYERS IN THE STYLE
+            var labelLayerId;
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                    labelLayerId = layers[i].id; //ADD EACH LAYER THAT IS A TEXT OR SYMBOL 
+                    break;
                 }
-            });
-            // if the geometry object is empty then dont run this
-            if (!isEmpty(geom.features[0].geometry)) {
-                cellLayer = L.geoJSON(geom).addTo(map);
-                // cellLayer2 = L.geoJSON(geom).addTo(map2);
-                map.fitBounds(cellLayer.getBounds());
-                jsomarker = L.circle(jsogeom, {
-                    radius: 20,
-                    color: 'yellow'
-                }).addTo(map)
-                    .bindPopup("<b class='text-center'>JSO Name</b></br>" + responsedata.netwin_cell_jso_name)
-                    .openPopup();
-            } else {
-                console.log('No Geometry');
+                //REMOVE THE OLD CELL LAYER
+                if (layers[i].id === "cellpolygon") {
+                    console.log("REMOVED cellpolygon");
+                    map.removeLayer("cellpolygon");
+                    map.removeLayer("cellpolygon_outline");
+                    map.removeSource("cellpolygon");
+                }
+                //REMOVE ANY CELLS IN VIEW SEARCHES
+                if (layers[i].id === 'cellsinview') {
+                    map.removeLayer("cellsinview");
+                    map.removeLayer("cellsinview_outline");
+                    map.removeSource("cellsinview");
+                }
             }
+            //ADD THE SEARCHED CELL LAYER
+            map.addSource('cellpolygon', {
+                'type': 'geojson',
+                'data': geom
+            });
+            map.addLayer({
+                'id': 'cellpolygon',
+                'type': 'fill',
+                'source': 'cellpolygon',
+                'layout': {},
+                'paint': {
+                    'fill-color': 'blue',
+                    'fill-opacity': 0.6,
+                }
+
+            }, labelLayerId);
+            map.addLayer({
+                'id': 'cellpolygon_outline',
+                'type': 'line',
+                'source': 'cellpolygon',
+                'layout': {},
+                'paint': {
+                    'line-color': 'black',
+                    'line-width': 2
+                }
+            }, labelLayerId);
+            // TURF FINDS THE EXTENT OF THE POLYGON AND THEN I JUST TELL MAPBOX TO ZOOM TO IT 'QUICKLY' AND PUT A LITTLE SPACING AROUND THE ZOOM
+            var bounds = turf.extent(geom);
+            map.fitBounds(bounds, {
+                duration: 0,
+                padding: 20
+            });
+
+
+
+
+
+            //==================================LEAFLET
+            //REMOVE THE PREVIOUS cellLayer
+            // map.eachLayer(function (layer) {
+            //     if (map.hasLayer(cellLayer)) {
+            //         map.removeLayer(cellLayer);
+            //         map.removeLayer(jsomarker);
+            //         if (map.hasLayer(cellsinarea_map)) {
+            //             map.removeLayer(cellsinarea_map);
+            //             console.log('cellsinarea_map Removed.');
+            //         }
+            //     }
+            // });
+            // // if the geometry object is empty then dont run this
+            // if (!isEmpty(geom.features[0].geometry)) {
+            //     cellLayer = L.geoJSON(geom).addTo(map);
+            //     map.fitBounds(cellLayer.getBounds());
+            //     jsomarker = L.circle(jsogeom, {
+            //             radius: 20,
+            //             color: 'yellow'
+            //         }).addTo(map)
+            //         .bindPopup("<b class='text-center'>JSO Name</b></br>" + responsedata.netwin_cell_jso_name)
+            //         .openPopup();
+            // } else {
+            //     console.log('No Geometry');
+            // }
         } catch (error) {
             console.log(error);
         }
@@ -265,64 +324,150 @@ $(window).scroll(function () {
         }
     }
     //================= END EXTRACT CELL DATA
-   
+
     //LEAFLET MAP SET UP
     var map;
-    function regular_map() {
-        map = L.map('map').setView([42, -74.09], 7);
 
-        // var openstreetmaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    function regular_map() {
+        //==========================LEAFLET
+        // map = L.map('map').setView([42, -74.09], 7);
+        // // var openstreetmaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        // // }).addTo(map);
+        // var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+        //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        //     subdomains: 'abcd',
         // }).addTo(map);
-        var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-            subdomains: 'abcd',
-        }).addTo(map);
+
+        //=======================MAPBOX
+        // mapboxgl.accessToken =
+        //     'pk.eyJ1IjoiYnJhZGxleTIzODciLCJhIjoiY2pnMTk0ZTk2NmJzOTJxbnZpMjl1ZGsxbiJ9.L-BSY_VjUrkHL3ov0OciKQ';
+        map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: '/js/style.json',
+            //  style: 'mapbox://styles/mapbox/dark-v9', //hosted style id
+            center: [-74.38, 41], // starting position
+            zoom: 6, // starting zoom
+            hash: true
+        });
+        // Add zoom and rotation controls to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+        // Add a button to make the map full-screen
+        map.addControl(new mapboxgl.FullscreenControl());
+
     }
     regular_map();
-    //Disable and Enable the find cells in view button based on zoom level
-    map.on('zoomend', function () {
-        if (map.getZoom() < 15) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
+    //==============================MAPBOX ONE
+    map.on('zoom', function () {
+        if (map.getZoom() < 3) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
             $("#cellsinareabtn").addClass("disabled");
         } else {
             $("#cellsinareabtn").removeClass("disabled");
         }
-    });
+    })
     async function findcellsinarea(coords) {
         try {
-            // DONT RUN FUNCTION IF THERE IS NO CELL SEARCHED
             if (!responsedata) {
                 alert("Please Search for A Cell");
                 return;
             }
-            map.eachLayer(function (layer) {
-                if (map.hasLayer(cellsinarea_map)) {
-                    map.removeLayer(cellsinarea_map);
-                    console.log('cellsinareageom Layer Removed');
+            var layers = map.getStyle().layers; //GET ALL THE LAYERS IN THE STYLE
+            var labelLayerId;
+            for (var i = 0; i < layers.length; i++) {
+                if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                    labelLayerId = layers[i].id; //ADD EACH LAYER THAT IS A TEXT OR SYMBOL 
+                    break;
                 }
-            });
-            let bounds = map.getBounds().toBBoxString();
+                //REMOVE ANY CELLS IN VIEW SEARCHES
+                if (layers[i].id === 'cellsinview') {
+                    console.log('REMOVED cellsinview')
+                    map.removeLayer("cellsinview");
+                    map.removeLayer("cellsinview_outline");
+                    map.removeSource("cellsinview");
+                }
+            }
+            let bounds = map.getBounds().toArray().toString();
             const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
             cellsinareageom = response.data;
             console.log('Cell in area data: ', cellsinareageom);
 
-            var cellsinareastyle = {
-                "color": "red",
-                "weight": 5,
-                "opacity": 0.65
-            };
-            cellsinarea_map = L.geoJSON(cellsinareageom, {
-                style: cellsinareastyle
-            }).addTo(map);
-
-            cellLayer.bringToFront();
-            cellsinarea_map.eachLayer(function (layer) {
-                layer.bindPopup(layer.feature.properties.netwin_cell_jso_name);
-            });
-        } catch (error) {
-            console.log(error);
+            map.addSource('cellsinview', {
+                'type': 'geojson',
+                'data': response.data
+            })
+            map.addLayer({
+                'id': 'cellsinview',
+                'type': 'fill',
+                'source': 'cellsinview',
+                'layout': {},
+                'paint': {
+                    'fill-color': 'red',
+                    'fill-opacity': 0.6,
+                    'fill-outline-color': 'black'
+                }
+            }, 'cellpolygon')
+            map.addLayer({
+                'id': 'cellsinview_outline',
+                'type': 'line',
+                'source': 'cellsinview',
+                'layout': {},
+                'paint': {
+                    'line-color': 'white',
+                    'line-width': 1
+                }
+            }, 'cellpolygon')
+        } catch (err) {
+            console.log(err)
         }
     }
+
+    //=============================LEAFLET 
+    //Disable and Enable the find cells in view button based on zoom level
+    // map.on('zoomend', function () {
+    //     if (map.getZoom() < 15) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
+    //         $("#cellsinareabtn").addClass("disabled");
+    //     } else {
+    //         $("#cellsinareabtn").removeClass("disabled");
+    //     }
+    // });
+
+    // async function findcellsinarea(coords) {
+    //     try {
+    //         // DONT RUN FUNCTION IF THERE IS NO CELL SEARCHED
+    //         if (!responsedata) {
+    //             alert("Please Search for A Cell");
+    //             return;
+    //         }
+    //         map.eachLayer(function (layer) {
+    //             if (map.hasLayer(cellsinarea_map)) {
+    //                 map.removeLayer(cellsinarea_map);
+    //                 console.log('cellsinareageom Layer Removed');
+    //             }
+    //         });
+    //         let bounds = map.getBounds().toBBoxString();
+    //         const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
+    //         cellsinareageom = response.data;
+    //         console.log('Cell in area data: ', cellsinareageom);
+
+    //         var cellsinareastyle = {
+    //             "color": "red",
+    //             "weight": 5,
+    //             "opacity": 0.65
+    //         };
+    //         cellsinarea_map = L.geoJSON(cellsinareageom, {
+    //             style: cellsinareastyle
+    //         }).addTo(map);
+
+    //         cellLayer.bringToFront();
+    //         cellsinarea_map.eachLayer(function (layer) {
+    //             layer.bindPopup(layer.feature.properties.netwin_cell_jso_name);
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
+
     $("#cellsinareabtn").on("click", function () {
         findcellsinarea();
     });
@@ -344,23 +489,23 @@ $(window).scroll(function () {
                     targets: 3
                 }],
                 columns: [{
-                    data: "design_function",
-                    name: "design_function"
-                }, {
-                    data: "resource",
-                    name: "resource"
-                },
-                //  {
-                //     data: "object_id"
-                // }, 
-                {
-                    data: "date_complete",
-                    name: "date_complete"
-                }, {
-                    data: "comment",
-                    name: "comment",
-                    width: "40%"
-                }
+                        data: "design_function",
+                        name: "design_function"
+                    }, {
+                        data: "resource",
+                        name: "resource"
+                    },
+                    //  {
+                    //     data: "object_id"
+                    // }, 
+                    {
+                        data: "date_complete",
+                        name: "date_complete"
+                    }, {
+                        data: "comment",
+                        name: "comment",
+                        width: "40%"
+                    }
                 ],
                 "order": [
                     [2, "desc"]
@@ -374,7 +519,7 @@ $(window).scroll(function () {
                     create: {
                         type: 'POST',
                         url: "http://localhost:8011/insert_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name,
-                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                        data: function (d) { //BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -389,7 +534,7 @@ $(window).scroll(function () {
                     edit: {
                         type: 'POST',
                         url: "http://localhost:8011/update_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name + "&id=_id_",
-                        data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                        data: function (d) { //BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
                             for (var key in d.data) {
                                 obj = d.data[key];
@@ -413,41 +558,41 @@ $(window).scroll(function () {
                     label: "Design Function",
                     type: "select",
                     options: [{
-                        label: "",
-                        value: null
-                    },
-                    {
-                        label: "Cell Pocketed",
-                        value: "Cell Pocketed"
-                    },
-                    {
-                        label: "Cell Designed",
-                        value: "Cell Designed"
-                    },
-                    {
-                        label: "Cell Issued to QC",
-                        value: "Cell Issued to QC"
-                    },
-                    {
-                        label: "Cell Drafted in Netwin",
-                        value: "Cell Drafted in Netwin"
-                    },
-                    {
-                        label: "Cell Released to Construction",
-                        value: "Cell Released to Construction"
-                    },
-                    {
-                        label: "Cell QC Design",
-                        value: "Cell QC Design"
-                    },
-                    {
-                        label: "Cell Pocketing QC",
-                        value: "Cell Pocketing QC"
-                    },
-                    {
-                        label: "Cell Design Issued",
-                        value: "Cell Design Issued"
-                    },
+                            label: "",
+                            value: null
+                        },
+                        {
+                            label: "Cell Pocketed",
+                            value: "Cell Pocketed"
+                        },
+                        {
+                            label: "Cell Designed",
+                            value: "Cell Designed"
+                        },
+                        {
+                            label: "Cell Issued to QC",
+                            value: "Cell Issued to QC"
+                        },
+                        {
+                            label: "Cell Drafted in Netwin",
+                            value: "Cell Drafted in Netwin"
+                        },
+                        {
+                            label: "Cell Released to Construction",
+                            value: "Cell Released to Construction"
+                        },
+                        {
+                            label: "Cell QC Design",
+                            value: "Cell QC Design"
+                        },
+                        {
+                            label: "Cell Pocketing QC",
+                            value: "Cell Pocketing QC"
+                        },
+                        {
+                            label: "Cell Design Issued",
+                            value: "Cell Design Issued"
+                        },
                     ],
                     attr: {
                         required: true
@@ -455,7 +600,7 @@ $(window).scroll(function () {
                 }, {
                     name: "resource",
                     label: "Resource",
-                    def: username.text()//grabbed from variable at the top
+                    def: username.text() //grabbed from variable at the top
 
                 }, {
                     name: "date_complete",
@@ -464,7 +609,7 @@ $(window).scroll(function () {
                     def: function () {
                         return new Date();
                     },
-                    format: 'M/DD/YYYY',//THIS MAKES SURE THE DATE COLUMN MATCHES THIS FORMAT
+                    format: 'M/DD/YYYY', //THIS MAKES SURE THE DATE COLUMN MATCHES THIS FORMAT
                 }, {
                     name: "comment",
                     label: "Comment"
@@ -495,24 +640,24 @@ $(window).scroll(function () {
 
             });
             new $.fn.dataTable.Buttons(functiondatatable, [{
-                extend: "create",
-                text: "<i class='fa fa-plus text-success'></i> Add Function",
-                editor: editor
-            },
-            {
-                extend: "edit",
-                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-                editor: editor
-            },
-            {
-                extend: "remove",
-                text: "<i class='fa fa-trash-o '></i> Delete Function",
-                editor: editor
-            }, {
-                extend: 'csvHtml5',
-                text: 'Export Functions',
-                title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
-            }
+                    extend: "create",
+                    text: "<i class='fa fa-plus text-success'></i> Add Function",
+                    editor: editor
+                },
+                {
+                    extend: "edit",
+                    text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+                    editor: editor
+                },
+                {
+                    extend: "remove",
+                    text: "<i class='fa fa-trash-o '></i> Delete Function",
+                    editor: editor
+                }, {
+                    extend: 'csvHtml5',
+                    text: 'Export Functions',
+                    title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
+                }
             ]);
 
             if (user_role.text() == 'admin') {
@@ -586,10 +731,10 @@ $(window).scroll(function () {
         }
     }
     $("#cellstatisticsbtn").on('click', function (e) {
-        pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch
+        pni_or_netwin_name = $("#cellsearch").val() // GRAB THE VALUE OF THE cellsearch
         if (!responsedata) {
             alert("Please Search for A Cell")
-            e.stopPropagation();// if there is no responsedata then dont open the modal
+            e.stopPropagation(); // if there is no responsedata then dont open the modal
             return
         }
         getsheathtable(pni_or_netwin_name);
@@ -602,7 +747,7 @@ $(window).scroll(function () {
             e.stopPropagation(); // if there is no responsedata then dont open the modal
             return
         }
-        pni_or_netwin_name = $("#cellsearch").val()// GRAB THE VALUE OF THE cellsearch AND PUT IT IN THE HEADER OF THE MODAL
+        pni_or_netwin_name = $("#cellsearch").val() // GRAB THE VALUE OF THE cellsearch AND PUT IT IN THE HEADER OF THE MODAL
         $("#editcellheader").html(pni_or_netwin_name)
         console.log('Edit Cell Prefilled Data: ', responsedata)
         Object.keys(responsedata).forEach(function (key) { //REMOVE THE '-' THAT WAS ADDED ABOVE SO THAT IT WONT GET SEND TO THE DATABASE
@@ -610,7 +755,7 @@ $(window).scroll(function () {
                 responsedata[key] = null;
             }
         })
-        $("#cellmodalform")[0].reset()//CLEAR ALL THE INPUTS SO THAT IF SOMETHING ISNT FILLED IN THE DATABASE IT WONT CLEAR THE PREVIOUS INPUT
+        $("#cellmodalform")[0].reset() //CLEAR ALL THE INPUTS SO THAT IF SOMETHING ISNT FILLED IN THE DATABASE IT WONT CLEAR THE PREVIOUS INPUT
         //PREFILL THE CELL DATA
         $("#netwin_cell_jso_name_edit").val(responsedata.netwin_cell_jso_name);
         $("#cell_state_edit").val(responsedata.cell_state);
@@ -791,36 +936,34 @@ $(window).scroll(function () {
     //NOW SEND ALL UPDATED CELL, FOOTAGES AND HOMES PASSED DATA
     $("#cellupdatebtn").on('click', async function () {
         await updateCellTable();
-        if (footagesresponsedata) {//IF THERE ISNT A FIELD IN THE FOOTAGES TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE footagesresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
+        if (footagesresponsedata) { //IF THERE ISNT A FIELD IN THE FOOTAGES TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE footagesresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
             await updateFootagesTable();
         } else {
             insertFootagesTableFromEdit()
         }
-        if (homesresponsedata) {//IF THERE ISNT A FIELD IN THE HOMES PASSED TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE homessresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
+        if (homesresponsedata) { //IF THERE ISNT A FIELD IN THE HOMES PASSED TABLE FOR THE CELL ALREADY THEN IT NEEDS TO BE CREATED SO CHECK IF THE homessresponsedata HAS DATA AND THEN IF NOT MAKE AN INSERT INSTEAD OF UPDATE
             await updateHomesPassedTable();
         } else {
             await insertHomesPassedTableFromEdit();
         }
-        await getData(pni_or_netwin_name);// WHEN THE CELL IS UPDATED RELOAD THE VIEW AGAIN
+        await getData(pni_or_netwin_name); // WHEN THE CELL IS UPDATED RELOAD THE VIEW AGAIN
         await getHomesPassed(pni_or_netwin_name);
         await getFootages(pni_or_netwin_name);
         //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
         if (homespassedupdateresponse == 'Successful' && footagesupdateresponse == 'Successful' && cellupdateresponse == 'Successful') {
-            $("#addcellSuccess .modal-body p").text("Cell Successfully Updated")//CHANGE THE TEXT OF THE MODAL
+            $("#addcellSuccess .modal-body p").text("Cell Successfully Updated") //CHANGE THE TEXT OF THE MODAL
             $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
             setTimeout(function () {
-                $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
+                $("#addcellSuccess").modal('hide'); //HIDE THE SUCCESS MODAL
             }, 4000);
-            $("#cellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
-        }
-        else {
+            $("#cellmodal").modal('hide'); //HIDE THE ADD CELL MODAL 
+        } else {
             alert("Error Updating Cell Please Check All Columns")
         }
     });
     // END UPDATE CELL FOOTAGES AND HOMES PASSED
 
     //====================================ADD NEW CELL, FOOTAGES AND HOMES PASSED==========================================================
-    var cellinsertresponse;
     async function addCell() {
         try {
             const response = await axios.post("http://localhost:8011/insert_cell/v1/ftth.cells", {
@@ -858,14 +1001,18 @@ $(window).scroll(function () {
                 cell_status: $("#cell_status_add").val(),
                 number_of_pdos: $("#number_of_pdos_add").val(),
             });
-            console.log("Inserted into Cells Table")
-            cellinsertresponse = response.data;
+            if (response.data == "Successful") {
+                console.log("Inserted into Cells Table")
+
+            } else {
+                // alert(response.data)
+                // return
+            }
         } catch (error) {
             console.log(error)
         }
     }
     //INSERT FOOTAGES TABLE
-    var footagesinsertresponse;
     async function insertFootagesTable() {
         try {
             const response = await axios.post("http://localhost:8011/insert_footages/v1/ftth.footages", {
@@ -878,17 +1025,22 @@ $(window).scroll(function () {
                 ug: $("#ug_footage_add").val(),
                 total: $("#total_footage_add").val()
             });
-            console.log("Inserted into Footages Table")
-            footagesinsertresponse = response.data;
+            if (response.data == "Successful") {
+                console.log("Inserted into Footages Table")
+
+            } else {
+                // return
+                // alert(response.data)
+            }
         } catch (error) {
             console.log(error)
         }
     }
     //INSERT HOMES PASSED TABLE
-    var homespassedinsertresponse;
+
     async function insertHomesPassedTable() {
         try {
-            const response = await axios.post("http://localhost:8011/insert_homes_passed/v1/ftth.homes_passed", {//THIS USES THE SAME ROUTE AS THE INSERTFROMEDIT ONE JUST WITH THE ID ITS GRABBING CHANGED FROM _edit TO _add
+            const response = await axios.post("http://localhost:8011/insert_homes_passed/v1/ftth.homes_passed", { //THIS USES THE SAME ROUTE AS THE INSERTFROMEDIT ONE JUST WITH THE ID ITS GRABBING CHANGED FROM _edit TO _add
                 pni_cell_name: $("#pni_cell_name_add").val(),
                 netwin_cell_jso_name: $("#netwin_cell_jso_name_add").val(),
                 aerial: $("#aerial_homes_passed_add").val(),
@@ -900,10 +1052,20 @@ $(window).scroll(function () {
                 ug: $("#UG_homes_passed_add").val(),
                 total: $("#total_homes_passed_add").val()
             });
-            console.log("Inserted into Homes Passed Table")
-            homespassedinsertresponse = response.data
+            if (response.data == "Successful") {
+                console.log("Inserted into Homes Passed Table")
+                $("#addcellSuccess .modal-body p").text("Cell Successfully Inserted") //CHANGE THE TEXT OF THE MODAL 
+                $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
+                setTimeout(function () {
+                    $("#addcellSuccess").modal('hide'); //HIDE THE SUCCESS MODAL
+                }, 4000);
+                $("#addcellmodal").modal('hide'); //HIDE THE ADD CELL MODAL 
+
+            } else {
+                alert("error")
+            }
         } catch (error) {
-            alert(error)
+            alert('Homespassed insert: ')
         }
     }
     // WHEN THE ADD CELL BUTTON IS CLICKED RUN EACH FUNCTION TO ADD THE CELL AND THEN THE FOOTAGES AND THEN THE HOMES PASSED
@@ -912,17 +1074,11 @@ $(window).scroll(function () {
         await insertFootagesTable();
         await insertHomesPassedTable();
         //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
-        if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
-            $("#addcellSuccess .modal-body p").text("Cell Successfully Inserted")//CHANGE THE TEXT OF THE MODAL 
-            $("#addcellSuccess").modal('show'); // Set a timeout to hide the element again
-            setTimeout(function () {
-                $("#addcellSuccess").modal('hide');//HIDE THE SUCCESS MODAL
-            }, 4000);
-            $("#addcellmodal").modal('hide');//HIDE THE ADD CELL MODAL 
-        }
-        else {
-            alert(cellinsertresponse)
-        }
+        // if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
+           
+        // } else {
+        //     alert('cellinsertresponse error: ', cellinsertresponse)
+        // }
     });
 
     // ===========================================END ADD A NEW CELL FOOTAGE AND HOMES PASSED=================================================
@@ -954,117 +1110,117 @@ $(window).scroll(function () {
 
                 // autoWidth:true,
                 columns: [{
-                    data: "pni_cell_name",
-                    name: "PNI Cell Name"
-                },
-                {
-                    data: "jso_location",
-                    name: "JSO Location"
-                },
-                {
-                    data: "start_device",
-                    name: "Start Device"
-                },
-                {
-                    data: "end_device",
-                    name: "End Device"
-                },
-                {
-                    data: "fiber_count",
-                    name: "Fiber Count"
-                },
-                {
-                    data: "homes_passed",
-                    name: "Homes Passed"
-                },
-                {
-                    data: "cbs",
-                    name: "CBS"
-                },
-                {
-                    data: "ug",
-                    name: "UG"
-                },
-                {
-                    data: "mdu",
-                    name: "MDU"
-                },
-                {
-                    data: "route",
-                    name: "Route"
-                },
-                {
-                    data: "start_footage",
-                    name: "Start Footage"
-                },
-                {
-                    data: "end_footage",
-                    name: "End Footage"
-                },
-                {
-                    data: "total_placed",
-                    name: "Total Placed"
-                },
-                {
-                    data: "placed",
-                    name: "Placed"
-                },
-                {
-                    data: "total_pdo",
-                    name: "Total PDO"
-                },
-                {
-                    data: "pdo_spliced",
-                    name: "PDO Spliced"
-                },
-                {
-                    data: "date_issued",
-                    name: "Date Issued"
-                },
-                {
-                    data: "cabled_complete",
-                    name: "Cabled Complete"
-                },
-                {
-                    data: "pdo_complete",
-                    name: "PDO Complete"
-                },
-                {
-                    data: "jso_spliced",
-                    name: "JSO Spliced"
-                },
-                {
-                    data: "pdo_jso_complete",
-                    name: "PDO JSO Complete"
-                },
-                {
-                    data: "feeder_spliced",
-                    name: "Feeder Spliced"
-                },
-                {
-                    data: "pdo_jso_feeder_complete",
-                    name: "PDO JSO Feeder Complete"
-                },
-                {
-                    data: "feeder_to_odf_rolt_spliced",
-                    name: "Feeder to ODF Rolt Spliced"
-                },
-                {
-                    data: "backhaul_spliced",
-                    name: "Backhaul Spliced"
-                },
-                {
-                    data: "pdo_to_odf",
-                    name: "PDO to ODF"
-                },
-                {
-                    data: "tested",
-                    name: "Tested"
-                },
-                {
-                    data: "permitting_rolt_number",
-                    name: "Permitting Rolt Number"
-                }
+                        data: "pni_cell_name",
+                        name: "PNI Cell Name"
+                    },
+                    {
+                        data: "jso_location",
+                        name: "JSO Location"
+                    },
+                    {
+                        data: "start_device",
+                        name: "Start Device"
+                    },
+                    {
+                        data: "end_device",
+                        name: "End Device"
+                    },
+                    {
+                        data: "fiber_count",
+                        name: "Fiber Count"
+                    },
+                    {
+                        data: "homes_passed",
+                        name: "Homes Passed"
+                    },
+                    {
+                        data: "cbs",
+                        name: "CBS"
+                    },
+                    {
+                        data: "ug",
+                        name: "UG"
+                    },
+                    {
+                        data: "mdu",
+                        name: "MDU"
+                    },
+                    {
+                        data: "route",
+                        name: "Route"
+                    },
+                    {
+                        data: "start_footage",
+                        name: "Start Footage"
+                    },
+                    {
+                        data: "end_footage",
+                        name: "End Footage"
+                    },
+                    {
+                        data: "total_placed",
+                        name: "Total Placed"
+                    },
+                    {
+                        data: "placed",
+                        name: "Placed"
+                    },
+                    {
+                        data: "total_pdo",
+                        name: "Total PDO"
+                    },
+                    {
+                        data: "pdo_spliced",
+                        name: "PDO Spliced"
+                    },
+                    {
+                        data: "date_issued",
+                        name: "Date Issued"
+                    },
+                    {
+                        data: "cabled_complete",
+                        name: "Cabled Complete"
+                    },
+                    {
+                        data: "pdo_complete",
+                        name: "PDO Complete"
+                    },
+                    {
+                        data: "jso_spliced",
+                        name: "JSO Spliced"
+                    },
+                    {
+                        data: "pdo_jso_complete",
+                        name: "PDO JSO Complete"
+                    },
+                    {
+                        data: "feeder_spliced",
+                        name: "Feeder Spliced"
+                    },
+                    {
+                        data: "pdo_jso_feeder_complete",
+                        name: "PDO JSO Feeder Complete"
+                    },
+                    {
+                        data: "feeder_to_odf_rolt_spliced",
+                        name: "Feeder to ODF Rolt Spliced"
+                    },
+                    {
+                        data: "backhaul_spliced",
+                        name: "Backhaul Spliced"
+                    },
+                    {
+                        data: "pdo_to_odf",
+                        name: "PDO to ODF"
+                    },
+                    {
+                        data: "tested",
+                        name: "Tested"
+                    },
+                    {
+                        data: "permitting_rolt_number",
+                        name: "Permitting Rolt Number"
+                    }
                 ],
                 // order: [
                 //     [2, "desc"]
@@ -1081,7 +1237,7 @@ $(window).scroll(function () {
                 create: {
                     type: 'POST',
                     url: "http://localhost:8011/insert_construction_tracker/v1/ftth.construction_cell_tracker",
-                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                    data: function (d) { //BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -1096,7 +1252,7 @@ $(window).scroll(function () {
                 edit: {
                     type: 'POST',
                     url: "http://localhost:8011/update_construction_tracker/v1/ftth.construction_cell_tracker?id=_id_",
-                    data: function (d) {//BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
+                    data: function (d) { //BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SEND AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                         var obj;
                         for (var key in d.data) {
                             obj = d.data[key];
@@ -1232,32 +1388,31 @@ $(window).scroll(function () {
         });
 
         new $.fn.dataTable.Buttons(construction_tracker_table, [{
-            extend: "create",
-            text: "<i class='fa fa-plus text-success'></i> Add Function",
-            editor: editor
-        },
-        {
-            extend: "edit",
-            text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-            editor: editor
-        },
-        {
-            extend: "remove",
-            text: "<i class='fa fa-trash-o '></i> Delete Function",
-            editor: editor
-        }, {
-            extend: 'csvHtml5',
-            text: 'Export CSV',
-            title: 'Construction_Tracker_Export'
-        }
+                extend: "create",
+                text: "<i class='fa fa-plus text-success'></i> Add Function",
+                editor: editor
+            },
+            {
+                extend: "edit",
+                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+                editor: editor
+            },
+            {
+                extend: "remove",
+                text: "<i class='fa fa-trash-o '></i> Delete Function",
+                editor: editor
+            }, {
+                extend: 'csvHtml5',
+                text: 'Export CSV',
+                title: 'Construction_Tracker_Export'
+            }
         ]);
         //WHEN CREATING A NEW CONSTRUCTION TRACKER FUNCTION DEPENDING ON WHICH WAY THEY SEARCHED EITHER BY cell OR rolt THEN UPDATE THE FUNCTION AND REFRESH THE TABLE BY cell OR rolt
         editor.on('create', function (e, o, action) {
             if (roltbuttonclicked === true) {
                 var permitting_rolt_number = $("#construction_rolt").val().toUpperCase();
                 getConstuctionTrackerFunction(permitting_rolt_number)
-            }
-            else {
+            } else {
                 var cell = $("#cellsearch").val().toUpperCase();
                 console.log("Function Added So Refreshing The Cell Function Table")
                 getConstuctionTrackerFunction(cell)
@@ -1268,13 +1423,12 @@ $(window).scroll(function () {
         if (user_role.text() == 'admin') {
             console.log('Construction Tracker Editing Buttons Enabled')
             construction_tracker_table.buttons().container()
-            .appendTo($('.col-md-6:eq(0)', construction_tracker_table.table().container()));
+                .appendTo($('.col-md-6:eq(0)', construction_tracker_table.table().container()));
             // functiondatatable.buttons().disable()
-        }
-        else{
+        } else {
             console.log('User Can NOT Edit')
         }
-        
+
         //THESE ENABLE THE EDITOR POPUP TO BE ASSIGNED A CLASS SO THAT I CAN MAKE THE MODAL WIDER
         editor.on('open', function (e, mode, action) {
             $('.modal-dialog').addClass('DTED_Stacked');

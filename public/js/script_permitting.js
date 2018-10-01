@@ -218,6 +218,7 @@ $(document).ready(function () {
                     road_type: $("#final_road_type_add_rolt").val(),
                     pictures: $("#final_pictures_add_rolt").val(),
                 });
+                console.log(response.data)
                 if (response.data == "Permitting Successfully Inserted.") {
                     $("#addpermittingSuccess").modal('show'); // Set a timeout to hide the element again
                     setTimeout(function () {
@@ -229,7 +230,7 @@ $(document).ready(function () {
                 }
             } catch (error) {
                 // console.log(response.data)
-                console.log(error.message)
+                console.log(error)
                 // alert('Error adding Permitting ', Error)
             }
         }

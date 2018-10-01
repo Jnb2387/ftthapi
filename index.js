@@ -18,13 +18,7 @@ server.connection({
   }
 });
 
-//THIS IS CONVOLUTED FOR SOME REASON EVERY JOI VALIDATION ERROR JUST COMES BACK AS A 400
-server.ext('onPreResponse', function (request, reply) {
-  if (request.response.statusCode !== 200 ){
-    return reply(request.response.output.payload.message);
-  }
-  return reply.continue();
-});
+
 
 //THIS FUNCTION TAKES IN THE INPUT FROM THE LOG IN AND RUNS A QUERY TO THE DATABASE CHECKS FOR THE USER NAME AND THEN COMPARES THE ENCRYPTED PASSWORDS
 var validate = function (request, username, password, callback) {
@@ -138,4 +132,15 @@ server.route({
   handler: function (request, h) {
     return h.file('public/index.html')
   }
+});
+
+//THIS IS CONVOLUTED FOR SOME REASON EVERY JOI VALIDATION ERROR JUST COMES BACK AS A 400
+server.ext('onPreResponse', function (request, reply) {
+  // console.log(request.response);
+  if (request.response.isBoom === true ){
+    console.log("isBoom === true")
+    console.log(request.response);
+    return reply(request.response.output.payload.message);
+  }
+  return reply.continue();
 });

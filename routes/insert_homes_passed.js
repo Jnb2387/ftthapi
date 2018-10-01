@@ -61,7 +61,7 @@ module.exports = [
                         reply("Successful");
                     })
                     .catch(function (err) {
-                        reply(err.detail, console.log(err.detail));
+                        reply(err.detail);
                     });
             },
         },
