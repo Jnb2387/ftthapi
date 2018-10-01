@@ -137,9 +137,9 @@ server.route({
 //THIS IS CONVOLUTED FOR SOME REASON EVERY JOI VALIDATION ERROR JUST COMES BACK AS A 400
 server.ext('onPreResponse', function (request, reply) {
   // console.log(request.response);
-  if (request.response.isBoom === true ){
-    console.log("isBoom === true")
-    console.log(request.response);
+  if (request.response.isBoom === true && request.response.output.statusCode === 400){
+    console.log(request.response.output.payload.message)
+    console.log(request.response.output.statusCode);
     return reply(request.response.output.payload.message);
   }
   return reply.continue();

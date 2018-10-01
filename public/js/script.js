@@ -168,7 +168,7 @@ $(document).ready(function () {
                     'line-color': 'black',
                     'line-width': 2
                 }
-            }, labelLayerId);
+            });
             // TURF FINDS THE EXTENT OF THE POLYGON AND THEN I JUST TELL MAPBOX TO ZOOM TO IT 'QUICKLY' AND PUT A LITTLE SPACING AROUND THE ZOOM
             var bounds = turf.extent(geom);
             map.fitBounds(bounds, {
@@ -359,7 +359,7 @@ $(document).ready(function () {
     regular_map();
     //==============================MAPBOX ONE
     map.on('zoom', function () {
-        if (map.getZoom() < 3) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
+        if (map.getZoom() < 14) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
             $("#cellsinareabtn").addClass("disabled");
         } else {
             $("#cellsinareabtn").removeClass("disabled");
@@ -403,7 +403,6 @@ $(document).ready(function () {
                 'paint': {
                     'fill-color': 'red',
                     'fill-opacity': 0.6,
-                    'fill-outline-color': 'black'
                 }
             }, 'cellpolygon')
             map.addLayer({
@@ -412,10 +411,10 @@ $(document).ready(function () {
                 'source': 'cellsinview',
                 'layout': {},
                 'paint': {
-                    'line-color': 'white',
-                    'line-width': 1
+                    'line-color': 'black',
+                    'line-width': 2
                 }
-            }, 'cellpolygon')
+            })
         } catch (err) {
             console.log(err)
         }
@@ -1062,7 +1061,7 @@ $(document).ready(function () {
                 $("#addcellmodal").modal('hide'); //HIDE THE ADD CELL MODAL 
 
             } else {
-                alert("error")
+                alert(response.data)
             }
         } catch (error) {
             alert('Homespassed insert: ')
