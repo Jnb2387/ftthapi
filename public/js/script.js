@@ -140,6 +140,8 @@ $(document).ready(function () {
                 if (layers[i].id === 'cellsinview') {
                     map.removeLayer("cellsinview");
                     map.removeLayer("cellsinview_outline");
+                    map.removeLayer("cellsinview_outline_highlight");
+                    map.removeLayer("cellsinview_label");
                     map.removeSource("cellsinview");
                 }
             }
@@ -168,7 +170,7 @@ $(document).ready(function () {
                     'line-color': 'black',
                     'line-width': 2
                 }
-            });
+            }, 'road_major_label');
             // TURF FINDS THE EXTENT OF THE POLYGON AND THEN I JUST TELL MAPBOX TO ZOOM TO IT 'QUICKLY' AND PUT A LITTLE SPACING AROUND THE ZOOM
             var bounds = turf.extent(geom);
             map.fitBounds(bounds, {
@@ -340,6 +342,11 @@ $(document).ready(function () {
         // }).addTo(map);
 
         //=======================MAPBOX
+        // Set bounds to New York, New York
+        var bounds = [
+            [-79.76506, 40.03666], // Southwest coordinates
+            [-70.6222, 45.0327 ]  // Northeast coordinates
+        ];
         // mapboxgl.accessToken =
         //     'pk.eyJ1IjoiYnJhZGxleTIzODciLCJhIjoiY2pnMTk0ZTk2NmJzOTJxbnZpMjl1ZGsxbiJ9.L-BSY_VjUrkHL3ov0OciKQ';
         map = new mapboxgl.Map({
@@ -348,7 +355,8 @@ $(document).ready(function () {
             //  style: 'mapbox://styles/mapbox/dark-v9', //hosted style id
             center: [-74.38, 41], // starting position
             zoom: 6, // starting zoom
-            hash: true
+            hash: true,
+            maxBounds: bounds
         });
         // Add zoom and rotation controls to the map.
         map.addControl(new mapboxgl.NavigationControl());
@@ -383,6 +391,8 @@ $(document).ready(function () {
                     console.log('REMOVED cellsinview')
                     map.removeLayer("cellsinview");
                     map.removeLayer("cellsinview_outline");
+                    map.removeLayer("cellsinview_outline_highlight");
+                    map.removeLayer("cellsinview_label");
                     map.removeSource("cellsinview");
                 }
             }
@@ -391,10 +401,12 @@ $(document).ready(function () {
             cellsinareageom = response.data;
             console.log('Cell in area data: ', cellsinareageom);
 
+            //Create a Source containing all the cells in view
             map.addSource('cellsinview', {
                 'type': 'geojson',
                 'data': response.data
             })
+            //Add the cells in view polygons
             map.addLayer({
                 'id': 'cellsinview',
                 'type': 'fill',
@@ -405,6 +417,7 @@ $(document).ready(function () {
                     'fill-opacity': 0.6,
                 }
             }, 'cellpolygon')
+            //Also add an outline to make it look better and distinct
             map.addLayer({
                 'id': 'cellsinview_outline',
                 'type': 'line',
@@ -414,7 +427,94 @@ $(document).ready(function () {
                     'line-color': 'black',
                     'line-width': 2
                 }
+            }, 'road_major_label');
+            //When a user clicks on the cells this highlights the cell in yellow
+            map.addLayer({
+                'id': 'cellsinview_outline_highlight',
+                'type': 'line',
+                'source': 'cellsinview',
+                'layout': {},
+                'paint': {
+                    'line-color': 'yellow',
+                    'line-width': 2
+                },
+                "filter": ["in", "cell_id", ""]
+            }, 'road_major_label');
+            //Make a label for all the cells in view contain the newtin jso and the pni
+            map.addLayer({
+                'id': 'cellsinview_label',
+                'type': 'symbol',
+                'source': 'cellsinview',
+                "minzoom": 14,
+                "layout": {
+                    "text-field": "{netwin_cell_jso_name}/{pni_cell_name}",
+                    "text-font": [
+                        "Roboto Black"
+                    ],
+                    "text-size": {
+                        'base': 1.75,
+                        'stops': [[14, 11], [22, 18]]
+                    },
+                    'text-allow-overlap': true,
+                    'text-ignore-placement': true,
+                    'visibility': 'visible'
+                },
+                "paint": {
+                    "text-color": "red",
+                    "text-halo-blur": 1,
+                    "text-halo-color": "black",
+                    "text-halo-width": 2
+                }
+            });
+            // Change the cursor to a pointer when the mouse is over the cellsinview layer.
+            map.on('mouseenter', 'cellsinview', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'cellsinview', function () {
+                map.getCanvas().style.cursor = '';
+            });
+            // Create a popup, but don't add it to the map yet.
+            var popup = new mapboxgl.Popup({
+                closeOnClick: false
             })
+            //When someone clicks on the cellsinview polygons this filters through the data and highlights the cell with the same cell_id
+            map.on('click', 'cellsinview', function (e) {
+                //Give the popup some data
+                popup.setLngLat(e.lngLat)
+                    .setHTML('<h6 class="text-center mb-0 font-weight-bold">' + e.features[0].properties.netwin_cell_jso_name + ' / ' + e.features[0].properties.pni_cell_name + '</h6><br><button class="mt-0 btn btn-sm btn-primary mapcellsearchbtn">Search For This Cell</button>')
+                    .addTo(map);
+                //GRAB THE newtin_cell_jso_name and store it in a variable to search.
+                pni_or_netwin_name = e.features[0].properties.netwin_cell_jso_name;
+                // set bbox as 5px reactangle area around clicked point
+                var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
+                var features = map.queryRenderedFeatures(bbox, { layers: ['cellsinview'] });
+
+                // Run through the selected features and set a filter
+                // to match features with unique cell_id's to activate
+                // the cellsinview_outline_highlight layer.
+                var filter = features.reduce(function (memo, feature) {
+                    memo.push(feature.properties.cell_id);
+                    return memo;
+                }, ['in', 'cell_id']);
+                //Add the filter to the highlight layer
+                map.setFilter("cellsinview_outline_highlight", filter);
+                //WHEN THE SEARCH FOR THIS CELL BUTTON IS CLICKED
+                $(".mapcellsearchbtn").on('click', function () {
+                    console.log('Searching for netwin jso only from popup click', pni_or_netwin_name);
+                    $("#cellsearch").val(pni_or_netwin_name)
+                    getData(pni_or_netwin_name);
+                    getfunctiontable(pni_or_netwin_name); // Run the getfunctiontable for the associated selected value.
+                    getHomesPassed(pni_or_netwin_name);
+                    getFootages(pni_or_netwin_name);
+                    if (popup) {
+                        // popup.remove();//DIDNT WORK FOR SOME REASON
+                        $(".mapboxgl-popup-close-button").click()
+                    }
+                });
+            });
+
         } catch (err) {
             console.log(err)
         }
@@ -488,23 +588,23 @@ $(document).ready(function () {
                     targets: 3
                 }],
                 columns: [{
-                        data: "design_function",
-                        name: "design_function"
-                    }, {
-                        data: "resource",
-                        name: "resource"
-                    },
-                    //  {
-                    //     data: "object_id"
-                    // }, 
-                    {
-                        data: "date_complete",
-                        name: "date_complete"
-                    }, {
-                        data: "comment",
-                        name: "comment",
-                        width: "40%"
-                    }
+                    data: "design_function",
+                    name: "design_function"
+                }, {
+                    data: "resource",
+                    name: "resource"
+                },
+                //  {
+                //     data: "object_id"
+                // }, 
+                {
+                    data: "date_complete",
+                    name: "date_complete"
+                }, {
+                    data: "comment",
+                    name: "comment",
+                    width: "40%"
+                }
                 ],
                 "order": [
                     [2, "desc"]
@@ -557,41 +657,41 @@ $(document).ready(function () {
                     label: "Design Function",
                     type: "select",
                     options: [{
-                            label: "",
-                            value: null
-                        },
-                        {
-                            label: "Cell Pocketed",
-                            value: "Cell Pocketed"
-                        },
-                        {
-                            label: "Cell Designed",
-                            value: "Cell Designed"
-                        },
-                        {
-                            label: "Cell Issued to QC",
-                            value: "Cell Issued to QC"
-                        },
-                        {
-                            label: "Cell Drafted in Netwin",
-                            value: "Cell Drafted in Netwin"
-                        },
-                        {
-                            label: "Cell Released to Construction",
-                            value: "Cell Released to Construction"
-                        },
-                        {
-                            label: "Cell QC Design",
-                            value: "Cell QC Design"
-                        },
-                        {
-                            label: "Cell Pocketing QC",
-                            value: "Cell Pocketing QC"
-                        },
-                        {
-                            label: "Cell Design Issued",
-                            value: "Cell Design Issued"
-                        },
+                        label: "",
+                        value: null
+                    },
+                    {
+                        label: "Cell Pocketed",
+                        value: "Cell Pocketed"
+                    },
+                    {
+                        label: "Cell Designed",
+                        value: "Cell Designed"
+                    },
+                    {
+                        label: "Cell Issued to QC",
+                        value: "Cell Issued to QC"
+                    },
+                    {
+                        label: "Cell Drafted in Netwin",
+                        value: "Cell Drafted in Netwin"
+                    },
+                    {
+                        label: "Cell Released to Construction",
+                        value: "Cell Released to Construction"
+                    },
+                    {
+                        label: "Cell QC Design",
+                        value: "Cell QC Design"
+                    },
+                    {
+                        label: "Cell Pocketing QC",
+                        value: "Cell Pocketing QC"
+                    },
+                    {
+                        label: "Cell Design Issued",
+                        value: "Cell Design Issued"
+                    },
                     ],
                     attr: {
                         required: true
@@ -639,24 +739,24 @@ $(document).ready(function () {
 
             });
             new $.fn.dataTable.Buttons(functiondatatable, [{
-                    extend: "create",
-                    text: "<i class='fa fa-plus text-success'></i> Add Function",
-                    editor: editor
-                },
-                {
-                    extend: "edit",
-                    text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-                    editor: editor
-                },
-                {
-                    extend: "remove",
-                    text: "<i class='fa fa-trash-o '></i> Delete Function",
-                    editor: editor
-                }, {
-                    extend: 'csvHtml5',
-                    text: 'Export Functions',
-                    title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
-                }
+                extend: "create",
+                text: "<i class='fa fa-plus text-success'></i> Add Function",
+                editor: editor
+            },
+            {
+                extend: "edit",
+                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+                editor: editor
+            },
+            {
+                extend: "remove",
+                text: "<i class='fa fa-trash-o '></i> Delete Function",
+                editor: editor
+            }, {
+                extend: 'csvHtml5',
+                text: 'Export Functions',
+                title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
+            }
             ]);
 
             if (user_role.text() == 'admin') {
@@ -1074,7 +1174,7 @@ $(document).ready(function () {
         await insertHomesPassedTable();
         //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
         // if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
-           
+
         // } else {
         //     alert('cellinsertresponse error: ', cellinsertresponse)
         // }
@@ -1109,117 +1209,117 @@ $(document).ready(function () {
 
                 // autoWidth:true,
                 columns: [{
-                        data: "pni_cell_name",
-                        name: "PNI Cell Name"
-                    },
-                    {
-                        data: "jso_location",
-                        name: "JSO Location"
-                    },
-                    {
-                        data: "start_device",
-                        name: "Start Device"
-                    },
-                    {
-                        data: "end_device",
-                        name: "End Device"
-                    },
-                    {
-                        data: "fiber_count",
-                        name: "Fiber Count"
-                    },
-                    {
-                        data: "homes_passed",
-                        name: "Homes Passed"
-                    },
-                    {
-                        data: "cbs",
-                        name: "CBS"
-                    },
-                    {
-                        data: "ug",
-                        name: "UG"
-                    },
-                    {
-                        data: "mdu",
-                        name: "MDU"
-                    },
-                    {
-                        data: "route",
-                        name: "Route"
-                    },
-                    {
-                        data: "start_footage",
-                        name: "Start Footage"
-                    },
-                    {
-                        data: "end_footage",
-                        name: "End Footage"
-                    },
-                    {
-                        data: "total_placed",
-                        name: "Total Placed"
-                    },
-                    {
-                        data: "placed",
-                        name: "Placed"
-                    },
-                    {
-                        data: "total_pdo",
-                        name: "Total PDO"
-                    },
-                    {
-                        data: "pdo_spliced",
-                        name: "PDO Spliced"
-                    },
-                    {
-                        data: "date_issued",
-                        name: "Date Issued"
-                    },
-                    {
-                        data: "cabled_complete",
-                        name: "Cabled Complete"
-                    },
-                    {
-                        data: "pdo_complete",
-                        name: "PDO Complete"
-                    },
-                    {
-                        data: "jso_spliced",
-                        name: "JSO Spliced"
-                    },
-                    {
-                        data: "pdo_jso_complete",
-                        name: "PDO JSO Complete"
-                    },
-                    {
-                        data: "feeder_spliced",
-                        name: "Feeder Spliced"
-                    },
-                    {
-                        data: "pdo_jso_feeder_complete",
-                        name: "PDO JSO Feeder Complete"
-                    },
-                    {
-                        data: "feeder_to_odf_rolt_spliced",
-                        name: "Feeder to ODF Rolt Spliced"
-                    },
-                    {
-                        data: "backhaul_spliced",
-                        name: "Backhaul Spliced"
-                    },
-                    {
-                        data: "pdo_to_odf",
-                        name: "PDO to ODF"
-                    },
-                    {
-                        data: "tested",
-                        name: "Tested"
-                    },
-                    {
-                        data: "permitting_rolt_number",
-                        name: "Permitting Rolt Number"
-                    }
+                    data: "pni_cell_name",
+                    name: "PNI Cell Name"
+                },
+                {
+                    data: "jso_location",
+                    name: "JSO Location"
+                },
+                {
+                    data: "start_device",
+                    name: "Start Device"
+                },
+                {
+                    data: "end_device",
+                    name: "End Device"
+                },
+                {
+                    data: "fiber_count",
+                    name: "Fiber Count"
+                },
+                {
+                    data: "homes_passed",
+                    name: "Homes Passed"
+                },
+                {
+                    data: "cbs",
+                    name: "CBS"
+                },
+                {
+                    data: "ug",
+                    name: "UG"
+                },
+                {
+                    data: "mdu",
+                    name: "MDU"
+                },
+                {
+                    data: "route",
+                    name: "Route"
+                },
+                {
+                    data: "start_footage",
+                    name: "Start Footage"
+                },
+                {
+                    data: "end_footage",
+                    name: "End Footage"
+                },
+                {
+                    data: "total_placed",
+                    name: "Total Placed"
+                },
+                {
+                    data: "placed",
+                    name: "Placed"
+                },
+                {
+                    data: "total_pdo",
+                    name: "Total PDO"
+                },
+                {
+                    data: "pdo_spliced",
+                    name: "PDO Spliced"
+                },
+                {
+                    data: "date_issued",
+                    name: "Date Issued"
+                },
+                {
+                    data: "cabled_complete",
+                    name: "Cabled Complete"
+                },
+                {
+                    data: "pdo_complete",
+                    name: "PDO Complete"
+                },
+                {
+                    data: "jso_spliced",
+                    name: "JSO Spliced"
+                },
+                {
+                    data: "pdo_jso_complete",
+                    name: "PDO JSO Complete"
+                },
+                {
+                    data: "feeder_spliced",
+                    name: "Feeder Spliced"
+                },
+                {
+                    data: "pdo_jso_feeder_complete",
+                    name: "PDO JSO Feeder Complete"
+                },
+                {
+                    data: "feeder_to_odf_rolt_spliced",
+                    name: "Feeder to ODF Rolt Spliced"
+                },
+                {
+                    data: "backhaul_spliced",
+                    name: "Backhaul Spliced"
+                },
+                {
+                    data: "pdo_to_odf",
+                    name: "PDO to ODF"
+                },
+                {
+                    data: "tested",
+                    name: "Tested"
+                },
+                {
+                    data: "permitting_rolt_number",
+                    name: "Permitting Rolt Number"
+                }
                 ],
                 // order: [
                 //     [2, "desc"]
@@ -1387,24 +1487,24 @@ $(document).ready(function () {
         });
 
         new $.fn.dataTable.Buttons(construction_tracker_table, [{
-                extend: "create",
-                text: "<i class='fa fa-plus text-success'></i> Add Function",
-                editor: editor
-            },
-            {
-                extend: "edit",
-                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-                editor: editor
-            },
-            {
-                extend: "remove",
-                text: "<i class='fa fa-trash-o '></i> Delete Function",
-                editor: editor
-            }, {
-                extend: 'csvHtml5',
-                text: 'Export CSV',
-                title: 'Construction_Tracker_Export'
-            }
+            extend: "create",
+            text: "<i class='fa fa-plus text-success'></i> Add Function",
+            editor: editor
+        },
+        {
+            extend: "edit",
+            text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+            editor: editor
+        },
+        {
+            extend: "remove",
+            text: "<i class='fa fa-trash-o '></i> Delete Function",
+            editor: editor
+        }, {
+            extend: 'csvHtml5',
+            text: 'Export CSV',
+            title: 'Construction_Tracker_Export'
+        }
         ]);
         //WHEN CREATING A NEW CONSTRUCTION TRACKER FUNCTION DEPENDING ON WHICH WAY THEY SEARCHED EITHER BY cell OR rolt THEN UPDATE THE FUNCTION AND REFRESH THE TABLE BY cell OR rolt
         editor.on('create', function (e, o, action) {
