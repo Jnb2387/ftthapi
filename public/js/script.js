@@ -221,7 +221,7 @@ $(document).ready(function () {
     }
     async function getHomesPassed(cell) {
         try {
-            const response = await axios.get("http://localhost:8011/query/v1/ftth.homes_passed?columns=*&filter=%20pni_cell_name%20ilike'" + cell + "'%20OR%20netwin_cell_jso_name%20ilike'" + cell + "'&limit=10");
+            const response = await axios.get("http://localhost:8011/query/v1/ftth.homes_passed?columns=*&filter=%20pni_cell_name%20ilike'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike'" + cell + "%25'&limit=10");
             homesresponsedata = response.data[0]; //JUST THE PROPERTIES OF THE DATA
             if (homesresponsedata) {
                 console.log('Homes Passed Table data ', homesresponsedata);
@@ -243,7 +243,7 @@ $(document).ready(function () {
     }
     async function getFootages(cell) {
         try {
-            const response = await axios.get("http://localhost:8011/query/v1/ftth.footages?columns=*&filter=%20pni_cell_name%20ilike'" + cell + "'%20OR%20netwin_cell_jso_name%20ilike'" + cell + "'&limit=10");
+            const response = await axios.get("http://localhost:8011/query/v1/ftth.footages?columns=*&filter=%20pni_cell_name%20ilike'" + cell + "%25'%20OR%20netwin_cell_jso_name%20ilike'" + cell + "%25'&limit=10");
             footagesresponsedata = response.data[0]; //JUST THE PROPERTIES OF THE DATA
             if (footagesresponsedata) {
                 console.log('Footages Table data ', footagesresponsedata);
@@ -462,7 +462,7 @@ $(document).ready(function () {
                 "paint": {
                     "text-color": "red",
                     "text-halo-blur": 1,
-                    "text-halo-color": "black",
+                    "text-halo-color": "white",
                     "text-halo-width": 2
                 }
             });
@@ -481,16 +481,22 @@ $(document).ready(function () {
             })
             //When someone clicks on the cellsinview polygons this filters through the data and highlights the cell with the same cell_id
             map.on('click', 'cellsinview', function (e) {
+                // set bbox as 5px reactangle area around clicked point
+                var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
+                var features = map.queryRenderedFeatures(bbox, { layers: ['cellsinview'] });
+
                 //Give the popup some data
                 popup.setLngLat(e.lngLat)
                     .setHTML('<h6 class="text-center mb-0 font-weight-bold">' + e.features[0].properties.netwin_cell_jso_name + ' / ' + e.features[0].properties.pni_cell_name + '</h6><br><button class="mt-0 btn btn-sm btn-primary mapcellsearchbtn">Search For This Cell</button>')
                     .addTo(map);
                 //GRAB THE newtin_cell_jso_name and store it in a variable to search.
-                pni_or_netwin_name = e.features[0].properties.netwin_cell_jso_name;
-                // set bbox as 5px reactangle area around clicked point
-                var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
-                var features = map.queryRenderedFeatures(bbox, { layers: ['cellsinview'] });
-
+                if(e.features[0].properties.netwin_cell_jso_name){
+                    pni_or_netwin_name = e.features[0].properties.netwin_cell_jso_name;
+                }
+                else{
+                    pni_or_netwin_name = e.features[0].properties.pni_cell_name;
+                }
+                
                 // Run through the selected features and set a filter
                 // to match features with unique cell_id's to activate
                 // the cellsinview_outline_highlight layer.
@@ -617,6 +623,7 @@ $(document).ready(function () {
                     contentType: 'application/json; charset=utf-8',
                     create: {
                         type: 'POST',
+                        // url: "http://localhost:8011/insert_functions/v1/ftth.functions_table?cell_id=" + responsedata.cell_id,
                         url: "http://localhost:8011/insert_functions/v1/ftth.functions_table?pni_cell_name=" + responsedata.pni_cell_name + "&netwin_cell_jso_name=" + responsedata.netwin_cell_jso_name,
                         data: function (d) { //BREAK OUT FROM THE WHAT THE NATIVE DATABASE EDITOR WAS SENDING AS THE KEY VALUE IN THE ACTUAL FIELD NAME. HAD 'DATA[0]' ATTACHED
                             var obj;
@@ -1594,7 +1601,6 @@ $(document).ready(function () {
             return
         }
         var cell = $("#cellsearch").val();
-        // responsedata.cell_id
         $("#construction_tracker_modal").modal('show')
         getConstuctionTrackerFunction(cell)
         $("#construction_tracker_modalLabel").html("Construction Tracker " + "<b>" + cell.toUpperCase() + "</b>")
@@ -1623,7 +1629,4 @@ $(document).ready(function () {
         }, 1000)
 
     });
-
-
-
 });

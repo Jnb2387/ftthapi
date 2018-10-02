@@ -45,7 +45,7 @@ function formatSQL(request) {
       );
     }
   }
-
+  console.log(sql.toString(),"\n")
   return sql.toString();
 }
 

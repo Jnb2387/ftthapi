@@ -32,7 +32,7 @@ module.exports = [
             .description('Table Name').default('ftth.construction_cell_tracker'),
         },
         query: {
-          id: Joi.number().integer().description('The ID for feature.'),
+          id: Joi.string().description('The ID for the Feature.'),//WAS WITH .number().integer() BUT WITH THE STRING IT LETS ME DELETE MULTIPLE ROWS
         },
       },
       jsonp: 'callback',

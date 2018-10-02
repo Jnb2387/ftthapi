@@ -32,7 +32,7 @@ module.exports = [
             .description('Table Name').default('ftth.permitting_functions'),
         },
         query: {
-          id: Joi.number().integer().description('The ID for the Feature.'),
+          id: Joi.string().description('The ID for the Feature.'),//WAS WITH .number().integer() BUT WITH THE STRING IT LETS ME DELETE MULTIPLE ROWS
         },
       },
       jsonp: 'callback',

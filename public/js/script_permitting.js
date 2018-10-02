@@ -498,7 +498,8 @@ $(document).ready(function () {
                 }
             }, {
                 name: "resource",
-                label: "Resource"
+                label: "Resource",
+                def: username.text() //grabbed from variable at the top
             }, {
                 name: "date_complete",
                 label: "Date Complete",

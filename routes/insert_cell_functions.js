@@ -41,6 +41,7 @@ module.exports = [
         query: {
           pni_cell_name: Joi.string().description('PNI Cell Name'),
           netwin_cell_jso_name: Joi.string().description('Netwin Cell JSO Name'),
+          cell_id : Joi.string().allow('')
         },
         payload:{
           design_function:Joi.string().description('Design Function'),//DROP DOWN
@@ -54,7 +55,7 @@ module.exports = [
       handler: function (request, reply) {
         //TRY WITh BASIC AUTH 
         const user=request.auth.credentials;
-        console.log("Request.Auth.Credentials: ", user)
+        // console.log("Request.Auth.Credentials: ", user)
         if(user.role == "admin"){
              db
           .query(formatSQL(request))
