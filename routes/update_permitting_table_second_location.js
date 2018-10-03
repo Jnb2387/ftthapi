@@ -32,7 +32,7 @@ module.exports = [{
     method: 'POST',
     path: '/update_permitting_table_second_location/v1/{table},{permitting_rolt_number},{id}',
     config: {
-         auth: 'simple',
+        auth: 'simple',
         description: 'Update the permitting table',
         notes: 'Update permitting table.',
         tags: ['api'],
@@ -42,25 +42,19 @@ module.exports = [{
                 permitting_rolt_number: Joi.string().description('Permitting Rolt Number'),
                 id: Joi.number().integer().description('The ID for the Feature.'),
             },
-            query: {
-            },
+            query: {},
             payload: {
                 second_franchise_town: Joi.string().description("Second Franchise Town"),
                 second_hamlet: Joi.string().description("Second Hamlet"),
                 second_street: Joi.string().description("Second Street"),
                 second_cross_street: Joi.string().description("Second Cross Street"),
-                second_utility_strip_width: Joi.string().replace(/'/g, "''").description("Second Utility Strip Width"),// THIS COLUMN HAS A SINGLE QUOTE IN THE FIELD SO IT SCREWS EVERTHING Up
+                second_utility_strip_width: Joi.string().replace(/'/g, "''").description("Second Utility Strip Width"), // THIS COLUMN HAS A SINGLE QUOTE IN THE FIELD SO IT SCREWS EVERTHING Up
                 second_lat_long: Joi.string().description("Second Lat Long"),
                 second_riser_pole: Joi.string().description("Second Riser Pole"),
                 second_permitting_agency: Joi.string().description("Second Permitting Agency"),
                 second_road_type: Joi.string().description("Second Road Type"),
                 second_pictures: Joi.string().description("Second Pictures")
-            },
-            failAction(request, reply, source, error) {
-                reply({
-                  error: 'badRequest',
-                }).code(400);
-              },
+            }
         },
         jsonp: 'callback',
         cache: config.cache,
@@ -72,7 +66,10 @@ module.exports = [{
                 })
                 .catch(function (err) {
                     console.log(err)
-                    reply(err);
+                    reply({
+                        'error': 'error running query',
+                        'error_details': err
+                    });
                 });
         }
     }

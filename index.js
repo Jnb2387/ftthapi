@@ -139,7 +139,7 @@ server.ext('onPreResponse', function (request, reply) {
   // console.log(request.response);
   if (request.response.isBoom === true && request.response.output.statusCode === 400){
     // console.log(request.response.output.payload.message)
-    // console.log(request.response.output.statusCode);
+    console.log(request.response.output.statusCode);
     return reply(request.response.output.payload.message);
   }
   return reply.continue();

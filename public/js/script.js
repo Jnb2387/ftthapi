@@ -152,8 +152,12 @@ $(document).ready(function () {
         center: [-74.38, 41], // starting position
         zoom: 6, // starting zoom
         hash: true,
-        maxBounds: bounds
+        maxBounds: bounds,
+        attributionControl:true
     });
+    map.addControl(new mapboxgl.AttributionControl({
+        compact: false
+    }));
     map.on('load', function () {
         // Add zoom and rotation controls to the map.
         map.addControl(new mapboxgl.NavigationControl());

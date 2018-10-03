@@ -681,7 +681,7 @@ $(document).ready(function () {
                 setTimeout(function () {
                     $("#permittingTableSuccess").modal('hide');
                 }, 3000);
-            }else{alert(JSON.stringify(response.data))}
+            }else{alert(response.data)}
         } catch (error) {
             console.log(error)
         }
@@ -763,7 +763,7 @@ $(document).ready(function () {
                 setTimeout(function () {
                     $("#permittingTableSuccess").modal('hide');
                 }, 3000);
-            }else{alert(JSON.stringify(response.data))}
+            }else{alert(response.data)}
         } catch (error) {
             console.log(error)
         }
@@ -847,7 +847,7 @@ $(document).ready(function () {
                 setTimeout(function () {
                     $("#permittingTableSuccess").modal('hide');
                 }, 3000);
-            }else{alert(JSON.stringify(response.data))}
+            }else{alert(esponse.data)}
         } catch (error) {
             console.log(error)
         }
