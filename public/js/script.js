@@ -2,13 +2,23 @@ $(document).ready(function () {
     $('[data-toggle="tooltip"]').tooltip(); // initialize the tooltip features
     var geom;
     var cellLayer;
-    var jsomarker;
     var responsedata;
     var cell_id;
     var cellsinarea_map;
     var homesresponsedata;
     var pni_or_netwin_name;
     var footagesresponsedata;
+    //CREATE A GEOJSON FOR THE JSO_LOCATION BECAUSE ITS LAT LONG WILL BE INCLUDED IN THE CELL GEOJSON PROPERTIES
+    var jsomarker = {
+        "type": "FeatureCollection",
+        "features": [{
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [0, 0]
+            }
+        }]
+    };
     //USER STUFF
     var username = $(".username");
     var user_role = $(".user_role");
@@ -90,8 +100,8 @@ $(document).ready(function () {
             responsedata = response.data.features[0].properties; //JUST THE PROPERTIES OF THE DATA
             // console.log(responsedata)
             let responsegeometry = response.data;
-            let jsogeom = [responsedata.jso_latitude, responsedata.jso_longitude]
-            cell_id = responsedata.cell_id
+            jsomarker.features[0].geometry.coordinates = [responsedata.jso_latitude, responsedata.jso_longitude]; //UPDATE THE jsomarker GEOJSON CREATED EARLIER WITH THE COORDINATES IN THIS RESPONSE
+            cell_id = responsedata.cell_id;
             delete responsegeometry.features[0].properties // REMOVE THE GEOMETRY TO JUST HAVE THE PROPERTIES
             geom = responsegeometry; // GEOMETRY CAN BE GRABED FROM ANYWHERE
             Object.keys(responsedata).forEach(function (key) { //REPLACE ANY NULL VALUES WITH JUST A DASH
@@ -120,8 +130,190 @@ $(document).ready(function () {
             $("#remaining_homes_unserviceable").html(responsedata.remaining_homes_unserviceable);
             $("#netwin_project_name").html(responsedata.netwin_project_name);
 
-            //=====================MAPBOX
-            // Insert the layer beneath any symbol layer.
+            addcelltomap(geom); //RUN THE FUNCTION TO ADD THE CURRENT CELL TO MAPBOX
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    //============================ MAP SET UP
+
+    //MAPBOX
+    // Set bounds to New York, New York
+    var bounds = [
+        [-79.76506, 40.03666], // Southwest coordinates
+        [-70.6222, 45.0327] // Northeast coordinates
+    ];
+    // mapboxgl.accessToken =
+    //     'pk.eyJ1IjoiYnJhZGxleTIzODciLCJhIjoiY2pnMTk0ZTk2NmJzOTJxbnZpMjl1ZGsxbiJ9.L-BSY_VjUrkHL3ov0OciKQ';
+    var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: '/js/style.json',
+        //  style: 'mapbox://styles/mapbox/dark-v9', //hosted style id
+        center: [-74.38, 41], // starting position
+        zoom: 6, // starting zoom
+        hash: true,
+        maxBounds: bounds
+    });
+    map.on('load', function () {
+        // Add zoom and rotation controls to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+        // Add a button to make the map full-screen
+        map.addControl(new mapboxgl.FullscreenControl());
+        map.on('zoom', function () {
+            if (map.getZoom() < 14) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
+                $("#cellsinareabtn").addClass("disabled");
+            } else {
+                $("#cellsinareabtn").removeClass("disabled");
+            }
+        });
+      
+            map.addSource('nysam', {
+                "type": "vector",
+                "tiles": ["http://www.jeffreybradley.a2hosted.com:49500/nysam/{z}/{x}/{y}.pbf"],
+                'minzoom': 7,
+                'maxzoom': 14,
+            });
+            map.addLayer({
+                "id": "nysam",
+                'type': 'circle',
+                "source": "nysam",
+                'source-layer': 'nysam2',
+                'minzoom': 7,
+                'maxzoom': 22,
+                "layout": {
+                    'visibility': 'visible',
+                },
+                "paint": {
+                    'circle-color': 'blue',
+                    'circle-radius': {
+                        'base': 1.75,
+                        'stops': [
+                            [14, 1],
+                            [22, 19]
+                        ]
+                    },
+                }
+            }, 'poi_label');
+
+            map.addLayer({
+                "id": "nysamlabels",
+                'type': 'symbol',
+                "source": "nysam",
+                'source-layer': 'nysam2',
+                'minzoom': 17,
+                'maxzoom': 22,
+                "layout": {
+                    'visibility': 'visible',
+                    "text-field": '{AddressLabel}',
+                    "text-font": ["Roboto Black"],
+                    "text-size": 11,
+                    "text-transform": "uppercase",
+                    "text-letter-spacing": 0.05,
+                    "text-offset": [0, 1.5]
+                },
+                "paint": {
+                    "text-color": "#202",
+                    "text-halo-color": "#fff",
+                    "text-halo-width": 2
+                }
+            }, 'poi_label');        
+
+    });
+    var jsopopup = new mapboxgl.Popup({
+        closeOnClick: false
+    });
+
+    function addcelltomap(geom) {
+        //=====================MAPBOX
+        var layers = map.getStyle().layers; //GET ALL THE LAYERS IN THE STYLE
+        var labelLayerId;
+        for (var i = 0; i < layers.length; i++) {
+            if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                labelLayerId = layers[i].id; //ADD EACH LAYER THAT IS A TEXT OR SYMBOL TO THE STORED VARIABLE
+                break;
+            }
+            // //REMOVE THE OLD CELL LAYER
+            if (layers[i].id === "cellpolygon") {
+                console.log("REMOVED cellpolygon");
+                map.removeLayer("cellpolygon");
+                map.removeLayer("cellpolygon_outline");
+                map.removeLayer("jsomarker");
+                map.removeSource("jsomarker");
+                map.removeSource("cellpolygon");
+            }
+            //REMOVE ANY CELLS IN VIEW SEARCHES
+            if (layers[i].id === 'cellsinview') {
+                map.removeLayer("cellsinview");
+                map.removeLayer("cellsinview_outline");
+                map.removeLayer("cellsinview_outline_highlight");
+                map.removeLayer("cellsinview_label");
+                map.removeSource("cellsinview");
+            }
+        }
+        // map.getSource('cellpolygon').setData(geom);//TRY TO USE THIS INSTEAD JUST CANT FIGURE OUT THE BEST WAY
+
+        //ADD THE SEARCHED CELL LAYER
+        map.addSource('cellpolygon', {
+            'type': 'geojson',
+            'data': geom //THIS WAS THE STRIPPED OUT GEOMETRY FROM THE getdata() response geojson
+        });
+        map.addLayer({
+            'id': 'cellpolygon',
+            'type': 'fill',
+            'source': 'cellpolygon',
+            'layout': {},
+            'paint': {
+                'fill-color': 'blue',
+                'fill-opacity': 0.6,
+            }
+
+        }, labelLayerId); //ADD THE LAYER BELOW ANY LABELS
+        map.addLayer({
+            'id': 'cellpolygon_outline',
+            'type': 'line',
+            'source': 'cellpolygon',
+            'layout': {},
+            'paint': {
+                'line-color': 'black',
+                'line-width': 2
+            }
+        }, 'road_major_label');
+        map.addSource('jsomarker', {
+            'type': 'geojson',
+            'data': jsomarker //THE GEOJSON CREATED AT THE TOP
+        });
+        map.addLayer({
+            'id': 'jsomarker',
+            'type': 'circle',
+            'source': 'jsomarker',
+            "paint": {
+                "circle-radius": 8,
+                "circle-color": "#3887be"
+            }
+        });
+        // TURF FINDS THE EXTENT OF THE CELL POLYGON AND THEN I JUST TELL MAPBOX TO ZOOM TO IT 'QUICKLY' AND PUT A LITTLE SPACING AROUND THE ZOOM
+        var bounds = turf.extent(geom);
+        map.fitBounds(bounds, {
+            duration: 0,
+            padding: 20
+        });
+        if (jsopopup) {
+            // popup.remove();//DIDNT WORK FOR SOME REASON
+            $(".mapboxgl-popup-close-button").click();
+        }
+        jsopopup
+            .setLngLat(jsomarker.features[0].geometry.coordinates) //SET THE POP TO BE THE JSO COORDINATES
+            .setHTML('<p><span class="font-italic small font-weight-bold">JSO Type:  </span>' + responsedata.jso_type + '</p>')
+            .addTo(map);
+
+
+    }
+    async function findcellsinarea(coords) {
+        try {
+            if (!responsedata) {
+                alert("Please Search for A Cell");
+                return;
+            }
             var layers = map.getStyle().layers; //GET ALL THE LAYERS IN THE STYLE
             var labelLayerId;
             for (var i = 0; i < layers.length; i++) {
@@ -129,15 +321,9 @@ $(document).ready(function () {
                     labelLayerId = layers[i].id; //ADD EACH LAYER THAT IS A TEXT OR SYMBOL 
                     break;
                 }
-                //REMOVE THE OLD CELL LAYER
-                if (layers[i].id === "cellpolygon") {
-                    console.log("REMOVED cellpolygon");
-                    map.removeLayer("cellpolygon");
-                    map.removeLayer("cellpolygon_outline");
-                    map.removeSource("cellpolygon");
-                }
                 //REMOVE ANY CELLS IN VIEW SEARCHES
                 if (layers[i].id === 'cellsinview') {
+                    console.log('REMOVED cellsinview')
                     map.removeLayer("cellsinview");
                     map.removeLayer("cellsinview_outline");
                     map.removeLayer("cellsinview_outline_highlight");
@@ -145,72 +331,232 @@ $(document).ready(function () {
                     map.removeSource("cellsinview");
                 }
             }
-            //ADD THE SEARCHED CELL LAYER
-            map.addSource('cellpolygon', {
+            let bounds = map.getBounds().toArray().toString();
+            const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
+            cellsinareageom = response.data;
+            console.log('Cell in area data: ', cellsinareageom);
+
+            //Create a Source containing all the cells in view
+            map.addSource('cellsinview', {
                 'type': 'geojson',
-                'data': geom
-            });
+                'data': response.data
+            })
+            //Add the cells in view polygons
             map.addLayer({
-                'id': 'cellpolygon',
+                'id': 'cellsinview',
                 'type': 'fill',
-                'source': 'cellpolygon',
+                'source': 'cellsinview',
                 'layout': {},
                 'paint': {
-                    'fill-color': 'blue',
+                    'fill-color': 'red',
                     'fill-opacity': 0.6,
                 }
-
-            }, labelLayerId);
+            }, 'cellpolygon')
+            //Also add an outline to make it look better and distinct
             map.addLayer({
-                'id': 'cellpolygon_outline',
+                'id': 'cellsinview_outline',
                 'type': 'line',
-                'source': 'cellpolygon',
+                'source': 'cellsinview',
                 'layout': {},
                 'paint': {
                     'line-color': 'black',
                     'line-width': 2
                 }
             }, 'road_major_label');
-            // TURF FINDS THE EXTENT OF THE POLYGON AND THEN I JUST TELL MAPBOX TO ZOOM TO IT 'QUICKLY' AND PUT A LITTLE SPACING AROUND THE ZOOM
-            var bounds = turf.extent(geom);
-            map.fitBounds(bounds, {
-                duration: 0,
-                padding: 20
+            //When a user clicks on the cells this highlights the cell in yellow
+            map.addLayer({
+                'id': 'cellsinview_outline_highlight',
+                'type': 'line',
+                'source': 'cellsinview',
+                'layout': {},
+                'paint': {
+                    'line-color': 'yellow',
+                    'line-width': 2
+                },
+                "filter": ["in", "cell_id", ""]
+            }, 'road_major_label');
+            //Make a label for all the cells in view contain the newtin jso and the pni
+            map.addLayer({
+                'id': 'cellsinview_label',
+                'type': 'symbol',
+                'source': 'cellsinview',
+                "minzoom": 14,
+                "layout": {
+                    "text-field": "{netwin_cell_jso_name}/{pni_cell_name}",
+                    "text-font": [
+                        "Roboto Black"
+                    ],
+                    "text-size": {
+                        'base': 1.75,
+                        'stops': [
+                            [14, 11],
+                            [22, 18]
+                        ]
+                    },
+                    'text-allow-overlap': true,
+                    'text-ignore-placement': true,
+                    'visibility': 'visible'
+                },
+                "paint": {
+                    "text-color": "red",
+                    "text-halo-blur": 1,
+                    "text-halo-color": "white",
+                    "text-halo-width": 2
+                }
+            });
+            // Change the cursor to a pointer when the mouse is over the cellsinview layer.
+            map.on('mouseenter', 'cellsinview', function () {
+                map.getCanvas().style.cursor = 'pointer';
             });
 
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'cellsinview', function () {
+                map.getCanvas().style.cursor = '';
+            });
+            // Create a popup, but don't add it to the map yet.
+            var popup = new mapboxgl.Popup({
+                closeOnClick: false
+            })
+            //When someone clicks on the cellsinview polygons this filters through the data and highlights the cell with the same cell_id
+            map.on('click', 'cellsinview', function (e) {
+                // set bbox as 5px reactangle area around clicked point
+                var bbox = [
+                    [e.point.x - 5, e.point.y - 5],
+                    [e.point.x + 5, e.point.y + 5]
+                ];
+                var features = map.queryRenderedFeatures(bbox, {
+                    layers: ['cellsinview']
+                });
 
+                //Give the popup some data
+                popup.setLngLat(e.lngLat)
+                    .setHTML('<h6 class="text-center mb-0 font-weight-bold">' + e.features[0].properties.netwin_cell_jso_name + ' / ' + e.features[0].properties.pni_cell_name + '</h6><br><button class="mt-0 btn btn-sm btn-primary mapcellsearchbtn">Search For This Cell</button>')
+                    .addTo(map);
+                //GRAB THE newtin_cell_jso_name and store it in a variable to search.
+                if (e.features[0].properties.netwin_cell_jso_name) {
+                    pni_or_netwin_name = e.features[0].properties.netwin_cell_jso_name;
+                } else {
+                    pni_or_netwin_name = e.features[0].properties.pni_cell_name;
+                }
 
+                // Run through the selected features and set a filter
+                // to match features with unique cell_id's to activate
+                // the cellsinview_outline_highlight layer.
+                var filter = features.reduce(function (memo, feature) {
+                    memo.push(feature.properties.cell_id);
+                    return memo;
+                }, ['in', 'cell_id']);
+                //Add the filter to the highlight layer
+                map.setFilter("cellsinview_outline_highlight", filter);
+                //WHEN THE SEARCH FOR THIS CELL BUTTON IS CLICKED
+                $(".mapcellsearchbtn").on('click', function () {
+                    console.log('Searching for netwin jso only from popup click', pni_or_netwin_name);
+                    $("#cellsearch").val(pni_or_netwin_name);
+                    $("#nav_cell_name").text(pni_or_netwin_name);
+                    getData(pni_or_netwin_name);
+                    getfunctiontable(pni_or_netwin_name); // Run the getfunctiontable for the associated selected value.
+                    getHomesPassed(pni_or_netwin_name);
+                    getFootages(pni_or_netwin_name);
+                    if (popup) {
+                        // popup.remove();//DIDNT WORK FOR SOME REASON
+                        $(".mapboxgl-popup-close-button").click()
+                    }
+                });
+            });
 
-
-            //==================================LEAFLET
-            //REMOVE THE PREVIOUS cellLayer
-            // map.eachLayer(function (layer) {
-            //     if (map.hasLayer(cellLayer)) {
-            //         map.removeLayer(cellLayer);
-            //         map.removeLayer(jsomarker);
-            //         if (map.hasLayer(cellsinarea_map)) {
-            //             map.removeLayer(cellsinarea_map);
-            //             console.log('cellsinarea_map Removed.');
-            //         }
-            //     }
-            // });
-            // // if the geometry object is empty then dont run this
-            // if (!isEmpty(geom.features[0].geometry)) {
-            //     cellLayer = L.geoJSON(geom).addTo(map);
-            //     map.fitBounds(cellLayer.getBounds());
-            //     jsomarker = L.circle(jsogeom, {
-            //             radius: 20,
-            //             color: 'yellow'
-            //         }).addTo(map)
-            //         .bindPopup("<b class='text-center'>JSO Name</b></br>" + responsedata.netwin_cell_jso_name)
-            //         .openPopup();
-            // } else {
-            //     console.log('No Geometry');
-            // }
-        } catch (error) {
-            console.log(error);
+        } catch (err) {
+            console.log(err)
         }
     }
+
+    //=============================LEAFLET 
+        // map = L.map('map').setView([42, -74.09], 7);
+        // // var openstreetmaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        // // }).addTo(map);
+        // var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+        //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        //     subdomains: 'abcd',
+        // }).addTo(map);
+        //REMOVE THE PREVIOUS cellLayer
+        // map.eachLayer(function (layer) {
+        //     if (map.hasLayer(cellLayer)) {
+        //         map.removeLayer(cellLayer);
+        //         map.removeLayer(jsomarker);
+        //         if (map.hasLayer(cellsinarea_map)) {
+        //             map.removeLayer(cellsinarea_map);
+        //             console.log('cellsinarea_map Removed.');
+        //         }
+        //     }
+        // });
+        // // if the geometry object is empty then dont run this
+        // if (!isEmpty(geom.features[0].geometry)) {
+        //     cellLayer = L.geoJSON(geom).addTo(map);
+        //     map.fitBounds(cellLayer.getBounds());
+        //     jsomarker = L.circle(jsogeom, {
+        //             radius: 20,
+        //             color: 'yellow'
+        //         }).addTo(map)
+        //         .bindPopup("<b class='text-center'>JSO Name</b></br>" + responsedata.netwin_cell_jso_name)
+        //         .openPopup();
+        // } else {
+        //     console.log('No Geometry');
+        // }
+    //Disable and Enable the find cells in view button based on zoom level
+    // map.on('zoomend', function () {
+    //     if (map.getZoom() < 15) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
+    //         $("#cellsinareabtn").addClass("disabled");
+    //     } else {
+    //         $("#cellsinareabtn").removeClass("disabled");
+    //     }
+    // });
+
+    // async function findcellsinarea(coords) {
+    //     try {
+    //         // DONT RUN FUNCTION IF THERE IS NO CELL SEARCHED
+    //         if (!responsedata) {
+    //             alert("Please Search for A Cell");
+    //             return;
+    //         }
+    //         map.eachLayer(function (layer) {
+    //             if (map.hasLayer(cellsinarea_map)) {
+    //                 map.removeLayer(cellsinarea_map);
+    //                 console.log('cellsinareageom Layer Removed');
+    //             }
+    //         });
+    //         let bounds = map.getBounds().toBBoxString();
+    //         const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
+    //         cellsinareageom = response.data;
+    //         console.log('Cell in area data: ', cellsinareageom);
+
+    //         var cellsinareastyle = {
+    //             "color": "red",
+    //             "weight": 5,
+    //             "opacity": 0.65
+    //         };
+    //         cellsinarea_map = L.geoJSON(cellsinareageom, {
+    //             style: cellsinareastyle
+    //         }).addTo(map);
+
+    //         cellLayer.bringToFront();
+    //         cellsinarea_map.eachLayer(function (layer) {
+    //             layer.bindPopup(layer.feature.properties.netwin_cell_jso_name);
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
+
+    $("#cellsinareabtn").on("click", function () {
+        findcellsinarea();
+    });
+
+
+
+
+
+
     //Helper function to check for empty objects
     function isEmpty(obj) {
         for (var key in obj) {
@@ -327,255 +673,7 @@ $(document).ready(function () {
     }
     //================= END EXTRACT CELL DATA
 
-    //LEAFLET MAP SET UP
-    var map;
 
-    function regular_map() {
-        //==========================LEAFLET
-        // map = L.map('map').setView([42, -74.09], 7);
-        // // var openstreetmaps = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        // //     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        // // }).addTo(map);
-        // var CartoDB_Positron = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
-        //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-        //     subdomains: 'abcd',
-        // }).addTo(map);
-
-        //=======================MAPBOX
-        // Set bounds to New York, New York
-        var bounds = [
-            [-79.76506, 40.03666], // Southwest coordinates
-            [-70.6222, 45.0327 ]  // Northeast coordinates
-        ];
-        // mapboxgl.accessToken =
-        //     'pk.eyJ1IjoiYnJhZGxleTIzODciLCJhIjoiY2pnMTk0ZTk2NmJzOTJxbnZpMjl1ZGsxbiJ9.L-BSY_VjUrkHL3ov0OciKQ';
-        map = new mapboxgl.Map({
-            container: 'map', // container id
-            style: '/js/style.json',
-            //  style: 'mapbox://styles/mapbox/dark-v9', //hosted style id
-            center: [-74.38, 41], // starting position
-            zoom: 6, // starting zoom
-            hash: true,
-            maxBounds: bounds
-        });
-        // Add zoom and rotation controls to the map.
-        map.addControl(new mapboxgl.NavigationControl());
-        // Add a button to make the map full-screen
-        map.addControl(new mapboxgl.FullscreenControl());
-
-    }
-    regular_map();
-    //==============================MAPBOX ONE
-    map.on('zoom', function () {
-        if (map.getZoom() < 14) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
-            $("#cellsinareabtn").addClass("disabled");
-        } else {
-            $("#cellsinareabtn").removeClass("disabled");
-        }
-    })
-    async function findcellsinarea(coords) {
-        try {
-            if (!responsedata) {
-                alert("Please Search for A Cell");
-                return;
-            }
-            var layers = map.getStyle().layers; //GET ALL THE LAYERS IN THE STYLE
-            var labelLayerId;
-            for (var i = 0; i < layers.length; i++) {
-                if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-                    labelLayerId = layers[i].id; //ADD EACH LAYER THAT IS A TEXT OR SYMBOL 
-                    break;
-                }
-                //REMOVE ANY CELLS IN VIEW SEARCHES
-                if (layers[i].id === 'cellsinview') {
-                    console.log('REMOVED cellsinview')
-                    map.removeLayer("cellsinview");
-                    map.removeLayer("cellsinview_outline");
-                    map.removeLayer("cellsinview_outline_highlight");
-                    map.removeLayer("cellsinview_label");
-                    map.removeSource("cellsinview");
-                }
-            }
-            let bounds = map.getBounds().toArray().toString();
-            const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
-            cellsinareageom = response.data;
-            console.log('Cell in area data: ', cellsinareageom);
-
-            //Create a Source containing all the cells in view
-            map.addSource('cellsinview', {
-                'type': 'geojson',
-                'data': response.data
-            })
-            //Add the cells in view polygons
-            map.addLayer({
-                'id': 'cellsinview',
-                'type': 'fill',
-                'source': 'cellsinview',
-                'layout': {},
-                'paint': {
-                    'fill-color': 'red',
-                    'fill-opacity': 0.6,
-                }
-            }, 'cellpolygon')
-            //Also add an outline to make it look better and distinct
-            map.addLayer({
-                'id': 'cellsinview_outline',
-                'type': 'line',
-                'source': 'cellsinview',
-                'layout': {},
-                'paint': {
-                    'line-color': 'black',
-                    'line-width': 2
-                }
-            }, 'road_major_label');
-            //When a user clicks on the cells this highlights the cell in yellow
-            map.addLayer({
-                'id': 'cellsinview_outline_highlight',
-                'type': 'line',
-                'source': 'cellsinview',
-                'layout': {},
-                'paint': {
-                    'line-color': 'yellow',
-                    'line-width': 2
-                },
-                "filter": ["in", "cell_id", ""]
-            }, 'road_major_label');
-            //Make a label for all the cells in view contain the newtin jso and the pni
-            map.addLayer({
-                'id': 'cellsinview_label',
-                'type': 'symbol',
-                'source': 'cellsinview',
-                "minzoom": 14,
-                "layout": {
-                    "text-field": "{netwin_cell_jso_name}/{pni_cell_name}",
-                    "text-font": [
-                        "Roboto Black"
-                    ],
-                    "text-size": {
-                        'base': 1.75,
-                        'stops': [[14, 11], [22, 18]]
-                    },
-                    'text-allow-overlap': true,
-                    'text-ignore-placement': true,
-                    'visibility': 'visible'
-                },
-                "paint": {
-                    "text-color": "red",
-                    "text-halo-blur": 1,
-                    "text-halo-color": "white",
-                    "text-halo-width": 2
-                }
-            });
-            // Change the cursor to a pointer when the mouse is over the cellsinview layer.
-            map.on('mouseenter', 'cellsinview', function () {
-                map.getCanvas().style.cursor = 'pointer';
-            });
-
-            // Change it back to a pointer when it leaves.
-            map.on('mouseleave', 'cellsinview', function () {
-                map.getCanvas().style.cursor = '';
-            });
-            // Create a popup, but don't add it to the map yet.
-            var popup = new mapboxgl.Popup({
-                closeOnClick: false
-            })
-            //When someone clicks on the cellsinview polygons this filters through the data and highlights the cell with the same cell_id
-            map.on('click', 'cellsinview', function (e) {
-                // set bbox as 5px reactangle area around clicked point
-                var bbox = [[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]];
-                var features = map.queryRenderedFeatures(bbox, { layers: ['cellsinview'] });
-
-                //Give the popup some data
-                popup.setLngLat(e.lngLat)
-                    .setHTML('<h6 class="text-center mb-0 font-weight-bold">' + e.features[0].properties.netwin_cell_jso_name + ' / ' + e.features[0].properties.pni_cell_name + '</h6><br><button class="mt-0 btn btn-sm btn-primary mapcellsearchbtn">Search For This Cell</button>')
-                    .addTo(map);
-                //GRAB THE newtin_cell_jso_name and store it in a variable to search.
-                if(e.features[0].properties.netwin_cell_jso_name){
-                    pni_or_netwin_name = e.features[0].properties.netwin_cell_jso_name;
-                }
-                else{
-                    pni_or_netwin_name = e.features[0].properties.pni_cell_name;
-                }
-                
-                // Run through the selected features and set a filter
-                // to match features with unique cell_id's to activate
-                // the cellsinview_outline_highlight layer.
-                var filter = features.reduce(function (memo, feature) {
-                    memo.push(feature.properties.cell_id);
-                    return memo;
-                }, ['in', 'cell_id']);
-                //Add the filter to the highlight layer
-                map.setFilter("cellsinview_outline_highlight", filter);
-                //WHEN THE SEARCH FOR THIS CELL BUTTON IS CLICKED
-                $(".mapcellsearchbtn").on('click', function () {
-                    console.log('Searching for netwin jso only from popup click', pni_or_netwin_name);
-                    $("#cellsearch").val(pni_or_netwin_name)
-                    getData(pni_or_netwin_name);
-                    getfunctiontable(pni_or_netwin_name); // Run the getfunctiontable for the associated selected value.
-                    getHomesPassed(pni_or_netwin_name);
-                    getFootages(pni_or_netwin_name);
-                    if (popup) {
-                        // popup.remove();//DIDNT WORK FOR SOME REASON
-                        $(".mapboxgl-popup-close-button").click()
-                    }
-                });
-            });
-
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
-    //=============================LEAFLET 
-    //Disable and Enable the find cells in view button based on zoom level
-    // map.on('zoomend', function () {
-    //     if (map.getZoom() < 15) { // if the current zoom level is higher than 15 then enable the button else keep it disabled.
-    //         $("#cellsinareabtn").addClass("disabled");
-    //     } else {
-    //         $("#cellsinareabtn").removeClass("disabled");
-    //     }
-    // });
-
-    // async function findcellsinarea(coords) {
-    //     try {
-    //         // DONT RUN FUNCTION IF THERE IS NO CELL SEARCHED
-    //         if (!responsedata) {
-    //             alert("Please Search for A Cell");
-    //             return;
-    //         }
-    //         map.eachLayer(function (layer) {
-    //             if (map.hasLayer(cellsinarea_map)) {
-    //                 map.removeLayer(cellsinarea_map);
-    //                 console.log('cellsinareageom Layer Removed');
-    //             }
-    //         });
-    //         let bounds = map.getBounds().toBBoxString();
-    //         const response = await axios.get("http://localhost:8011/geojson/v1/ftth.cells?geom_column=geom&columns=*&filter=geom%26%26ST_MakeEnvelope(" + bounds + ")AND%20cell_id%3C%3E" + cell_id + "&limit=50");
-    //         cellsinareageom = response.data;
-    //         console.log('Cell in area data: ', cellsinareageom);
-
-    //         var cellsinareastyle = {
-    //             "color": "red",
-    //             "weight": 5,
-    //             "opacity": 0.65
-    //         };
-    //         cellsinarea_map = L.geoJSON(cellsinareageom, {
-    //             style: cellsinareastyle
-    //         }).addTo(map);
-
-    //         cellLayer.bringToFront();
-    //         cellsinarea_map.eachLayer(function (layer) {
-    //             layer.bindPopup(layer.feature.properties.netwin_cell_jso_name);
-    //         });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
-
-    $("#cellsinareabtn").on("click", function () {
-        findcellsinarea();
-    });
     //CELL FUNCTION TABLE
     async function getfunctiontable(cell) {
         try {
@@ -594,23 +692,23 @@ $(document).ready(function () {
                     targets: 3
                 }],
                 columns: [{
-                    data: "design_function",
-                    name: "design_function"
-                }, {
-                    data: "resource",
-                    name: "resource"
-                },
-                //  {
-                //     data: "object_id"
-                // }, 
-                {
-                    data: "date_complete",
-                    name: "date_complete"
-                }, {
-                    data: "comment",
-                    name: "comment",
-                    width: "40%"
-                }
+                        data: "design_function",
+                        name: "design_function"
+                    }, {
+                        data: "resource",
+                        name: "resource"
+                    },
+                    //  {
+                    //     data: "object_id"
+                    // }, 
+                    {
+                        data: "date_complete",
+                        name: "date_complete"
+                    }, {
+                        data: "comment",
+                        name: "comment",
+                        width: "40%"
+                    }
                 ],
                 "order": [
                     [2, "desc"]
@@ -664,41 +762,41 @@ $(document).ready(function () {
                     label: "Design Function",
                     type: "select",
                     options: [{
-                        label: "",
-                        value: null
-                    },
-                    {
-                        label: "Cell Pocketed",
-                        value: "Cell Pocketed"
-                    },
-                    {
-                        label: "Cell Designed",
-                        value: "Cell Designed"
-                    },
-                    {
-                        label: "Cell Issued to QC",
-                        value: "Cell Issued to QC"
-                    },
-                    {
-                        label: "Cell Drafted in Netwin",
-                        value: "Cell Drafted in Netwin"
-                    },
-                    {
-                        label: "Cell Released to Construction",
-                        value: "Cell Released to Construction"
-                    },
-                    {
-                        label: "Cell QC Design",
-                        value: "Cell QC Design"
-                    },
-                    {
-                        label: "Cell Pocketing QC",
-                        value: "Cell Pocketing QC"
-                    },
-                    {
-                        label: "Cell Design Issued",
-                        value: "Cell Design Issued"
-                    },
+                            label: "",
+                            value: null
+                        },
+                        {
+                            label: "Cell Pocketed",
+                            value: "Cell Pocketed"
+                        },
+                        {
+                            label: "Cell Designed",
+                            value: "Cell Designed"
+                        },
+                        {
+                            label: "Cell Issued to QC",
+                            value: "Cell Issued to QC"
+                        },
+                        {
+                            label: "Cell Drafted in Netwin",
+                            value: "Cell Drafted in Netwin"
+                        },
+                        {
+                            label: "Cell Released to Construction",
+                            value: "Cell Released to Construction"
+                        },
+                        {
+                            label: "Cell QC Design",
+                            value: "Cell QC Design"
+                        },
+                        {
+                            label: "Cell Pocketing QC",
+                            value: "Cell Pocketing QC"
+                        },
+                        {
+                            label: "Cell Design Issued",
+                            value: "Cell Design Issued"
+                        },
                     ],
                     attr: {
                         required: true
@@ -746,24 +844,24 @@ $(document).ready(function () {
 
             });
             new $.fn.dataTable.Buttons(functiondatatable, [{
-                extend: "create",
-                text: "<i class='fa fa-plus text-success'></i> Add Function",
-                editor: editor
-            },
-            {
-                extend: "edit",
-                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-                editor: editor
-            },
-            {
-                extend: "remove",
-                text: "<i class='fa fa-trash-o '></i> Delete Function",
-                editor: editor
-            }, {
-                extend: 'csvHtml5',
-                text: 'Export Functions',
-                title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
-            }
+                    extend: "create",
+                    text: "<i class='fa fa-plus text-success'></i> Add Function",
+                    editor: editor
+                },
+                {
+                    extend: "edit",
+                    text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+                    editor: editor
+                },
+                {
+                    extend: "remove",
+                    text: "<i class='fa fa-trash-o '></i> Delete Function",
+                    editor: editor
+                }, {
+                    extend: 'csvHtml5',
+                    text: 'Export Functions',
+                    title: responsedata.netwin_cell_jso_name + '_Cell_Functions_Export'
+                }
             ]);
 
             if (user_role.text() == 'admin') {
@@ -1216,117 +1314,117 @@ $(document).ready(function () {
 
                 // autoWidth:true,
                 columns: [{
-                    data: "pni_cell_name",
-                    name: "PNI Cell Name"
-                },
-                {
-                    data: "jso_location",
-                    name: "JSO Location"
-                },
-                {
-                    data: "start_device",
-                    name: "Start Device"
-                },
-                {
-                    data: "end_device",
-                    name: "End Device"
-                },
-                {
-                    data: "fiber_count",
-                    name: "Fiber Count"
-                },
-                {
-                    data: "homes_passed",
-                    name: "Homes Passed"
-                },
-                {
-                    data: "cbs",
-                    name: "CBS"
-                },
-                {
-                    data: "ug",
-                    name: "UG"
-                },
-                {
-                    data: "mdu",
-                    name: "MDU"
-                },
-                {
-                    data: "route",
-                    name: "Route"
-                },
-                {
-                    data: "start_footage",
-                    name: "Start Footage"
-                },
-                {
-                    data: "end_footage",
-                    name: "End Footage"
-                },
-                {
-                    data: "total_placed",
-                    name: "Total Placed"
-                },
-                {
-                    data: "placed",
-                    name: "Placed"
-                },
-                {
-                    data: "total_pdo",
-                    name: "Total PDO"
-                },
-                {
-                    data: "pdo_spliced",
-                    name: "PDO Spliced"
-                },
-                {
-                    data: "date_issued",
-                    name: "Date Issued"
-                },
-                {
-                    data: "cabled_complete",
-                    name: "Cabled Complete"
-                },
-                {
-                    data: "pdo_complete",
-                    name: "PDO Complete"
-                },
-                {
-                    data: "jso_spliced",
-                    name: "JSO Spliced"
-                },
-                {
-                    data: "pdo_jso_complete",
-                    name: "PDO JSO Complete"
-                },
-                {
-                    data: "feeder_spliced",
-                    name: "Feeder Spliced"
-                },
-                {
-                    data: "pdo_jso_feeder_complete",
-                    name: "PDO JSO Feeder Complete"
-                },
-                {
-                    data: "feeder_to_odf_rolt_spliced",
-                    name: "Feeder to ODF Rolt Spliced"
-                },
-                {
-                    data: "backhaul_spliced",
-                    name: "Backhaul Spliced"
-                },
-                {
-                    data: "pdo_to_odf",
-                    name: "PDO to ODF"
-                },
-                {
-                    data: "tested",
-                    name: "Tested"
-                },
-                {
-                    data: "permitting_rolt_number",
-                    name: "Permitting Rolt Number"
-                }
+                        data: "pni_cell_name",
+                        name: "PNI Cell Name"
+                    },
+                    {
+                        data: "jso_location",
+                        name: "JSO Location"
+                    },
+                    {
+                        data: "start_device",
+                        name: "Start Device"
+                    },
+                    {
+                        data: "end_device",
+                        name: "End Device"
+                    },
+                    {
+                        data: "fiber_count",
+                        name: "Fiber Count"
+                    },
+                    {
+                        data: "homes_passed",
+                        name: "Homes Passed"
+                    },
+                    {
+                        data: "cbs",
+                        name: "CBS"
+                    },
+                    {
+                        data: "ug",
+                        name: "UG"
+                    },
+                    {
+                        data: "mdu",
+                        name: "MDU"
+                    },
+                    {
+                        data: "route",
+                        name: "Route"
+                    },
+                    {
+                        data: "start_footage",
+                        name: "Start Footage"
+                    },
+                    {
+                        data: "end_footage",
+                        name: "End Footage"
+                    },
+                    {
+                        data: "total_placed",
+                        name: "Total Placed"
+                    },
+                    {
+                        data: "placed",
+                        name: "Placed"
+                    },
+                    {
+                        data: "total_pdo",
+                        name: "Total PDO"
+                    },
+                    {
+                        data: "pdo_spliced",
+                        name: "PDO Spliced"
+                    },
+                    {
+                        data: "date_issued",
+                        name: "Date Issued"
+                    },
+                    {
+                        data: "cabled_complete",
+                        name: "Cabled Complete"
+                    },
+                    {
+                        data: "pdo_complete",
+                        name: "PDO Complete"
+                    },
+                    {
+                        data: "jso_spliced",
+                        name: "JSO Spliced"
+                    },
+                    {
+                        data: "pdo_jso_complete",
+                        name: "PDO JSO Complete"
+                    },
+                    {
+                        data: "feeder_spliced",
+                        name: "Feeder Spliced"
+                    },
+                    {
+                        data: "pdo_jso_feeder_complete",
+                        name: "PDO JSO Feeder Complete"
+                    },
+                    {
+                        data: "feeder_to_odf_rolt_spliced",
+                        name: "Feeder to ODF Rolt Spliced"
+                    },
+                    {
+                        data: "backhaul_spliced",
+                        name: "Backhaul Spliced"
+                    },
+                    {
+                        data: "pdo_to_odf",
+                        name: "PDO to ODF"
+                    },
+                    {
+                        data: "tested",
+                        name: "Tested"
+                    },
+                    {
+                        data: "permitting_rolt_number",
+                        name: "Permitting Rolt Number"
+                    }
                 ],
                 // order: [
                 //     [2, "desc"]
@@ -1494,24 +1592,24 @@ $(document).ready(function () {
         });
 
         new $.fn.dataTable.Buttons(construction_tracker_table, [{
-            extend: "create",
-            text: "<i class='fa fa-plus text-success'></i> Add Function",
-            editor: editor
-        },
-        {
-            extend: "edit",
-            text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
-            editor: editor
-        },
-        {
-            extend: "remove",
-            text: "<i class='fa fa-trash-o '></i> Delete Function",
-            editor: editor
-        }, {
-            extend: 'csvHtml5',
-            text: 'Export CSV',
-            title: 'Construction_Tracker_Export'
-        }
+                extend: "create",
+                text: "<i class='fa fa-plus text-success'></i> Add Function",
+                editor: editor
+            },
+            {
+                extend: "edit",
+                text: "<i class='fa fa-pencil-square-o'></i> Edit Function",
+                editor: editor
+            },
+            {
+                extend: "remove",
+                text: "<i class='fa fa-trash-o '></i> Delete Function",
+                editor: editor
+            }, {
+                extend: 'csvHtml5',
+                text: 'Export CSV',
+                title: 'Construction_Tracker_Export'
+            }
         ]);
         //WHEN CREATING A NEW CONSTRUCTION TRACKER FUNCTION DEPENDING ON WHICH WAY THEY SEARCHED EITHER BY cell OR rolt THEN UPDATE THE FUNCTION AND REFRESH THE TABLE BY cell OR rolt
         editor.on('create', function (e, o, action) {

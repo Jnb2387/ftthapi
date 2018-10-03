@@ -134,7 +134,10 @@ outline: 1px solid slategrey;
 }
 
 
-
+.mapboxgl-popup {
+  max-width: 400px;
+  /* font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif; */
+}
 
 
 @media (min-width: 1200px) {
