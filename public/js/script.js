@@ -170,6 +170,10 @@ $(document).ready(function () {
                 $("#cellsinareabtn").removeClass("disabled");
             }
         });
+        map.on('click', function(e){
+            var features=map.queryRenderedFeatures(e.point)
+            console.log(features)
+        })
         //NEW YORK SAM ADDRESSES
         // map.addSource('nysam', {
         //     "type": "vector",
@@ -281,7 +285,7 @@ $(document).ready(function () {
                 'line-color': 'black',
                 'line-width': 2
             }
-        }, 'road_major_label');
+        }, labelLayerId);//"road_label"
         //JSO MARKER
         map.addSource('jsomarker', {
             'type': 'geojson',
@@ -388,7 +392,7 @@ $(document).ready(function () {
                     'line-color': 'black',
                     'line-width': 2
                 }
-            }, 'road_major_label');
+            }, 'cellpolygon');
             //When a user clicks on the cells this highlights the cell in yellow
             map.addLayer({
                 'id': 'cellsinview_outline_highlight',
@@ -400,7 +404,7 @@ $(document).ready(function () {
                     'line-width': 2
                 },
                 "filter": ["in", "cell_id", ""]
-            }, 'road_major_label');
+            });
             //Make a label for all the cells in view contain the newtin jso and the pni
             map.addLayer({
                 'id': 'cellsinview_label',
@@ -430,6 +434,7 @@ $(document).ready(function () {
                     "text-halo-width": 2
                 }
             });
+            
             // Change the cursor to a pointer when the mouse is over the cellsinview layer.
             map.on('mouseenter', 'cellsinview', function () {
                 map.getCanvas().style.cursor = 'pointer';
@@ -1235,8 +1240,8 @@ $(document).ready(function () {
                 console.log("Inserted into Cells Table")
 
             } else {
-                // alert(response.data)
-                // return
+                //alert(response.data)
+                return
             }
         } catch (error) {
             console.log(error)
@@ -1304,11 +1309,11 @@ $(document).ready(function () {
         await insertFootagesTable();
         await insertHomesPassedTable();
         //MAY HAVE TO REFACTOR CAUSE NOT THE BEST WAY. BUT CHECK THE RESPONSE OF EACH POST REQUEST AND IF THEY ARE ALL SUCCESSFUL THEN SHOW THE SUCCESS MODAL OTHERS ALERT ERROR
-        // if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
+        if (homespassedinsertresponse == 'Successful' && footagesinsertresponse == 'Successful' && cellinsertresponse == 'Successful') {
 
-        // } else {
-        //     alert('cellinsertresponse error: ', cellinsertresponse)
-        // }
+        } else {
+            alert('cellinsertresponse error: ', cellinsertresponse)
+        }
     });
 
     // ===========================================END ADD A NEW CELL FOOTAGE AND HOMES PASSED=================================================
